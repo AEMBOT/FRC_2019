@@ -152,16 +152,4 @@ public class Logger {
             stopwatch = new Stopwatch(true);
         }
     }
-
-    //Get programming a permanent thumbdrive!
-    public void pullLogFiles(boolean oneSevenTwo){
-        Runtime runtime = Runtime.getRuntime();
-
-        try {
-            if(oneSevenTwo) runtime.exec("cmd /c start \"\" loggerRetrieval_172.bat");
-            else runtime.exec("cmd /c start \"\" loggerRetrieval_10.bat");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
