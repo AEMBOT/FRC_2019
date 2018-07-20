@@ -59,26 +59,26 @@ public class Logger {
 
     private static void logInterior(LoggerSystems system, String message, boolean all){
         if(all){
-            message = system.getName() + ": " + message;
+            message = system.name() + ": " + message;
             system = LoggerSystems.All;
         }
         
         String out;
 
-        if(logOne[system.getValue()]){
-            oldMessage[system.getValue()] = message;
-            logOne[system.getValue()] = false;
-        } else if(message.equals(oldMessage[system.getValue()])){
-            condenser[system.getValue()]++;
-        } else if(condenser[system.getValue()] > 1) {
-            out = oldMessage[system.getValue()] + "(X" + condenser[system.getValue()] + ")";
+        if(logOne[system.ordinal()]){
+            oldMessage[system.ordinal()] = message;
+            logOne[system.ordinal()] = false;
+        } else if(message.equals(oldMessage[system.ordinal()])){
+            condenser[system.ordinal()]++;
+        } else if(condenser[system.ordinal()] > 1) {
+            out = oldMessage[system.ordinal()] + "(X" + condenser[system.ordinal()] + ")";
             print(system, out);
-            oldMessage[system.getValue()] = message;
-            condenser[system.getValue()] = 0;
+            oldMessage[system.ordinal()] = message;
+            condenser[system.ordinal()] = 0;
         } else {
-            out = oldMessage[system.getValue()];
+            out = oldMessage[system.ordinal()];
             print(system, out);
-            oldMessage[system.getValue()] = message;
+            oldMessage[system.ordinal()] = message;
         }
     }
 

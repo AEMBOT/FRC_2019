@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 public class TeleopMode extends SimpleCommand {
 
     private int unpressedID = 0;
-    private int numOfSubsystems = 4;
+    private int numOfSubsystems = 2;
 
     private Xbox primary;           //Drive and flywheel/output
     private Xbox secondary;         //Secondary functions
@@ -81,11 +81,11 @@ public class TeleopMode extends SimpleCommand {
     //Pairs an action with a manual input (joystick, trigger, etc)
     private void manual(Subsystems manualNumber, double input, Runnable action){
         if(Math.abs(input) > 0.2){
-            isManualSetter.get(manualNumber.getValue()).accept(true);
-            isManualLessThanBuffer[manualNumber.getValue()] = false;
+            isManualSetter.get(manualNumber.ordinal()).accept(true);
+            isManualLessThanBuffer[manualNumber.ordinal()] = false;
             action.run();
         } else {
-            isManualLessThanBuffer[manualNumber.getValue()] = true;
+            isManualLessThanBuffer[manualNumber.ordinal()] = true;
         }
     }
 
@@ -96,15 +96,15 @@ public class TeleopMode extends SimpleCommand {
 
     //Runs an action when manual is less than buffer
     private void off(Runnable off, Subsystems manualNumber) {
-        if(isManualLessThanBuffer[manualNumber.getValue()]) off.run();
+        if(isManualLessThanBuffer[manualNumber.ordinal()]) off.run();
     }
 
     //Runs an action when a set of buttons is not pressed and manual is less than buffer
     private void off(Runnable off, Subsystems manualNumber, boolean ... button){
         try {
-            if(areAllFalse(button) && !isManualGetter.get(manualNumber.getValue()).call()) off.run();
-            else if((areAllFalse(button) && isManualGetter.get(manualNumber.getValue()).call()
-                    && isManualLessThanBuffer[manualNumber.getValue()])) off.run();
+            if(areAllFalse(button) && !isManualGetter.get(manualNumber.ordinal()).call()) off.run();
+            else if((areAllFalse(button) && isManualGetter.get(manualNumber.ordinal()).call()
+                    && isManualLessThanBuffer[manualNumber.ordinal()])) off.run();
         } catch (Exception e) {
             e.printStackTrace();
         }
