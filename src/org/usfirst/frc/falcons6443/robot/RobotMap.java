@@ -21,6 +21,13 @@ public class RobotMap {
     public static final int RightEncoderA = -1;
     public static final int RightEncoderB = -1;
 
+    //shooter motors
+    public static final int ShooterMotor = -1;
+
+    //shooter encoder
+    public static final int ShooterEncoderA = -1;
+    public static final int ShooterEncoderB = -1;
+
     //code settings
     public static final boolean BackUpDistance = false;
     public static final boolean BackUpAngle = false;

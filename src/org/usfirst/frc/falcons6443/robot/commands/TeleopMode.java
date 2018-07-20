@@ -41,7 +41,7 @@ public class TeleopMode extends SimpleCommand {
         //driveProfile = new FalconDrive(primary);
 
         //add manual getters and setters
-        //Subsystems.subsystemEnum.getValue(),() -> function()
+        //Subsystems.subsystemEnum.ordinal(),() -> function()
         // or (Boolean set) -> function(set)
         while(isManualGetter.size() < numOfSubsystems) isManualGetter.add(null);
         while(isManualSetter.size() < numOfSubsystems) isManualSetter.add(null);
@@ -51,7 +51,6 @@ public class TeleopMode extends SimpleCommand {
 
     @Override
     public void execute() {
-
         //drive
         driveTrain.falconDrive(primary.leftStickX(), primary.leftTrigger(), primary.rightTrigger());
         // driveTrain.tankDrive(driveProfile.calculate()); TODO: TEST this cause profiles are cool
