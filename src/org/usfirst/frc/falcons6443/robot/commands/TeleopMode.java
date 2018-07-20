@@ -31,6 +31,7 @@ public class TeleopMode extends SimpleCommand {
     public TeleopMode() {
         super("Teleop Command");
         requires(driveTrain);
+        requires(shooter);
     }
 
     @Override
