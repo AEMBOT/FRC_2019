@@ -3,7 +3,6 @@ package org.usfirst.frc.falcons6443.robot.commands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.Robot;
 import org.usfirst.frc.falcons6443.robot.hardware.Joysticks.Xbox;
-import org.usfirst.frc.falcons6443.robot.utilities.Logger;
 import org.usfirst.frc.falcons6443.robot.utilities.enums.*;
 
 import java.util.List;
@@ -60,6 +59,7 @@ public class TeleopMode extends SimpleCommand {
         press(primary.leftBumper(), () -> driveTrain.downShift());
 
         //general periodic functions
+        shooter.update();
         periodicEnd();
     }
 
