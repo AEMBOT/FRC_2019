@@ -40,8 +40,7 @@ public class TeleopMode extends SimpleCommand {
         //driveProfile = new FalconDrive(primary);
 
         //add manual getters and setters
-        //Subsystems.subsystemEnum.ordinal(),() -> function()
-        // or (Boolean set) -> function(set)
+        //Subsystems.subsystemEnum.ordinal(),() -> function() or (Boolean set) -> function(set)
         while(isManualGetter.size() < numOfSubsystems) isManualGetter.add(null);
         while(isManualSetter.size() < numOfSubsystems) isManualSetter.add(null);
 
@@ -58,8 +57,14 @@ public class TeleopMode extends SimpleCommand {
         press(primary.rightBumper(), () -> driveTrain.upShift());
         press(primary.leftBumper(), () -> driveTrain.downShift());
 
+        //shooter
+        press(primary.A(), () -> shooter.charge());
+        unpressed(primary.B(), () -> shooter.shoot(), true); //resets the dashboard Load boolean
+
+        //off
+        off(() -> shooter.off(), primary.A());
+
         //general periodic functions
-        shooter.update();
         periodicEnd();
     }
 

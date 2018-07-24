@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.Encoders;
-import org.usfirst.frc.falcons6443.robot.utilities.PID;
 
 public class ShooterSystem extends Subsystem {
 
@@ -25,6 +24,7 @@ public class ShooterSystem extends Subsystem {
         SmartDashboard.putNumber("Distance to Target", 36);
         SmartDashboard.putNumberArray("Chart X", defaultArray);
         SmartDashboard.putNumberArray("Chart Y", defaultArray);
+        SmartDashboard.putBoolean("Load", false);
     }
 
     @Override
@@ -32,16 +32,11 @@ public class ShooterSystem extends Subsystem {
 
     public void setMotor(double power){ motor.set(power); }
 
-    public void resetEncoder() {
-        encoder.reset();
-    }
+    public void resetEncoder() { encoder.reset(); }
 
-    public double getEncoderTicks(){
-        return encoder.getDistance();
-    }
+    public double getEncoderTicks(){ return encoder.getDistance(); }
 
-    //periodic function
-    public void update(){
+    public void charge(){
         //get distance to target (inches) from camera
         //(pulling value from ShuffleBoard until vision code done)
         distance = SmartDashboard.getNumber("Distance to Target", 36);
@@ -66,10 +61,19 @@ public class ShooterSystem extends Subsystem {
         }
 
         if(xy[0] != -1 && desiredSpeed == -1){
-            desiredSpeed = xy[1] + ((xy[3] - xy[1])/(xy[2] - xy[0])) * (distance - xy[0]);
+            desiredSpeed = xy[1] + ((xy[3] - xy[1])/(xy[2] - xy[0])) * (distance - xy[0]); //linear interpolation equation
         }
         //velocity PID to get wheel up to speed (encoder)
 
         //feed in ball when at speed (a green light [boolean] on ShuffleBoard to alert hand feeding)
+
+        /*if(pid.isDone())*/ SmartDashboard.putBoolean("Load", true);
+        /*else*/ SmartDashboard.putBoolean("Load", false);
     }
+
+    public void shoot(){
+        SmartDashboard.putBoolean("Load", false);
+    }
+
+    public void off(){ motor.set(0); }
 }
