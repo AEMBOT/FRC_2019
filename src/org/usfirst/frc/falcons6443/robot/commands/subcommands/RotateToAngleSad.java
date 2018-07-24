@@ -2,8 +2,7 @@ package org.usfirst.frc.falcons6443.robot.commands.subcommands;
 
 import org.usfirst.frc.falcons6443.robot.commands.SimpleCommand;
 import org.usfirst.frc.falcons6443.robot.hardware.NavX;
-import org.usfirst.frc.falcons6443.robot.utilities.*;
-import org.usfirst.frc.falcons6443.robot.utilities.enums.LoggerSystems;
+import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 
 /**
  * Command to rotate the robot to an angle specified in a constructor parameter.
@@ -36,7 +35,7 @@ public class RotateToAngleSad extends SimpleCommand {
         pid = new PID(P, I, D, Eps);
         pid.setMaxOutput(.7);
         pid.setMinDoneCycles(2);
-        pid.setDoneRange(buffer);
+        pid.setFinishedRange(buffer);
         if (angle > 180){
             angle -= 360;
             directionPos = false;
