@@ -1,8 +1,7 @@
 package org.usfirst.frc.falcons6443.robot.commands.subcommands;
 
 import org.usfirst.frc.falcons6443.robot.commands.SimpleCommand;
-import org.usfirst.frc.falcons6443.robot.utilities.*;
-import org.usfirst.frc.falcons6443.robot.utilities.enums.LoggerSystems;
+import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 
 public class DriveToDistance extends SimpleCommand {
 
@@ -27,7 +26,7 @@ public class DriveToDistance extends SimpleCommand {
         pid = new PID(P, I, D, Eps);
         pid.setMaxOutput(.65);
         pid.setMinDoneCycles(5);
-        pid.setDoneRange(buffer);
+        pid.setFinishedRange(buffer);
         targetDistance = distance;
     }
 
