@@ -1,5 +1,11 @@
 package org.usfirst.frc.falcons6443.robot.utilities.pid;
 
+/**
+ * This class was imported from Simbotics code.
+ * PID: proportional–integral–derivative controller
+ *
+ * @author Simbotics 2017
+ */
 public class PIDTimer extends PID {
     private long startTime =-1;
     private long timeout;
