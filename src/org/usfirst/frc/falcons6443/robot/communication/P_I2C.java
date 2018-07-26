@@ -2,7 +2,7 @@ package org.usfirst.frc.falcons6443.robot.communication;
 
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.I2C.Port;
-import org.usfirst.frc.falcons6443.robot.hardware.PixyPacket;
+import org.usfirst.frc.falcons6443.robot.utilities.PixyPacket;
 
 /**
  * @author Goirick Saha
