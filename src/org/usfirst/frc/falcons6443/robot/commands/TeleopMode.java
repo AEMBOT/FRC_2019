@@ -31,6 +31,7 @@ public class TeleopMode extends SimpleCommand {
         super("Teleop Command");
         requires(driveTrain);
         requires(shooter);
+        requires(turret);
     }
 
     @Override
@@ -49,6 +50,7 @@ public class TeleopMode extends SimpleCommand {
 
     @Override
     public void execute() {
+
         //drive
         driveTrain.falconDrive(primary.leftStickX(), primary.leftTrigger(), primary.rightTrigger());
         // driveTrain.tankDrive(driveProfile.calculate()); TODO: TEST this cause profiles are cool
@@ -63,6 +65,9 @@ public class TeleopMode extends SimpleCommand {
 
         //off
         off(() -> shooter.off(), primary.A());
+
+        //turret
+        unpressed(primary.seven(), () -> turret.disable(), false);
 
         //general periodic functions
         periodicEnd();

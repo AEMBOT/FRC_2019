@@ -3,8 +3,6 @@ package org.usfirst.frc.falcons6443.robot.hardware;
 import edu.wpi.first.wpilibj.Encoder;
 
 public class Encoders extends Encoder{
-    private int prev;
-    private int speed;
     private int offset;
 
     public Encoders(int channelA, int channelB) {
@@ -25,7 +23,6 @@ public class Encoders extends Encoder{
     public void reset() {
         super.reset();
         this.offset = 0;
-        this.prev = 0;
     }
 
     public void set(int val) {

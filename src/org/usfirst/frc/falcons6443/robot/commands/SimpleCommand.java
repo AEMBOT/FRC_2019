@@ -21,6 +21,7 @@ public abstract class SimpleCommand extends Command {
     // It can then be referred to from any command inheriting this class.
     public DriveTrainSystem driveTrain = Robot.DriveTrain;
     public ShooterSystem shooter = Robot.Shooter;
+    public TurretSystem turret = Robot.Turret;
 
     /**
      * Constructor for SimpleCommand.
