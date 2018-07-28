@@ -12,32 +12,44 @@ public class Pixy {
     P_I2C i2c = new P_I2C();
     PixyPacket pkt = i2c.getPixy();
 
-    private final double objectHeight = 50.8; //all units here are in mm and pixels,
+    private final double objectWidth = 50.8; //all units here are in mm and pixels,
     private final double sensorHeight = 6.35;//the final distance will converted to inches.
     private final double focalLength = 2.8;
-    private final double imagePixelHeight = 199;
-    private final double objVerticalDistance = 1524;
-    private final double inchScale = 0.04; //multiple by 0.04 inches
+    private final double imagePixHeight = 199;
+    private final double objYDistance = 1524; //5 feet y distance placeholder
+    private final double inchScale = 0.0393701; //mm to inch converter
+    private final double objDistVar = 120; //temporary object distance value, needs to be changed when measuring.
+                                          //works with triangle similarity equation.
 
-    private double objectPixelHeight = pkt.y;
+    private double objectPixWidth = pkt.y;
     private double distanceToObject;
     private double objXDistance;
+    private double pFocalLength; //perceived focal length
 
     public Pixy(){
 
     }
 
+/*    private double calcDistance() {
+          distanceToObject = (focalLength*objectHeight*imagePixelHeight)/(objectPixelHeight*sensorHeight);
+          return distanceToObject;
+          }
+*/
+
+    //Triangle similarity equation will give X distance and not direct distance.
+
     private double calcDistance() {
-        distanceToObject = (focalLength*objectHeight*imagePixelHeight)/(objectPixelHeight*sensorHeight);
-        distanceToObject = distanceToObject * inchScale; //converting mm to inches
+        pFocalLength = ((objectPixWidth*objDistVar)/objectWidth);
+        distanceToObject = ((objectWidth*pFocalLength)/objectPixWidth);
         return distanceToObject;
     }
 
-    private double calcXDistance() {
-        objXDistance = Math.sqrt((Math.pow(distanceToObject, 2)) - (Math.pow(objVerticalDistance,2)));
-        objXDistance = objXDistance * inchScale;
-        return objXDistance;
-    }
+/*    private double calcXDistance() {
+          objXDistance = Math.sqrt((Math.pow(distanceToObject, 2)) - (Math.pow(objYDistance,2)));
+          objXDistance = objXDistance * inchScale;
+          return objXDistance;
+      }
+*/
 
     private void centerOnObject() {
         if(pkt.x != -1){
@@ -73,13 +85,13 @@ public class Pixy {
     }
 
     public double getDistanceToObject() {
-        return distanceToObject;
+        return distanceToObject * inchScale;
     }
 
-    public double getObjXDistance() {
-        return objXDistance;
-    }
-
+/*    public double getObjXDistance() {
+          return objXDistance * inchScale;
+     }
+*/
 
 }
 
