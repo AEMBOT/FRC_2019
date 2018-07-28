@@ -8,7 +8,7 @@ import org.usfirst.frc.falcons6443.robot.hardware.Encoders;
 import org.usfirst.frc.falcons6443.robot.hardware.LimitSwitch;
 import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 
-public class TurretSystem extends Subsystem{
+public class TurretSystem extends Subsystem {
 
     private Spark motor;
     private Encoders encoder;
@@ -16,7 +16,6 @@ public class TurretSystem extends Subsystem{
     private LimitSwitch rightLimitSwitch;
     private PID pid;
 
-    private boolean isRoaming; //if true, search for target. If false, only lock on target if in view.
     private boolean movingLeft;
     private boolean isDisabled;
     private static final int totalTicks = 425; //update value
@@ -25,16 +24,15 @@ public class TurretSystem extends Subsystem{
     private static final double i = 0;
     private static final double d = 0;
     private static final double epsilon = 0;
-    private static final double buffer = 0.5; //update value
+    private static final double buffer = 0.5; //update value; use from pixy
 
-    public TurretSystem(){
+    public TurretSystem() {
         motor = new Spark(RobotMap.TurretMotor);
         encoder = new Encoders(RobotMap.TurretEncoderA, RobotMap.TurretEncoderB);
         leftLimitSwitch = new LimitSwitch(RobotMap.TurretLeftSwitch);
         rightLimitSwitch = new LimitSwitch(RobotMap.TurretRightSwitch);
         pid = new PID(p, i, d, epsilon);
         encoder.setReverseDirection(false);
-        isRoaming = false;
         movingLeft = true;
         isDisabled = false;
         pid.setFinishedRange(buffer);
@@ -45,27 +43,45 @@ public class TurretSystem extends Subsystem{
     }
 
     @Override
-    public void initDefaultCommand() { }
+    public void initDefaultCommand() {
+    }
 
-    public void setMotor(double power){ motor.set(power); }
-
-    public boolean getRoaming() { return isRoaming; }
-
-    private void setRoaming(boolean roaming) {  isRoaming = roaming; }
-
-    public void roamingToggle(){ isRoaming = !isRoaming; }
-
-    public double getDegree(){
+    public double getDegree() {
         return totalDegrees * encoder.get() / totalTicks;
     }
 
-    public void disable(){
-        isRoaming = false;
-        isDisabled = true;
+    public void disable() { isDisabled = true; }
+
+    public void roaming() {
+        double power;
+        if (movingLeft) {
+            power = -0.5; //negative is left, positive is right
+        } else {
+            power = 0.5;
+        }
+
+        if (leftLimitSwitch.get()) {
+            power = Math.abs(power);
+            encoder.reset();
+        } else if (rightLimitSwitch.get()) {
+            power = -Math.abs(power);
+            encoder.set(totalTicks);
+        }
     }
 
-    //periodic function
-    public void update(){
+    public void move(double targetDegree) { //negative is left, positive is right
+        double power;
+        double desiredDegree = getDegree() + targetDegree;
+        pid.setDesiredValue(desiredDegree);
+        power = pid.calcPID(getDegree());
+
+        if (power != 0) movingLeft = !(power > 0);
+    }
+}
+
+
+
+/*    public void update(){
         double power;
         double targetDegree = 4; //get from vision, 0 being center, left side of screen negative, right positive
         boolean inView = true; //get from vision
@@ -88,12 +104,12 @@ public class TurretSystem extends Subsystem{
         }
 
         //if centered, power = 0 and inform drivers (ShuffleBoard boolean) and shooter(?)
-        if(pid.isDone() && Math.abs(targetDegree) < buffer) {
-            power = 0;
-            SmartDashboard.putBoolean("Centered", true);
-        } else {
-            SmartDashboard.putBoolean("Centered", false);
-        }
+//        if(pid.isDone() && Math.abs(targetDegree) < buffer) {
+//            power = 0;
+//            SmartDashboard.putBoolean("Centered", true);
+//        } else {
+//            SmartDashboard.putBoolean("Centered", false);
+//        }
 
         if(leftLimitSwitch.get()) {
             power = Math.abs(power);
@@ -106,5 +122,4 @@ public class TurretSystem extends Subsystem{
         if(power != 0) movingLeft = !(power > 0);
 
         motor.set(power);
-    }
-}
+    }*/
