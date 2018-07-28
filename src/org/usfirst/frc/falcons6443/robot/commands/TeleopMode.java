@@ -31,6 +31,7 @@ public class TeleopMode extends SimpleCommand {
     public TeleopMode() {
         super("Teleop Command");
         requires(driveTrain);
+        requires(turret);
     }
 
     @Override
@@ -58,6 +59,9 @@ public class TeleopMode extends SimpleCommand {
         //shifting
         press(primary.rightBumper(), () -> driveTrain.upShift());
         press(primary.leftBumper(), () -> driveTrain.downShift());
+
+        //turret
+        unpressed(primary.seven(), () -> turret.disable(), false);
 
         //general periodic functions
         periodicEnd();
