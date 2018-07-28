@@ -7,7 +7,7 @@ import org.usfirst.frc.falcons6443.robot.utilities.PixyPacket;
  * @author Goirick Saha
  */
 
-public class Pixy {
+public class PixySystem {
 
     P_I2C i2c = new P_I2C();
     PixyPacket pkt = i2c.getPixy();
@@ -26,7 +26,7 @@ public class Pixy {
     private double objXDistance;
     private double pFocalLength; //perceived focal length
 
-    public Pixy(){
+    public PixySystem(){
 
     }
 
