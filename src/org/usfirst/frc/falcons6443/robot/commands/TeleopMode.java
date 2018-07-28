@@ -66,6 +66,9 @@ public class TeleopMode extends SimpleCommand {
 
         //general periodic functions
         periodicEnd();
+
+        //other junk
+        if(shooter.isCharged()) primary.setRumble(XboxRumble.RumbleBoth, 0.4);
     }
 
     //Pairs an action with a button

@@ -36,10 +36,26 @@ public class ShooterSystem extends Subsystem {
         SmartDashboard.putNumberArray("Distance From Target", defaultArray);
         SmartDashboard.putNumberArray("Speed at Distance", defaultArray);
         SmartDashboard.putBoolean("Load", false);
+        SmartDashboard.putBoolean("Charged", false);
+        SmartDashboard.putBoolean("Locked On", false);
     }
 
     @Override
     public void initDefaultCommand() { }
+
+    public boolean isCharged(){
+        return pidf.isDone();
+    }
+
+    public void autoUpdate(){
+        if (SmartDashboard.getBoolean("Charged", false)){
+            shoot();
+        } else if(SmartDashboard.getBoolean("Locked On", false)){
+            charge();
+        } else {
+            off();
+        }
+    }
 
     public void charge(){
         //get distance to target (inches) from camera
@@ -76,7 +92,9 @@ public class ShooterSystem extends Subsystem {
         motor.set(power);
 
         //feed in ball when at speed (a green light [boolean] on ShuffleBoard to alert hand feeding)
-        if (pidf.isDone()) SmartDashboard.putBoolean("Load", true);
+        if (pidf.isDone()) {
+            SmartDashboard.putBoolean("Load", true);
+        }
         else SmartDashboard.putBoolean("Load", false);
     }
 
