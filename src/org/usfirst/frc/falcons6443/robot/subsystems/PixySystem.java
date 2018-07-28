@@ -28,8 +28,10 @@ public class PixySystem extends Subsystem {
     private double objXDistance;
     private double pFocalLength; //perceived focal length
 
-    public PixySystem(){
+    private TurretSystem turret;
 
+    public PixySystem(){
+        turret = new TurretSystem();
     }
 
     @Override
@@ -57,7 +59,9 @@ public class PixySystem extends Subsystem {
       }
 */
 
-    private void roam(){}
+    private void roam() {
+        turret.roaming();
+    }
 
     private void lockOnObject() {
         if(pkt.x != -1){
@@ -65,10 +69,10 @@ public class PixySystem extends Subsystem {
                 while(pkt.x < .48 || pkt.x > .52){
 
                     if(pkt.x < .48){ //Example code
-                        //rotate turret right
+                        turret.move(1);
                     }
                     if(pkt.x > .52){
-                        //rotate turret left
+                        turret.move(-1);
                     }
                     if(pkt.y == -1)//Restart if ball lost during turn
                         break;
