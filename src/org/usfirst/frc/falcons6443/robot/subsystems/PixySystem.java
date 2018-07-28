@@ -1,13 +1,15 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
+import edu.wpi.first.wpilibj.command.Subsystem;
 import org.usfirst.frc.falcons6443.robot.communication.P_I2C;
 import org.usfirst.frc.falcons6443.robot.utilities.PixyPacket;
+import org.usfirst.frc.falcons6443.robot.utilities.enums.Subsystems;
 
 
 /**
  * @author Goirick Saha
  */
 
-public class PixySystem {
+public class PixySystem extends Subsystem {
 
     P_I2C i2c = new P_I2C();
     PixyPacket pkt = i2c.getPixy();
@@ -30,6 +32,10 @@ public class PixySystem {
 
     }
 
+    @Override
+    public void initDefaultCommand() { }
+
+
 /*    private double calcDistance() {
           distanceToObject = (focalLength*objectHeight*imagePixelHeight)/(objectPixelHeight*sensorHeight);
           return distanceToObject;
@@ -51,7 +57,9 @@ public class PixySystem {
       }
 */
 
-    private void centerOnObject() {
+    private void roam(){}
+
+    private void lockOnObject() {
         if(pkt.x != -1){
             if(pkt.x < .48 || pkt.x > .52){
                 while(pkt.x < .48 || pkt.x > .52){
@@ -80,6 +88,22 @@ public class PixySystem {
         }
     }
 
+    public void update() {
+        if(pkt.x == -1){
+            roam();
+        } else {
+            lockOnObject();
+        }
+    }
+
+    public boolean isObjLocked() {
+        if(pkt.x > .48 || pkt.x < .52) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public boolean getTargetInView() {
         return targetInView();
     }
@@ -87,11 +111,6 @@ public class PixySystem {
     public double getDistanceToObject() {
         return distanceToObject * inchScale;
     }
-
-/*    public double getObjXDistance() {
-          return objXDistance * inchScale;
-     }
-*/
 
 }
 
