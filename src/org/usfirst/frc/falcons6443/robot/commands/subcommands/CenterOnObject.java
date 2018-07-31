@@ -1,11 +1,9 @@
 package org.usfirst.frc.falcons6443.robot.commands.subcommands;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
-import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.commands.autocommands.RotateToAngle;
-import org.usfirst.frc.falcons6443.robot.commands.subcommands.*;
 import org.usfirst.frc.falcons6443.robot.communication.P_I2C;
-import org.usfirst.frc.falcons6443.robot.hardware.PixyPacket;
+import org.usfirst.frc.falcons6443.robot.utilities.PixyPacket;
 
 /**
  * @author Goirick Saha
