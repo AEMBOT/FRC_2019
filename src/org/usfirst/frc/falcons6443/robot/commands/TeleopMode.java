@@ -3,7 +3,6 @@ package org.usfirst.frc.falcons6443.robot.commands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.Robot;
 import org.usfirst.frc.falcons6443.robot.hardware.Joysticks.Xbox;
-import org.usfirst.frc.falcons6443.robot.utilities.Logger;
 import org.usfirst.frc.falcons6443.robot.utilities.enums.*;
 
 import java.util.List;
@@ -31,6 +30,7 @@ public class TeleopMode extends SimpleCommand {
     public TeleopMode() {
         super("Teleop Command");
         requires(driveTrain);
+        requires(shooter);
         requires(turret);
     }
 
@@ -41,8 +41,7 @@ public class TeleopMode extends SimpleCommand {
         //driveProfile = new FalconDrive(primary);
 
         //add manual getters and setters
-        //Subsystems.subsystemEnum.getValue(),() -> function()
-        // or (Boolean set) -> function(set)
+        //Subsystems.subsystemEnum.ordinal(),() -> function() or (Boolean set) -> function(set)
         while(isManualGetter.size() < numOfSubsystems) isManualGetter.add(null);
         while(isManualSetter.size() < numOfSubsystems) isManualSetter.add(null);
 
@@ -60,11 +59,21 @@ public class TeleopMode extends SimpleCommand {
         press(primary.rightBumper(), () -> driveTrain.upShift());
         press(primary.leftBumper(), () -> driveTrain.downShift());
 
+        //shooter
+        press(primary.A(), () -> shooter.charge());
+        unpressed(primary.B(), () -> shooter.shoot(), true); //resets the dashboard Load boolean
+
+        //off
+        off(() -> shooter.off(), primary.A());
+
         //turret
         unpressed(primary.seven(), () -> turret.disable(), false);
 
         //general periodic functions
         periodicEnd();
+
+        //other junk
+        if(shooter.isCharged()) primary.setRumble(XboxRumble.RumbleBoth, 0.4);
     }
 
     //Pairs an action with a button
