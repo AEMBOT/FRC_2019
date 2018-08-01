@@ -22,10 +22,9 @@ public class Xbox {
         this.controller = controller;
     }
 
-    public XboxController getJoystick(XboxController xbox) {
-        return xbox;
-    }
-
+    /**
+     * @return The value of the X axis of the left stick
+     */
     public double leftStickX() {
         return controller.getRawAxis(0);
     }

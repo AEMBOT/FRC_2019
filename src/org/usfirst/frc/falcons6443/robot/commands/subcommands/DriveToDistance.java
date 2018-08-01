@@ -12,12 +12,8 @@ public class DriveToDistance extends SimpleCommand {
     private static final double Eps = 0.5; //weakest applied power //0.4???
 
     private static final double buffer = 1; //inches //0.5
-    private static final double counterBuffer = 2; //inches //0.5
 
     private double targetDistance;
-    private double oldDistance;
-    private int counter;
-    private boolean done;
     private PixySystem pixy;
 
     private PID pid;
@@ -50,9 +46,6 @@ public class DriveToDistance extends SimpleCommand {
     public void initialize() {
         driveTrain.reset();
         setDistance();
-        oldDistance = 0;
-        counter = 0;
-        done = false;
     }
 
     @Override
@@ -63,9 +56,6 @@ public class DriveToDistance extends SimpleCommand {
 
     @Override
     protected boolean isFinished() {
-        if(isAtDistance()){
-            done = true;
-        }
-        return done;
+        return isAtDistance();
     }
 }
