@@ -1,18 +1,19 @@
-package org.usfirst.frc.falcons6443.robot.subsystems;
-import edu.wpi.first.wpilibj.command.Subsystem;
+package org.usfirst.frc.falcons6443.robot.hardware;
+
 import org.usfirst.frc.falcons6443.robot.communication.P_I2C;
 import org.usfirst.frc.falcons6443.robot.utilities.PixyPacket;
-import org.usfirst.frc.falcons6443.robot.utilities.enums.Subsystems;
-
+import java.util.function.Consumer;
 
 /**
  * @author Goirick Saha
  */
 
-public class PixySystem extends Subsystem {
+public class Pixy {
 
-    P_I2C i2c = new P_I2C();
-    PixyPacket pkt = i2c.getPixy();
+    public static Pixy instance;
+
+    private P_I2C i2c;
+    private PixyPacket pkt;
 
     private final double objectWidth = 50.8; //all units here are in mm and pixels,
     private final double sensorHeight = 6.35;//the final distance will converted to inches.
@@ -28,15 +29,20 @@ public class PixySystem extends Subsystem {
     private double objXDistance;
     private double pFocalLength; //perceived focal length
 
-    private TurretSystem turret;
-
-    public PixySystem(){
-        turret = new TurretSystem();
+    private Pixy(){
+        i2c = new P_I2C();
+        pkt = i2c.getPixy();
     }
 
-    @Override
-    public void initDefaultCommand() { }
-
+    /**
+     * @return the one instance of this class.
+     */
+    public static Pixy get(){
+        if (instance == null){
+            instance = new Pixy();
+        }
+        return instance;
+    }
 
 /*    private double calcDistance() {
           distanceToObject = (focalLength*objectHeight*imagePixelHeight)/(objectPixelHeight*sensorHeight);
@@ -45,11 +51,9 @@ public class PixySystem extends Subsystem {
 */
 
     //Triangle similarity equation will give X distance and not direct distance.
-
-    private double calcDistance() {
+    private void calcDistance() {
         pFocalLength = ((objectPixWidth*objDistVar)/objectWidth);
         distanceToObject = ((objectWidth*pFocalLength)/objectPixWidth);
-        return distanceToObject;
     }
 
 /*    private double calcXDistance() {
@@ -59,60 +63,36 @@ public class PixySystem extends Subsystem {
       }
 */
 
-    private void roam() {
-        turret.roaming();
-    }
+    public void lockOnObject(Consumer<Double> consumer) {
+        if(isTargetInView()){
+            while(!isObjLocked()){
 
-    private void lockOnObject() {
-        if(pkt.x != -1){
-            if(pkt.x < .48 || pkt.x > .52){
-                while(pkt.x < .48 || pkt.x > .52){
-
-                    if(pkt.x < .48){ //Example code
-                        turret.move(1);
-                    }
-                    if(pkt.x > .52){
-                        turret.move(-1);
-                    }
-                    if(pkt.y == -1)//Restart if ball lost during turn
-                        break;
-                    pkt = i2c.getPixy();//refresh the data
-                    System.out.println("XPos: " + pkt.x);//print the data
+                if(pkt.x < .48){ //Example code
+                    consumer.accept(1.0);
+                    //turret.move(1);
                 }
-
+                if(pkt.x > .52){
+                    consumer.accept(-1.0);
+                    //turret.move(-1);
+                }
+                if(pkt.y == -1)//Restart if ball lost during turn
+                    break;
+                pkt = i2c.getPixy();//refresh the data
+                System.out.println("XPos: " + pkt.x);//print the data
             }
         }
     }
 
-    private boolean targetInView() {
-        if(pkt.x!=-1){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public void update() {
-        if(pkt.x == -1){
-            roam();
-        } else {
-            lockOnObject();
-        }
+    public boolean isTargetInView() {
+        return pkt.x!=-1;
     }
 
     public boolean isObjLocked() {
-        if(pkt.x > .48 || pkt.x < .52) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean getTargetInView() {
-        return targetInView();
+        return pkt.x > .48 || pkt.x < .52;
     }
 
     public double getDistanceToObject() {
+        calcDistance();
         return distanceToObject * inchScale;
     }
 

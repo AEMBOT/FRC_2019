@@ -6,11 +6,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.Encoders;
 import org.usfirst.frc.falcons6443.robot.hardware.LimitSwitch;
+import org.usfirst.frc.falcons6443.robot.hardware.Pixy;
 import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 
 public class TurretSystem extends Subsystem {
 
     private Spark motor;
+    private Pixy pixy;
     private Encoders encoder;
     private LimitSwitch leftLimitSwitch;
     private LimitSwitch rightLimitSwitch;
@@ -18,6 +20,7 @@ public class TurretSystem extends Subsystem {
 
     private boolean movingLeft;
     private boolean isDisabled;
+    private boolean isRoaming;
     private static final int totalTicks = 425; //update value
     private static final double totalDegrees = 180.0; //update value
     private static final double p = 0;
@@ -28,6 +31,7 @@ public class TurretSystem extends Subsystem {
 
     public TurretSystem() {
         motor = new Spark(RobotMap.TurretMotor);
+        pixy = Pixy.get();
         encoder = new Encoders(RobotMap.TurretEncoderA, RobotMap.TurretEncoderB);
         leftLimitSwitch = new LimitSwitch(RobotMap.TurretLeftSwitch);
         rightLimitSwitch = new LimitSwitch(RobotMap.TurretRightSwitch);
@@ -35,6 +39,7 @@ public class TurretSystem extends Subsystem {
         encoder.setReverseDirection(false);
         movingLeft = true;
         isDisabled = false;
+        isRoaming = true;
         pid.setFinishedRange(buffer);
         pid.setMaxOutput(1);
         pid.setMinDoneCycles(5);
@@ -52,6 +57,19 @@ public class TurretSystem extends Subsystem {
 
     public void disable() { isDisabled = true; }
 
+    public void roamingToggle(){ isRoaming = !isRoaming; }
+
+    public void update() {
+        if(!pixy.isTargetInView()){
+            roaming();
+        } else if (!pixy.isObjLocked()){
+            SmartDashboard.putBoolean("Centered", false);
+            pixy.lockOnObject((Double set) -> move(set));
+        } else {
+            SmartDashboard.putBoolean("Centered", true);
+        }
+    }
+
     public void roaming() {
         double power;
         if (movingLeft) {
@@ -67,6 +85,13 @@ public class TurretSystem extends Subsystem {
             power = -Math.abs(power);
             encoder.set(totalTicks);
         }
+
+        if(isRoaming && !isDisabled) {
+            motor.set(power);
+            SmartDashboard.putBoolean("Roaming", true);
+        } else {
+            SmartDashboard.putBoolean("Roaming", false);
+        }
     }
 
     public void move(double targetDegree) { //negative is left, positive is right
@@ -76,6 +101,8 @@ public class TurretSystem extends Subsystem {
         power = pid.calcPID(getDegree());
 
         if (power != 0) movingLeft = !(power > 0);
+
+        if(!isDisabled) motor.set(power);
     }
 }
 

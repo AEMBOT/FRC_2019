@@ -26,7 +26,6 @@ public class Robot extends IterativeRobot {
     public static final DriveTrainSystem DriveTrain = new DriveTrainSystem();
     public static final ShooterSystem Shooter = new ShooterSystem();
     public static final TurretSystem Turret = new TurretSystem();
-    public static final PixySystem Pixy = new PixySystem();
 
     public static OI oi;
 
