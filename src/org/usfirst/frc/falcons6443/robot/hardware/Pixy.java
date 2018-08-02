@@ -24,14 +24,18 @@ public class Pixy {
     private final double objDistVar = 120; //temporary object distance value, needs to be changed when measuring.
                                           //works with triangle similarity equation.
 
-    private double objectPixWidth = pkt.y;
+    private double objectPixWidth;
     private double distanceToObject;
     private double objXDistance;
     private double pFocalLength; //perceived focal length
 
+    private double cameraFullDegrees = 120; //measure value //in degree units left to right
+    private double totalPixyX = 1; //measure value
+
     private Pixy(){
         i2c = new P_I2C();
         pkt = i2c.getPixy();
+        objectPixWidth = pkt.y;
     }
 
     /**
@@ -63,7 +67,34 @@ public class Pixy {
       }
 */
 
-    public void lockOnObject(Consumer<Double> consumer) {
+    public boolean isTargetInView() {
+        refreshData();
+        return pkt.x!=-1;
+    }
+
+    public boolean isObjLocked() {
+        refreshData();
+        return pkt.x > .48 || pkt.x < .52;
+    }
+
+    public double getDistanceToObject() {
+        calcDistance();
+        return distanceToObject * inchScale;
+    }
+
+    public double getAngleToObject(){ //left is negative, right is positive
+        refreshData();
+        return (pkt.x * cameraFullDegrees / totalPixyX) - (cameraFullDegrees / 2);
+    }
+
+    public double getBuffer(){
+        return (.52 * cameraFullDegrees / totalPixyX) - (cameraFullDegrees / 2);
+    }
+
+    private void refreshData(){ pkt = i2c.getPixy(); }
+}
+
+/* public void lockOnObject(Consumer<Double> consumer) {
         if(isTargetInView()){
             while(!isObjLocked()){
 
@@ -81,20 +112,4 @@ public class Pixy {
                 System.out.println("XPos: " + pkt.x);//print the data
             }
         }
-    }
-
-    public boolean isTargetInView() {
-        return pkt.x!=-1;
-    }
-
-    public boolean isObjLocked() {
-        return pkt.x > .48 || pkt.x < .52;
-    }
-
-    public double getDistanceToObject() {
-        calcDistance();
-        return distanceToObject * inchScale;
-    }
-
-}
-
+    }*/

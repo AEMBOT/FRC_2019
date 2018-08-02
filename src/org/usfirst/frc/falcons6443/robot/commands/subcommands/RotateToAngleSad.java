@@ -67,19 +67,6 @@ public class RotateToAngleSad extends SimpleCommand {
 
     @Override
     public void execute() {
-        //backup counter
-        if(counter > 50) {
-            oldAngle = navX.getYaw();
-            counter = 0;
-        } else if (counter == 50){
-            if((oldAngle + counterBuffer) >= navX.getYaw() && directionPos){
-                done = true;
-            } else if((oldAngle - counterBuffer) <= navX.getYaw() && !directionPos){
-                done = true;
-            }
-        } else {
-            counter++;
-        }//was commented out. if issues occur get rid of it, but maybe it magically works??
         setAngle();
         turnToAngle();
         if(isAtAngle()){
