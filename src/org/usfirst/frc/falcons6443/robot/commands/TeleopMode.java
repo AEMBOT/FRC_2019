@@ -1,5 +1,6 @@
 package org.usfirst.frc.falcons6443.robot.commands;
 
+import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.Robot;
 import org.usfirst.frc.falcons6443.robot.hardware.Joysticks.Xbox;
@@ -40,8 +41,8 @@ public class TeleopMode extends SimpleCommand {
         secondary = Robot.oi.getXbox(false);
         //driveProfile = new FalconDrive(primary);
 
-        //add manual getters and setters
-        //Subsystems.subsystemEnum.ordinal(),() -> function() or (Boolean set) -> function(set)
+        //add manual getters and setters using isManualGetter and isManualSetter
+        //.add(Subsystems.subsystemEnum.ordinal(),() -> function() or (Boolean set) -> function(set))
         while(isManualGetter.size() < numOfSubsystems) isManualGetter.add(null);
         while(isManualSetter.size() < numOfSubsystems) isManualSetter.add(null);
 
@@ -55,21 +56,19 @@ public class TeleopMode extends SimpleCommand {
         driveTrain.falconDrive(primary.leftStickX(), primary.leftTrigger(), primary.rightTrigger());
         // driveTrain.tankDrive(driveProfile.calculate()); TODO: TEST this cause profiles are cool
 
-        //shifting
-        press(primary.rightBumper(), () -> driveTrain.upShift());
-        press(primary.leftBumper(), () -> driveTrain.downShift());
-
         //shooter
-        press(primary.A(), () -> shooter.charge());
-        unpressed(primary.B(), () -> shooter.shoot(), true); //resets the dashboard Load boolean
+        press(primary.leftBumper(), () -> shooter.charge());
+        unpressed(primary.rightBumper(), () -> shooter.shoot(), true); //resets the dashboard Load boolean
 
         //off
-        off(() -> shooter.off(), primary.A());
+        off(() -> shooter.off(), primary.leftBumper());
 
         //turret
-        unpressed(primary.seven(), () -> turret.disable(), false);
+        unpressed(primary.eight(), () -> turret.disable(), false);
+        unpressed(primary.Y(), () -> turret.roamingToggle(), false);
 
         //general periodic functions
+        turret.update();
         periodicEnd();
 
         //other junk
