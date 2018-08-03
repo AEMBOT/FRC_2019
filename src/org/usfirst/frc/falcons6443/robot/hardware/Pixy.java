@@ -74,7 +74,7 @@ public class Pixy {
 
     public boolean isObjLocked() {
         refreshData();
-        return pkt.x > .48 || pkt.x < .52;
+        return pkt.x > .48 && pkt.x < .52;
     }
 
     public double getDistanceToObject() {
