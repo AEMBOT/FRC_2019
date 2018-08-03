@@ -1,7 +1,6 @@
 package org.usfirst.frc.falcons6443.robot.commands.subcommands;
 
 import org.usfirst.frc.falcons6443.robot.commands.SimpleCommand;
-import org.usfirst.frc.falcons6443.robot.subsystems.PixySystem;
 import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 
 public class DriveToDistance extends SimpleCommand {
@@ -14,19 +13,19 @@ public class DriveToDistance extends SimpleCommand {
     private static final double buffer = 1; //inches //0.5
 
     private double targetDistance;
-    private PixySystem pixy;
 
     private PID pid;
 
     public DriveToDistance(double distance){
         super("Drive To Distance");
         requires(driveTrain);
+        requires(turret);
+        requires(shooter);
         pid = new PID(P, I, D, Eps);
         pid.setMaxOutput(.65);
         pid.setMinDoneCycles(5);
         pid.setFinishedRange(buffer);
         targetDistance = distance;
-        pixy = new PixySystem();
     }
 
     private void driveToDistance(){
@@ -50,7 +49,8 @@ public class DriveToDistance extends SimpleCommand {
 
     @Override
     public void execute() {
-        pixy.update();
+        turret.update();
+        shooter.autoUpdate();
         driveToDistance();
     }
 
