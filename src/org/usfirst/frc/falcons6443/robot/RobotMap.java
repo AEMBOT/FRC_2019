@@ -38,5 +38,5 @@ public class RobotMap {
     public static final int TurretRightSwitch = -1;
 
     //code settings
-    public static final boolean Logger = true;
+    public static final boolean Logger = false;
 }

@@ -2,11 +2,12 @@ package org.usfirst.frc.falcons6443.robot.hardware.Joysticks;
 
 import edu.wpi.first.wpilibj.Joystick;
 
-public class Playstation {
+//NOTE: no rumble
+public class Logitech {
 
     public Joystick controller;
 
-    public Playstation(Joystick controller) {
+    public Logitech(Joystick controller) {
         this.controller = controller;
     }
 
@@ -28,28 +29,28 @@ public class Playstation {
      * @return The value of the X axis of the right stick.
      */
     public double rightStickX() {
-        return controller.getRawAxis(2);
+        return controller.getRawAxis(4);
     }
 
     /**
      * @return The value of the Y axis of the right stick.
      */
     public double rightStickY() {
-        return controller.getRawAxis(3);
+        return controller.getRawAxis(5);
     }
 
     /**
      * @return The value of the axis for the left trigger.
      */
     public boolean leftTrigger() {
-        return controller.getRawButton(7);
+        return controller.getRawButton(2);
     }
 
     /**
      * @return The value of the axis for the right trigger.
      */
     public boolean rightTrigger() {
-        return controller.getRawButton(8);
+        return controller.getRawButton(3);
     }
 
     /**
@@ -70,21 +71,21 @@ public class Playstation {
      * @return the value of the left joystick button.
      */
     public boolean leftStickButton() {
-        return controller.getRawButton(11);
+        return controller.getRawButton(9);
     }
 
     /**
      * @return the value of the right joystick button.
      */
     public boolean rightStickButton() {
-        return controller.getRawButton(12);
+        return controller.getRawButton(10);
     }
 
     /**
      * @return the value of the A button.
      */
     public boolean A() {
-        return controller.getRawButton(3);
+        return controller.getRawButton(1);
     }
 
     /**
@@ -98,19 +99,25 @@ public class Playstation {
      * @return the value of the X button.
      */
     public boolean X() {
-        return controller.getRawButton(4);
+        return controller.getRawButton(3);
     }
 
     /**
      * @return the value of the Y button.
      */
     public boolean Y() {
-        return controller.getRawButton(1);
+        return controller.getRawButton(4);
     }
 
-    //PLEASE FIND THE ACTUAL NAME FOR THESE TOO
-    public boolean seven() {
-        return controller.getRawButton(9);
+    /**
+     * @return the value of the back button.
+     */
+    public boolean back() {
+        return controller.getRawButton(7);
     }
-    public boolean eight() { return controller.getRawButton(10); }
+
+    /**
+     * @return the value of the start button.
+     */
+    public boolean start() { return controller.getRawButton(8); }
 }

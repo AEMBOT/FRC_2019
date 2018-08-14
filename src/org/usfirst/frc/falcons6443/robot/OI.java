@@ -45,10 +45,6 @@ public class OI {
         }
     }
 
-   // public Playstation getPlay(){
-   //     return secondary;
-   // }
-
     /**
      * Returns the Button object associated with the key.
      *

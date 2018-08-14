@@ -1,27 +1,31 @@
 package org.usfirst.frc.falcons6443.robot.commands.subcommands;
 
+import edu.wpi.first.wpilibj.Preferences;
 import org.usfirst.frc.falcons6443.robot.commands.SimpleCommand;
 import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 
 public class DriveToDistance extends SimpleCommand {
 
-    private static final double P = .15; //.42
-    private static final double I = 0;
-    private static final double D = .1; //3.5
-    private static final double Eps = 0.5; //weakest applied power //0.4???
+  //  private static final double P = .15; //.42
+  //  private static final double I = 0;
+  //  private static final double D = .1; //3.5
+  //  private static final double Eps = 0;
 
     private static final double buffer = 1; //inches //0.5
 
     private double targetDistance;
 
     private PID pid;
+    private Preferences prefs;
 
     public DriveToDistance(double distance){
         super("Drive To Distance");
         requires(driveTrain);
         requires(turret);
         requires(shooter);
-        pid = new PID(P, I, D, Eps);
+        prefs = Preferences.getInstance();
+        pid = new PID(prefs.getDouble("Drive P", 0), prefs.getDouble("Drive I", 0),
+                prefs.getDouble("Drive D", 0), prefs.getDouble("Drive Eps", 0));
         pid.setMaxOutput(.65);
         pid.setMinDoneCycles(5);
         pid.setFinishedRange(buffer);

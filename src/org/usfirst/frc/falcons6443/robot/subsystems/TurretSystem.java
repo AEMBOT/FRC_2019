@@ -1,5 +1,6 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,6 +18,7 @@ public class TurretSystem extends Subsystem {
     private LimitSwitch leftLimitSwitch;
     private LimitSwitch rightLimitSwitch;
     private PID pid;
+    private Preferences prefs;
 
     private boolean movingLeft;
     private boolean isDisabled;
@@ -24,10 +26,6 @@ public class TurretSystem extends Subsystem {
     private double roamingPower = 0.5;
     private static final int totalTicks = 425; //update value
     private static final double totalDegrees = 180.0; //update value
-    private static final double p = 0;
-    private static final double i = 0;
-    private static final double d = 0;
-    private static final double epsilon = 0;
 
     public TurretSystem() {
         motor = new Spark(RobotMap.TurretMotor);
@@ -35,7 +33,9 @@ public class TurretSystem extends Subsystem {
         encoder = new Encoders(RobotMap.TurretEncoderA, RobotMap.TurretEncoderB);
         leftLimitSwitch = new LimitSwitch(RobotMap.TurretLeftSwitch);
         rightLimitSwitch = new LimitSwitch(RobotMap.TurretRightSwitch);
-        pid = new PID(p, i, d, epsilon);
+        prefs = Preferences.getInstance();
+        pid = new PID(prefs.getDouble("Turret P", 0), prefs.getDouble("Turret I", 0),
+                prefs.getDouble("Turret D", 0), prefs.getDouble("Turret Eps", 0));
         encoder.setReverseDirection(false);
         movingLeft = true;
         isDisabled = false;

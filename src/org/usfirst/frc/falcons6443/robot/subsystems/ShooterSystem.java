@@ -1,5 +1,6 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,30 +15,29 @@ public class ShooterSystem extends Subsystem {
     private Pixy pixy;
     private Encoders encoder;
     private PIDF pidf;
+    private Preferences prefs;
 
-    private double[] chartX = new double[5]; //distance from target
-    private double[] chartY = new double[5]; //speed needed
+    private double[] chartX = {0, 10, 20, 30, 40}; //distance from target
+    private double[] chartY = {0, 10, 20, 30, 40}; //speed needed
     private double[] defaultArray = {0, 10, 20, 30, 40};
 
     private double ballCounter;
-    private static final double p = 0;
-    private static final double i = 0;
-    private static final double d = 0;
-    private static final double f = 0;
-    private static final double epsilon = 0;
 
     public ShooterSystem(){
         motor = new Spark(RobotMap.ShooterMotor);
         pixy = Pixy.get();
         encoder = new Encoders(RobotMap.ShooterEncoderA, RobotMap.ShooterEncoderB);
-        pidf = new PIDF(p, i, d, f, epsilon);
+        prefs = Preferences.getInstance();
+        pidf = new PIDF(prefs.getDouble("Shooter P", 0), prefs.getDouble("Shooter I", 0),
+                prefs.getDouble("Shooter D", 0), prefs.getDouble("Shooter F", 0),
+                prefs.getDouble("Shooter Eps", 0));
         encoder.setReverseDirection(false);
         pidf.setFinishedRange(5); //update value
         pidf.setMaxOutput(1);
         pidf.setMinDoneCycles(5);
         ballCounter = 0;
-        SmartDashboard.putNumberArray("Distance From Target", defaultArray);
-        SmartDashboard.putNumberArray("Speed at Distance", defaultArray);
+        SmartDashboard.putNumberArray("Distance From Target", chartX);
+        SmartDashboard.putNumberArray("Speed at Distance", chartY);
         SmartDashboard.putNumber("Balls Shot", ballCounter);
         SmartDashboard.putBoolean("Load", false);
     }
@@ -63,8 +63,8 @@ public class ShooterSystem extends Subsystem {
         //get distance to target (inches) from camera
         double distance = pixy.getDistanceToObject();
         //data tables
-        chartX = SmartDashboard.getNumberArray("Distance From Target", defaultArray);
-        chartY = SmartDashboard.getNumberArray("Speed at Distance", defaultArray);
+        chartX = SmartDashboard.getNumberArray("Distance From Target", chartX);
+        chartY = SmartDashboard.getNumberArray("Speed at Distance", chartY);
 
         //calculate speed from distance
         //linear interpolation
