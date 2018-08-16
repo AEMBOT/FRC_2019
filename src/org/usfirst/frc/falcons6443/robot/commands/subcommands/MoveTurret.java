@@ -23,5 +23,5 @@ public class MoveTurret extends SimpleCommand {
     }
 
     @Override
-    public boolean isFinished() {return true;}
+    public boolean isFinished() {return false;}
 }

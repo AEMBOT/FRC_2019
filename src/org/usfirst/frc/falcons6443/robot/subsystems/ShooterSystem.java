@@ -62,9 +62,6 @@ public class ShooterSystem extends Subsystem {
 
 
     public void charge() {
-        if (SmartDashboard.getBoolean("Load", false)) {
-            shoot();
-        } else if (pixy.isObjLocked()) {
             //get distance to target (inches) from camera
             double distance = pixy.getDistanceToObject();
             //data tables
@@ -101,7 +98,7 @@ public class ShooterSystem extends Subsystem {
             if (pidf.isDone()) SmartDashboard.putBoolean("Load", true);
             else SmartDashboard.putBoolean("Load", false);
         }
-    }
+
 
     //turns "Load" light off (mimics motor feeding on a button, logic wise)
     public void shoot(){
