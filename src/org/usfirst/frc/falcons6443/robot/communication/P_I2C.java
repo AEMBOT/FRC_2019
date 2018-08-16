@@ -32,6 +32,7 @@ public class P_I2C {
             pkt.x = Double.parseDouble(info[0]);
             pkt.y = Double.parseDouble(info[1]);
             pkt.area = Double.parseDouble(info[2]);
+            pkt.width = Double.parseDouble(info[3]);
         }
         return pkt;
     }

@@ -6,7 +6,8 @@ import org.usfirst.frc.falcons6443.robot.commands.subcommands.*;
 
 public class DriveToDistanceStop extends CommandGroup {
     public DriveToDistanceStop(int distance){
-            addSequential(new DriveToDistance(distance));
-            addSequential(new StopDrive());
+            addParallel(new DriveToDistance(distance)); //all three commands run at the same time
+            addParallel(new MoveTurret());
+            addSequential(new MoveShooter());
     }
 }

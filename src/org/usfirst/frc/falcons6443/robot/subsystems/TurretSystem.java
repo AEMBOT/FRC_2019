@@ -57,7 +57,7 @@ public class TurretSystem extends Subsystem {
 
     public void roamingToggle(){ isRoaming = !isRoaming; }
 
-    public void update(){
+    public void roam(){
         double power;
         double targetDegree = pixy.getAngleToObject(); //get from vision, 0 being center, left negative, right positive
 
