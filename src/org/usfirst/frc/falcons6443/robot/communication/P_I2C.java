@@ -28,7 +28,7 @@ public class P_I2C {
             pkt.x = -1;
             pkt.y = -1;
             pkt.area = -1;
-        }else if(info.length == 3){
+        }else if(info.length == 4){
             pkt.x = Double.parseDouble(info[0]);
             pkt.y = Double.parseDouble(info[1]);
             pkt.area = Double.parseDouble(info[2]);
