@@ -13,9 +13,7 @@ public class MoveTurret extends SimpleCommand {
     }
 
     @Override
-    public void initialize() {
-
-    }
+    public void initialize() {   }
 
     @Override
     public void execute() {
@@ -23,5 +21,5 @@ public class MoveTurret extends SimpleCommand {
     }
 
     @Override
-    public boolean isFinished() {return false;}
+    public boolean isFinished() {return turret.isAtPosition();}
 }
