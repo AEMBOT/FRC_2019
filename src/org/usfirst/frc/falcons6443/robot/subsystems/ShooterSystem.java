@@ -48,8 +48,8 @@ public class ShooterSystem extends Subsystem {
     public boolean isCharged(){
         return pidf.isDone();
     }
-
-    public void autoUpdate(){
+/*
+    public void chargeUpdate(){
         if (SmartDashboard.getBoolean("Load", false)){
             shoot();
         } else if(pixy.isObjLocked()){
@@ -58,44 +58,47 @@ public class ShooterSystem extends Subsystem {
             off();
         }
     }
+*/
 
-    public void charge(){
-        //get distance to target (inches) from camera
-        double distance = pixy.getDistanceToObject();
-        //data tables
-        chartX = SmartDashboard.getNumberArray("Distance From Target", chartX);
-        chartY = SmartDashboard.getNumberArray("Speed at Distance", chartY);
 
-        //calculate speed from distance
-        //linear interpolation
-        double[] xy = {-1, -1, -1, -1}; //{x1, y1, x2, y2}
-        double desiredSpeed = -1;
+    public void charge() {
+            //get distance to target (inches) from camera
+            double distance = pixy.getDistanceToObject();
+            //data tables
+            chartX = SmartDashboard.getNumberArray("Distance From Target", chartX);
+            chartY = SmartDashboard.getNumberArray("Speed at Distance", chartY);
 
-        for(int i = 0; i < chartX.length; i++) {
-            if (distance > chartX[i]) {
-                if(i == chartX.length - 1) desiredSpeed = chartY[i];
-                else if (distance < chartX[i + 1]) {
-                    xy[0] = chartX[i];
-                    xy[1] = chartY[i];
-                    xy[2] = chartX[i + 1];
-                    xy[3] = chartY[i + 1];
-                }
-            } else if (distance == chartX[i]) desiredSpeed = chartY[i];
+            //calculate speed from distance
+            //linear interpolation
+            double[] xy = {-1, -1, -1, -1}; //{x1, y1, x2, y2}
+            double desiredSpeed = -1;
+
+            for (int i = 0; i < chartX.length; i++) {
+                if (distance > chartX[i]) {
+                    if (i == chartX.length - 1) desiredSpeed = chartY[i];
+                    else if (distance < chartX[i + 1]) {
+                        xy[0] = chartX[i];
+                        xy[1] = chartY[i];
+                        xy[2] = chartX[i + 1];
+                        xy[3] = chartY[i + 1];
+                    }
+                } else if (distance == chartX[i]) desiredSpeed = chartY[i];
+            }
+
+            if (xy[0] != -1 && desiredSpeed == -1) {
+                desiredSpeed = xy[1] + ((xy[3] - xy[1]) / (xy[2] - xy[0])) * (distance - xy[0]); //linear interpolation equation
+            }
+
+            pidf.setDesiredValue(desiredSpeed);
+            //velocity PID to get wheel up to speed (encoder)
+            double power = pidf.calcPID(encoder.getRate());
+            motor.set(power);
+
+            //feed in ball when at speed (a green light [boolean] on ShuffleBoard to alert hand feeding)
+            if (pidf.isDone()) SmartDashboard.putBoolean("Load", true);
+            else SmartDashboard.putBoolean("Load", false);
         }
 
-        if(xy[0] != -1 && desiredSpeed == -1){
-            desiredSpeed = xy[1] + ((xy[3] - xy[1])/(xy[2] - xy[0])) * (distance - xy[0]); //linear interpolation equation
-        }
-
-        pidf.setDesiredValue(desiredSpeed);
-        //velocity PID to get wheel up to speed (encoder)
-        double power = pidf.calcPID(encoder.getRate());
-        motor.set(power);
-
-        //feed in ball when at speed (a green light [boolean] on ShuffleBoard to alert hand feeding)
-        if (pidf.isDone()) SmartDashboard.putBoolean("Load", true);
-        else SmartDashboard.putBoolean("Load", false);
-    }
 
     //turns "Load" light off (mimics motor feeding on a button, logic wise)
     public void shoot(){

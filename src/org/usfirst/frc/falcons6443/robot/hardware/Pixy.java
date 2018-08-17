@@ -35,7 +35,7 @@ public class Pixy {
     private Pixy(){
         i2c = new P_I2C();
         pkt = i2c.getPixy();
-        objectPixWidth = pkt.y;
+        objectPixWidth = pkt.width;
     }
 
     /**

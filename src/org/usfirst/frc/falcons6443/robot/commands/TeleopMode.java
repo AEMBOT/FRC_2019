@@ -68,7 +68,7 @@ public class TeleopMode extends SimpleCommand {
         unpressed(primary.Y(), () -> turret.roamingToggle(), false);
 
         //general periodic functions
-        turret.update();
+        turret.roam();
         periodicEnd();
 
         //other junk
