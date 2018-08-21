@@ -1,6 +1,5 @@
 package org.usfirst.frc.falcons6443.robot.commands;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.Robot;
 import org.usfirst.frc.falcons6443.robot.hardware.Joysticks.Xbox;
