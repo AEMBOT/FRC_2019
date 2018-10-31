@@ -2,19 +2,28 @@ package org.usfirst.frc.falcons6443.robot.hardware;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 
-public class LimitSwitch {
-    private DigitalInput limit;
-    private boolean inverted;
+/*
+ * Creates a limit switch, inverting the output so that get() returns true when the
+ * limit switch is pushed and false if it is not pushed.
+ */
+public class LimitSwitch extends DigitalInput {
+    private boolean uninverted = false;
 
     public LimitSwitch(int channel){
-        limit = new DigitalInput(channel);
+        super(channel);
     }
 
-    // limit.get() is naturally inverted
+    public LimitSwitch(int channel, boolean uninverted){
+        super(channel);
+        this.uninverted = uninverted;
+    }
+
+    @Override
+    //returns true if pushed, false if not pushed (false if pushed when uninverted is true)
     public boolean get() {
-        if(inverted) return  limit.get();
-        else return !limit.get();
+        if (!this.uninverted) return !super.get();
+        else return super.get();
     }
 
-    public void setInverted(boolean inverted) { this.inverted = inverted; }
+    public void setUninverted(boolean uninverted) { this.uninverted = uninverted; }
 }
