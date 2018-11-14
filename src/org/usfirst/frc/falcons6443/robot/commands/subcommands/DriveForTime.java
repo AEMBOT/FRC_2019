@@ -3,7 +3,9 @@ package org.usfirst.frc.falcons6443.robot.commands.subcommands;
 import edu.wpi.first.wpilibj.Timer;
 import org.usfirst.frc.falcons6443.robot.commands.SimpleCommand;
 
-// A MoveByTime class that actually works
+/*
+ * Moves the robot for a specified period of time. Can set each side to the same power or different powers
+ */
 public class DriveForTime extends SimpleCommand {
 
     private Timer timer;
@@ -21,6 +23,15 @@ public class DriveForTime extends SimpleCommand {
         this.rightPower = rightPower;
     }
 
+    public DriveForTime(double desiredTime, double power){
+        super("Move For Time");
+        requires(driveTrain);
+        timer = new Timer();
+        this.desiredTime = desiredTime;
+        this.leftPower = power;
+        this.rightPower = power;
+    }
+
     @Override
     public void initialize() {
         driveTrain.reset();
@@ -30,13 +41,16 @@ public class DriveForTime extends SimpleCommand {
     @Override
     public void execute() {
         driveTrain.tankDrive(leftPower, rightPower);
-        //       System.out.println(driveTrain.getLeftDistance());
-        if(timer.get() > desiredTime) driveTrain.tankDrive(0, 0);
     }
 
     @Override
     protected boolean isFinished() {
-        if(timer.get() > desiredTime) driveTrain.tankDrive(0, 0);
         return timer.get() > desiredTime;
+    }
+
+    //test this end function
+    @Override
+    public void end(){
+        driveTrain.tankDrive(0, 0);
     }
 }

@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Solenoid;
  */
 public class Piston extends Solenoid{
 
-    boolean outTrue; //says if the piston moving out is true or false.
+    boolean outTrue; //states if the piston moving out is true or false.
 
     public Piston(int pistonPort, boolean outTrue){
         super(pistonPort);
@@ -16,11 +16,17 @@ public class Piston extends Solenoid{
         this.outTrue = outTrue;
     }
 
+    public Piston(int pistonPort){
+        super(pistonPort);
+        SingularCompressor.createCompressor();
+        this.outTrue = true;
+    }
+
     public void out(){ this.set(outTrue); }
 
     public void in(){ this.set(!outTrue); }
 
-    public void setOutTrue(boolean outTrue) {
+    public void setDirection(boolean outTrue) {
         this.outTrue = outTrue;
     }
 }

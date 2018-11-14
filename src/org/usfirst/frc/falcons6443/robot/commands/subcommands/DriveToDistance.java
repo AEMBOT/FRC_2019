@@ -4,12 +4,13 @@ import edu.wpi.first.wpilibj.Preferences;
 import org.usfirst.frc.falcons6443.robot.commands.SimpleCommand;
 import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 
+//add PIDt and test if pref PID values work
 public class DriveToDistance extends SimpleCommand {
 
-  //  private static final double P = .15; //.42
-  //  private static final double I = 0;
-  //  private static final double D = .1; //3.5
-  //  private static final double Eps = 0;
+    private static final double P = .15; //.42
+    private static final double I = 0;
+    private static final double D = .1; //3.5
+    private static final double Eps = 0;
 
     private static final double buffer = 1; //inches //0.5
 
@@ -34,7 +35,7 @@ public class DriveToDistance extends SimpleCommand {
 
     private void driveToDistance(){
         double power = pid.calcPID(driveTrain.getLeftDistance());
-        driveTrain.tankDrive(power, power + .05);
+        driveTrain.tankDrive(power, power);
     }
 
     private void setDistance(){
@@ -59,5 +60,10 @@ public class DriveToDistance extends SimpleCommand {
     @Override
     protected boolean isFinished() {
         return isAtDistance();
+    }
+
+    @Override
+    public void end(){
+        driveTrain.tankDrive(0, 0);
     }
 }

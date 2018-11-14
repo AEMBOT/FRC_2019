@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.Encoder;
 
 /**
  * This class was imported from Simbotics code.
- * Includes more encoder options
+ * Includes more encoder options. Some added functions to fit code needs
  *
  * @author Simbotics 2017
  */
@@ -13,6 +13,8 @@ public class Encoders extends Encoder{
     private int prev;
     private int speed;
     private int offset;
+    private int ticksPerRev = 850;
+    private double diameter;
 
     public Encoders(int channelA, int channelB) {
         super(channelA, channelB);
@@ -23,31 +25,15 @@ public class Encoders extends Encoder{
         this.offset = offset;
     }
 
-    public Encoders(int aChannel, int bChannel, boolean reverseDirection,
-                    CounterBase.EncodingType encodingType, int offset) {
-        super(aChannel, bChannel, reverseDirection, encodingType);
+    //look into counterbase and encoding types
+    public Encoders(int aChannel, int bChannel, CounterBase.EncodingType encodingType, int offset) {
+        super(aChannel, bChannel, false, encodingType);
         this.offset = offset;
         this.setDistancePerPulse(1);
     }
 
-    public Encoders(int aChannel, int bChannel, boolean reverseDirection,
-                    CounterBase.EncodingType encodingType) {
-        this(aChannel, bChannel, reverseDirection, encodingType, 0);
-    }
-
-    public Encoders(int aChannel, int bChannel, boolean reverseDirection,
-                    int offset) {
-        this(aChannel, bChannel, reverseDirection,
-                CounterBase.EncodingType.k4X, offset);
-    }
-
-    public Encoders(int aChannel, int bChannel, boolean reverseDirection) {
-        this(aChannel, bChannel, reverseDirection,
-                CounterBase.EncodingType.k4X, 0);
-    }
-
-    public double getDistance() {
-        return super.getRaw();
+    public Encoders(int aChannel, int bChannel, CounterBase.EncodingType encodingType) {
+        this(aChannel, bChannel, encodingType, 0);
     }
 
     public void set(int val) {
@@ -58,10 +44,6 @@ public class Encoders extends Encoder{
     @Override
     public int get() {
         return super.get() + this.offset;
-    }
-
-    public void setReverseDirection(boolean reversed) {
-        super.setReverseDirection(reversed);
     }
 
     @Override
@@ -75,6 +57,7 @@ public class Encoders extends Encoder{
         return this.speed;
     }
 
+    //periodic function (TEST)
     public void updateSpeed(){
         int curr = this.get();
         this.speed = curr - this.prev;
@@ -83,5 +66,17 @@ public class Encoders extends Encoder{
 
     public double rawSpeed(){
         return this.getRate();
+    }
+
+    public double getDistanceWithDiameter(){
+        return this.get() * this.diameter * Math.PI / this.ticksPerRev;
+    }
+
+    public void setDiameter(double wheelDiameter){
+        diameter = wheelDiameter;
+    }
+
+    public void setTicksPerRev(int ticksPerRev){
+        this.ticksPerRev = ticksPerRev;
     }
 }

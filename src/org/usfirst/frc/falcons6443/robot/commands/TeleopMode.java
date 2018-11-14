@@ -106,13 +106,13 @@ public class TeleopMode extends SimpleCommand {
     }
 
     //Pairs an action with a manual input (joystick, trigger, etc)
-    private void manual(ManualControls manualNumber, double input, Runnable action){
+    private void manual(ManualControls manual, double input, Runnable action){
         if(Math.abs(input) > 0.2){
-            isManualSetter.get(manualNumber.ordinal()).accept(true);
-            isManualLessThanBuffer.set(manualNumber.ordinal(), false);
+            isManualSetter.get(manual.ordinal()).accept(true);
+            isManualLessThanBuffer.set(manual.ordinal(), false);
             action.run();
         } else {
-            isManualLessThanBuffer.set(manualNumber.ordinal(), true);
+            isManualLessThanBuffer.set(manual.ordinal(), true);
         }
     }
 

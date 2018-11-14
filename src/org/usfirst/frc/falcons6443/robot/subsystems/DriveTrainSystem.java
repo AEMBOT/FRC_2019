@@ -1,6 +1,7 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.Vector2d;
@@ -8,6 +9,9 @@ import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.*;
 //import org.usfirst.frc.falcons6443.robot.utilities.Logger;
 import org.usfirst.frc.falcons6443.robot.utilities.enums.LoggerSystems;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Subsystem for the robot's drive train.
@@ -25,7 +29,11 @@ public class DriveTrainSystem extends Subsystem {
 
     private Encoders leftEncoder;
     private Encoders rightEncoder;
+    private List<List<Integer>> encoderList = new ArrayList<List<Integer>>(); //used for the encoder checker
+    public Timer encoderCheck;
 
+    private boolean usingLeftEncoder = true; //keep true. Left is our default encoder, right is our backup encoder
+    private double minEncoderMovement = 20; //ticks //change value
     private boolean reversed;
     private static final double WheelDiameter = 6;
 
@@ -80,18 +88,40 @@ public class DriveTrainSystem extends Subsystem {
         return reversed;
     }
 
-    public double getLeftDistance(){
-        // Encoders clicks per rotation = 850
-        return leftEncoder.getDistance() * WheelDiameter * Math.PI / 850; // In inches
+
+    public boolean first; //set true in AutoPaths.WaitDrive()
+    private int strikes; //how many times the encoder did not move enough in 1 second
+    //In progress. Needs to be tested
+    public double getDistanceSafe(){
+        if(first){
+            encoderCheck.reset();
+            encoderCheck.start(); //stopped in AutoPaths.WaitDrive()
+        }
+
+        first = false;
+        //Left encoder is encoderList.get(0). Right encoder is encoderList.get(1)
+        encoderList.get(0).add(leftEncoder.get());
+        encoderList.get(1).add(rightEncoder.get());
+
+        if(encoderCheck.get() > 1){ //if the function has been running for a second
+            double first = encoderList.get(0).get(0);
+            double last = encoderList.get(0).get(encoderList.size() - 1);
+            encoderCheck.reset();
+
+            for(int i = 0; i <= 1; i++) encoderList.get(i).clear();
+
+            if(last - first < minEncoderMovement){ //if the encoder has not moved enough in a second increase strikes
+                strikes++;
+                if(strikes >= 3) usingLeftEncoder = false; //if 3 strikes use right encoder (the backup encoder)
+            }
+        }
+
+        return getDistanceUnsafe();
     }
 
-    public double getRightDistance(){
-        return rightEncoder.getDistance() * WheelDiameter * Math.PI / 850; // In inches
-    }
-
-    //FIND A BETTER WAY!!!
-    public double getLinearDistance(){
-        return (getLeftDistance() + getRightDistance()) / 2;
+    public double getDistanceUnsafe(){
+        if(usingLeftEncoder) return leftEncoder.getDistanceWithDiameter();
+        else return rightEncoder.getDistanceWithDiameter();
     }
 
     public void reset(){

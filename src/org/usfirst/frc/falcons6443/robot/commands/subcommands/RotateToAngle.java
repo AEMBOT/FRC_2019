@@ -1,36 +1,33 @@
 package org.usfirst.frc.falcons6443.robot.commands.subcommands;
 
-import edu.wpi.first.wpilibj.Preferences;
 import org.usfirst.frc.falcons6443.robot.commands.SimpleCommand;
 import org.usfirst.frc.falcons6443.robot.hardware.NavX;
-import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
+import org.usfirst.frc.falcons6443.robot.utilities.pid.PIDTimer;
 
 /**
- * Command to rotate the robot to an angle specified in a constructor parameter.
- *
- * @author Christopher Medlin, Ivan Kenevich
- */
-public class RotateToAngleSad extends SimpleCommand {
-    private PID pid;
+ * Command to rotate the robot to an angle between 0 and 360 degrees. It will always
+ * take the shortest path (aka: 270 would turn the robot 90 degs left not 270 right.
+ * Also finishes turning after 2.5 seconds (even if not at the angle)
+ **/
+public class RotateToAngle extends SimpleCommand {
+    private PIDTimer pid;
     private NavX navX;
-    private Preferences prefs;
 
-//    private static final double P = 0.1; //.3
-  //  private static final double I = 0;
- //   private static final double D = .2; //1.23
- //   private static final double Eps = 0.68; //.44 //weakest applied power //try upping more???
+    private static final double P = 0.3; //.3
+    private static final double I = 0;
+    private static final double D = 1; //1.23 //0.85
+    private static final double Eps = 0;
 
-    private static final double buffer = 4; //degrees
+    private static final double buffer = 1; //degrees
+
     private double targetAngle;
 
-    public RotateToAngleSad(double angle) {
+    public RotateToAngle(double angle) {
         super("Rotate To Angle Beta");
         requires(driveTrain);
         navX = NavX.get();
-        prefs = Preferences.getInstance();
-        pid = new PID(prefs.getDouble("Turn P", 0), prefs.getDouble("Turn I", 0),
-                prefs.getDouble("Turn D", 0), prefs.getDouble("Turn Eps", 0));
-        pid.setMaxOutput(.7);
+        pid = new PIDTimer(P, I, D, Eps, 2500);
+        pid.setMaxOutput(.72);
         pid.setMinDoneCycles(5);
         pid.setFinishedRange(buffer);
         if (angle > 180){
@@ -39,16 +36,20 @@ public class RotateToAngleSad extends SimpleCommand {
             angle = 179.99;
         }
         targetAngle = angle;
+        navX.reset();
+        //pidt.resetTimeOut();
     }
 
     private void turnToAngle(){
         double power = pid.calcPID(navX.getYaw());
         driveTrain.tankDrive(power, -power );
+        System.out.println("speed: " + power);
     }
 
     private void setAngle(){
         pid.setDesiredValue(targetAngle);
     }
+
     private boolean isAtAngle(){
         return pid.isDone();
     }
@@ -62,13 +63,18 @@ public class RotateToAngleSad extends SimpleCommand {
     public void execute() {
         setAngle();
         turnToAngle();
-        if(isAtAngle()){
-            driveTrain.tankDrive(0, 0);
-        }
+        System.out.println("angle: " + navX.getYaw());
+        //Logger.log(LoggerSystems.Gyro,"Angle" + Float.toString(navX.getYaw()));
     }
 
     @Override
     public boolean isFinished() {
         return isAtAngle();
+    }
+
+    @Override
+    public void end(){
+        driveTrain.tankDrive(0, 0);
+        System.out.println("DONE");
     }
 }
