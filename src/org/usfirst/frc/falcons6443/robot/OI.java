@@ -2,7 +2,7 @@ package org.usfirst.frc.falcons6443.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.Button;
-import org.usfirst.frc.falcons6443.robot.hardware.Joysticks.Xbox;
+import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
 
 import java.util.HashMap;
 
