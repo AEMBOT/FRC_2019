@@ -2,7 +2,6 @@ package org.usfirst.frc.falcons6443.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.Spark;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.Encoders;
@@ -10,7 +9,7 @@ import org.usfirst.frc.falcons6443.robot.hardware.LimitSwitch;
 import org.usfirst.frc.falcons6443.robot.hardware.Pixy;
 import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 
-public class TurretSystem extends Subsystem {
+public class TurretSystem {
 
     private Spark motor;
     private Pixy pixy;
@@ -45,10 +44,6 @@ public class TurretSystem extends Subsystem {
         pid.setMinDoneCycles(5);
         SmartDashboard.putBoolean("Centered", false);
         SmartDashboard.putBoolean("Roaming", false);
-    }
-
-    @Override
-    public void initDefaultCommand() {
     }
 
     private double getDegree() { return encoder.get() * totalDegrees / totalTicks; }

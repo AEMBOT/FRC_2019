@@ -2,16 +2,15 @@ package org.usfirst.frc.falcons6443.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.*;
-//import org.usfirst.frc.falcons6443.robot.utilities.Logger;
-import org.usfirst.frc.falcons6443.robot.utilities.enums.LoggerSystems;
 
 import java.util.ArrayList;
 import java.util.List;
+//import org.usfirst.frc.falcons6443.robot.utilities.Logger;
+
 
 /**
  * Subsystem for the robot's drive train.
@@ -22,14 +21,14 @@ import java.util.List;
  *
  * @author Christopher Medlin, Ivan Kenevich, Shivashriganesh Mahato
  */
-public class DriveTrainSystem extends Subsystem {
+public class DriveTrainSystem{
 
     private SpeedControllerGroup leftMotors;
     private SpeedControllerGroup rightMotors;
 
-    private Encoders leftEncoder;
+    private Encoders leftEncoder; // Encoders clicks per rotation = 850 (default in Encoders class)
     private Encoders rightEncoder;
-    private List<List<Integer>> encoderList = new ArrayList<List<Integer>>(); //used for the encoder checker
+    private List<List<Integer>> encoderList = new ArrayList<List<Integer>>();
     public Timer encoderCheck;
 
     private boolean usingLeftEncoder = true; //keep true. Left is our default encoder, right is our backup encoder
@@ -53,15 +52,16 @@ public class DriveTrainSystem extends Subsystem {
         leftMotors.setInverted(true);
         leftEncoder = new Encoders(RobotMap.LeftEncoderA, RobotMap.LeftEncoderB);
         rightEncoder = new Encoders(RobotMap.RightEncoderA, RobotMap.RightEncoderB);
+        leftEncoder.setDiameter(WheelDiameter);
+        rightEncoder.setDiameter(WheelDiameter);
         // the driver station will complain for some reason if this isn't setSpeed so it's pretty necessary.
         // [FOR SCIENCE!]
         drive.setSafetyEnabled(false);
         reversed = false;
         drive.setMaxOutput(1);
+        for(int i = 0; i <= 1; i++) encoderList.add(i, new ArrayList<>());
+        encoderCheck = new Timer();
     }
-
-    @Override
-    public void initDefaultCommand() { }
 
     /**
      * Allows for custom setting of motor power level.
@@ -75,6 +75,7 @@ public class DriveTrainSystem extends Subsystem {
         } else {
             drive.tankDrive(left, right);
         }
+//        Logger.log(LoggerSystems.Drive, "* {" + left + "}[" + right + "]" );
     }
 
     /**
@@ -87,7 +88,6 @@ public class DriveTrainSystem extends Subsystem {
     public boolean isReversed() {
         return reversed;
     }
-
 
     public boolean first; //set true in AutoPaths.WaitDrive()
     private int strikes; //how many times the encoder did not move enough in 1 second
@@ -127,6 +127,7 @@ public class DriveTrainSystem extends Subsystem {
     public void reset(){
         leftEncoder.reset();
         rightEncoder.reset();
+//        Logger.log(LoggerSystems.Drive, "reset drive encoders");
     }
 
     //Not sure if good format, but these values are only used for this method
@@ -158,13 +159,13 @@ public class DriveTrainSystem extends Subsystem {
         } else if (leftTrigger > 0) { //reverse
             vector.x = leftTrigger*power+.1 - Math.pow(Math.E,-leftTrigger)*.5*differential*Math.signum(leftStickX);
             vector.y = leftTrigger*power+.1 - Math.pow(Math.E,-leftTrigger)*.5*differential*Math.signum(leftStickX)*-1;
-          //vector.x *= -1;
-          //vector.y *= -1;ghtTrigger() * 1.2 * (primary.rightTrigger() * .7 + .44f) + (differential + .71 * primary.rightTrigger());//x is right
-          //drive.y = primary.ri
+            //vector.x *= -1;
+            //vector.y *= -1;ghtTrigger() * 1.2 * (primary.rightTrigger() * .7 + .44f) + (differential + .71 * primary.rightTrigger());//x is right
+            //drive.y = primary.ri
         } else { //no trigger values, stationary rotation
-        //  drive.x = primary.rightTrigger() * 1.2 * (primary.rightTrigger() * .7 + .44f) - (differential - .71 * primary.rightTrigger());//y is left
-         // drive.x = 2*differential;
-          //drive.y = -2*differential;
+            //  drive.x = primary.rightTrigger() * 1.2 * (primary.rightTrigger() * .7 + .44f) - (differential - .71 * primary.rightTrigger());//y is left
+            // drive.x = 2*differential;
+            //drive.y = -2*differential;
             if(Math.abs(leftStickX) > .2){
                 vector.x = -leftStickX/1.28-(.1*Math.signum(leftStickX));
                 vector.y = leftStickX/1.28+(.1*Math.signum(leftStickX));

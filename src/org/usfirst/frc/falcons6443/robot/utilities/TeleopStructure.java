@@ -1,36 +1,31 @@
-package org.usfirst.frc.falcons6443.robot.commands;
+package org.usfirst.frc.falcons6443.robot.utilities;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.falcons6443.robot.Robot;
-import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
-import org.usfirst.frc.falcons6443.robot.utilities.enums.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
-/**
- * Teleoperated mode for the robot.
- * The execute method of this class handles all possible inputs from the driver during the game.
+/*
+ * A class containing all of the logic for teleop, including pairing a button with an action
+ * running continuously or once per press), manual controls with and without backup buttons,
+ * and functions that run when a set of buttons are not pressed.
+ *
+ * Use this class in Robot.java, function TeleopInit() and TeleopPeriodic()
  */
-public class TeleopMode extends SimpleCommand {
+public class TeleopStructure {
 
     private int unpressedID = 0;
     private boolean first = true;
 
-    private Xbox primary;           //Drive and flywheel/output
-    private Xbox secondary;         //Secondary functions
     private List<Boolean> runOnceSavedData = new ArrayList<>();
     private List<Boolean> isManualLessThanBuffer = new ArrayList<>();
     private List<Callable<Boolean>> isManualGetter = new ArrayList<>(); //add control manual getters
     private List<Consumer<Boolean>> isManualSetter = new ArrayList<>(); //add control manual setters
-    //private WCDProfile driveProfile;//Profile used to calculate robot drive power
 
-    public TeleopMode() {
-        super("Teleop Command");
-        requires(driveTrain);
-        requires(shooter);
-        requires(turret);
+    public TeleopStructure(){
+        //While loops to fill Lists with nulls (allows us to change them later)
+        while(isManualGetter.size() <= ManualControls.values().length) isManualGetter.add(null);
+        while(isManualSetter.size() <= ManualControls.values().length) isManualSetter.add(null);
     }
 
     //A list of all manual controls of the robot, excluding drive
@@ -39,66 +34,26 @@ public class TeleopMode extends SimpleCommand {
         Elevator, Rotate
     }
 
-    @Override
-    public void initialize() {
-        primary = Robot.oi.getXbox(true);
-        secondary = Robot.oi.getXbox(false);
-        //driveProfile = new FalconDrive(primary);
-
-        //add manual getters and setters using isManualGetter and isManualSetter
-        while(isManualGetter.size() < ManualControls.values().length) isManualGetter.add(null); //ensures that array is at least size of ManualControls enum
-        while(isManualSetter.size() < ManualControls.values().length) isManualSetter.add(null);
-
-        SmartDashboard.putNumber("Number", 1);
-    }
-
-    @Override
-    public void execute() {
-
-        //drive
-        driveTrain.falconDrive(primary.leftStickX(), primary.leftTrigger(), primary.rightTrigger());
-        // driveTrain.tankDrive(driveProfile.calculate()); TODO: TEST this cause profiles are cool
-
-        //shooter
-        press(primary.leftBumper(), () -> shooter.charge());
-        runOncePerPress(primary.rightBumper(), () -> shooter.shoot(), true); //resets the dashboard Load boolean
-
-        //off
-        off(() -> shooter.off(), primary.leftBumper());
-
-        //turret
-        runOncePerPress(primary.eight(), () -> turret.disable(), false);
-        runOncePerPress(primary.Y(), () -> turret.roamingToggle(), false);
-
-        //general periodic functions
-        turret.roam();
-        periodicEnd();
-
-        //other junk
-        if(shooter.isCharged()) primary.setRumble(XboxRumble.RumbleBoth, 0.4);
-    }
-
     //adding manual getters and setters to Lists using params:
     // ManualControls.manualEnum, () -> function(), (Boolean set) -> function(set)
     //Example: addIsManualGetter(TeleopStructure.ManualControls.Elevator, () -> elevator.getManual(),
     //                      (Boolean set) -> elevator.setManual(set));
-    //also adds isManualLessThanBuffer to ensure equal numbers of getters/setters to buffer checkers
-    private void addIsManualGetterSetter(ManualControls manual, Callable<Boolean> callable,
-                                         Consumer<Boolean> consumer) {
+    public void addIsManualGetterSetter(ManualControls manual, Callable<Boolean> callable,
+                                        Consumer<Boolean> consumer) {
         isManualGetter.add(manual.ordinal(), callable);
         isManualSetter.add(manual.ordinal(), consumer);
-        isManualLessThanBuffer.add(manual.ordinal(), true);
+        isManualLessThanBuffer.add(manual.ordinal(), true);  //included to ensure equal numbers of getters/setters to buffer checkers
     }
 
     //Pairs an action with a button
-    private void press(boolean button, Runnable action){
+    public void press(boolean button, Runnable action){
         if(button) action.run();
     }
 
     //Pairs an action with a button, compatible with manual()
     // ie: this function can be used with manual() to control the same component
     // eg: button control and (backup) manual control of the same component
-    private void press(ManualControls manual, boolean button, Runnable action){
+    public void press(ManualControls manual, boolean button, Runnable action){
         if(button) {
             isManualSetter.get(manual.ordinal()).accept(false); //turn manual off if nonmanual button pressed
             action.run();
@@ -106,28 +61,28 @@ public class TeleopMode extends SimpleCommand {
     }
 
     //Pairs an action with a manual input (joystick, trigger, etc)
-    private void manual(ManualControls manual, double input, Runnable action){
+    public void manual(ManualControls manualNumber, double input, Runnable action){
         if(Math.abs(input) > 0.2){
-            isManualSetter.get(manual.ordinal()).accept(true);
-            isManualLessThanBuffer.set(manual.ordinal(), false);
+            isManualSetter.get(manualNumber.ordinal()).accept(true);
+            isManualLessThanBuffer.set(manualNumber.ordinal(), false);
             action.run();
         } else {
-            isManualLessThanBuffer.set(manual.ordinal(), true);
+            isManualLessThanBuffer.set(manualNumber.ordinal(), true);
         }
     }
 
     //Runs an action when a set of buttons is not pressed
-    private void off(Runnable off, boolean ... button){
+    public void off(Runnable off, boolean ... button){
         if(areAllFalse(button)) off.run();
     }
 
     //Runs an action when manual is less than buffer
-    private void off(Runnable off, ManualControls manualNumber) {
+    public void off(Runnable off, ManualControls manualNumber) {
         if(isManualLessThanBuffer.get(manualNumber.ordinal())) off.run();
     }
 
     //Runs an action when a set of buttons is not pressed and manual is less than buffer
-    private void off(Runnable off, ManualControls manualNumber, boolean ... button){
+    public void off(Runnable off, ManualControls manualNumber, boolean ... button){
         try {
             if(areAllFalse(button) && !isManualGetter.get(manualNumber.ordinal()).call()) off.run();
             else if((areAllFalse(button) && isManualGetter.get(manualNumber.ordinal()).call()
@@ -139,7 +94,7 @@ public class TeleopMode extends SimpleCommand {
 
     //Pairs an action with a button, activated only once unpressed (true) or once pressed (false)
     //This action will only run once, unlike press() which runs periodically until unpressed
-    private void runOncePerPress(boolean button, Runnable function, boolean unpressedMode){
+    public void runOncePerPress(boolean button, Runnable function, boolean unpressedMode){
         if(first) runOnceSavedData.add(unpressedID, false);
         if(button){
             if(!unpressedMode && !runOnceSavedData.get(unpressedID)){
@@ -156,7 +111,7 @@ public class TeleopMode extends SimpleCommand {
     }
 
     //clears the unpressedID
-    private void periodicEnd(){
+    public void periodicEnd(){
         first = false;
         unpressedID = 0;
     }
@@ -169,13 +124,5 @@ public class TeleopMode extends SimpleCommand {
     private static boolean areAllZero(double buffer, double[] array) {
         for(double d : array) if(d > buffer) return false;
         return true;
-    }
-
-    public void reset(){
-        //driveProfile = null;
-    }
-
-    public boolean isFinished() {
-        return false;
     }
 }

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.utilities.enums.LoggerSystems;
 
@@ -14,37 +15,36 @@ public class Logger {
 
     private static Stopwatch stopwatch;
     private static String startTime;
-    private static int numberOfSystems = 7;
-    //private static int cacheSize = 25;
     private static boolean initOne = true;
+    private static boolean disabled = true;
 
-    private static String[] oldMessage = new String[numberOfSystems];
-    private static int[] condenser = new int[numberOfSystems];
-    // private static int[] cacheNumber = new int[numberOfSystems];
-    private static boolean[] logOne = new boolean[numberOfSystems];
+    private static LoggerSystems[] system = LoggerSystems.values();
+    private static String[] oldMessage = new String[LoggerSystems.values().length];
+    private static int[] condenser = new int[LoggerSystems.values().length];
+    private static boolean[] logOne = new boolean[LoggerSystems.values().length];
 
     //Run in autonomousInit
     public static void autoInit(){
         init();
-        //loop?
-        Logger.log(LoggerSystems.Drive,"AUTONOMOUS");
-        Logger.log(LoggerSystems.Gyro,"AUTONOMOUS");
-        Logger.log(LoggerSystems.Auto,"AUTONOMOUS");
+        for (LoggerSystems system : system){
+            log(system, "AUTONOMOUS");
+        }
     }
 
     //Run in teleopInit
     public static void teleopInit(){
         init();
-        Logger.log(LoggerSystems.Drive,"TELEOP");
-        Logger.log(LoggerSystems.Gyro,"TELEOP");
-        Logger.log(LoggerSystems.Auto,"TELEOP");
+        for (LoggerSystems system : system){
+            log(system, "TELEOP");
+        }
     }
 
     //Run in disabledInit
     public static void disabled(){
-        Logger.log(LoggerSystems.Drive,"DISABLED");
-        Logger.log(LoggerSystems.Gyro,"DISABLED");
-        Logger.log(LoggerSystems.Auto,"DISABLED");
+        disabled = true;
+        for (LoggerSystems system : system){
+            log(system, "DISABLED");
+        }
     }
 
     //Run to log, using system, message name, and message
@@ -59,10 +59,10 @@ public class Logger {
 
     private static void logInterior(LoggerSystems system, String message, boolean all){
         if(all){
-            message = system.name() + ": " + message;
+            message = system + ": " + message;
             system = LoggerSystems.All;
         }
-        
+
         String out;
 
         if(logOne[system.ordinal()]){
@@ -84,18 +84,15 @@ public class Logger {
 
     private static void print(LoggerSystems system, String oldMessage) {
         if (startTime != null) {
-            String fileName = "/home/lvuser/logs/" + dateStamp() + "/" + system + "/" + startTime + ".txt" /*".json"*/;
+            String fileName = "/home/lvuser/logs/" + dateStamp() + "/" + system + "/" + startTime + ".txt";
             File file = new File(fileName);
             file.getParentFile().mkdirs();
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName, true))) {
-                //if (cacheNumber[system.getName()] < cacheSize) {
                 bw.write(oldMessage);
                 bw.newLine();
                 bw.write(timeStamp() + ", " + clockTimeStamp());
                 bw.newLine();
-                bw.flush();
-                bw.close();
-                //cacheNumber[system.getName()] = 0;
+                if(disabled) bw.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -104,14 +101,14 @@ public class Logger {
 
     private static void init(){
         if(RobotMap.Logger){
+            disabled = false;
             initiateTimer();
             if (initOne){
                 startTime = clockTimeStamp();
                 initOne = false;
-                for (int i = 0; i < numberOfSystems; i++){
+                for (int i = 0; i < LoggerSystems.values().length; i++){
                     oldMessage[i] = "";
                     condenser[i] = 0;
-                    //cacheNumber[i] = 0;
                     logOne[i] = true;
                 }
             }
@@ -151,5 +148,13 @@ public class Logger {
         if (stopwatch == null){
             stopwatch = new Stopwatch(true);
         }
+    }
+
+    //GB
+    public static void printSpace() throws Exception{
+        FileStorage fileStorage = new FileStorage() {};
+        SmartDashboard.putNumber("Total RIO Space", fileStorage.getTotalSpace());
+        SmartDashboard.putNumber("Usable RIO Space: ", fileStorage.getUsableSpace());
+        SmartDashboard.putNumber("Filled RIO Space: ", fileStorage.getFilledSpace());
     }
 }

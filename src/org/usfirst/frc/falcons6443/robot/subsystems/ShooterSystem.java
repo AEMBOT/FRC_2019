@@ -2,14 +2,13 @@ package org.usfirst.frc.falcons6443.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.Spark;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.Encoders;
 import org.usfirst.frc.falcons6443.robot.hardware.Pixy;
 import org.usfirst.frc.falcons6443.robot.utilities.pid.PIDF;
 
-public class ShooterSystem extends Subsystem {
+public class ShooterSystem {
 
     private Spark motor;
     private Pixy pixy;
@@ -41,9 +40,6 @@ public class ShooterSystem extends Subsystem {
         SmartDashboard.putNumber("Balls Shot", ballCounter);
         SmartDashboard.putBoolean("Load", false);
     }
-
-    @Override
-    public void initDefaultCommand() { }
 
     public boolean isCharged(){
         return pidf.isDone();
