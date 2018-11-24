@@ -18,7 +18,6 @@ public class ShooterSystem {
 
     private double[] chartX = {0, 10, 20, 30, 40}; //distance from target
     private double[] chartY = {0, 10, 20, 30, 40}; //speed needed
-    private double[] defaultArray = {0, 10, 20, 30, 40};
 
     private double ballCounter;
 
@@ -31,6 +30,7 @@ public class ShooterSystem {
                 prefs.getDouble("Shooter D", 0), prefs.getDouble("Shooter F", 0),
                 prefs.getDouble("Shooter Eps", 0));
         encoder.setReverseDirection(false);
+        encoder.setTicksPerRev(1024); //4:1 gearbox
         pidf.setFinishedRange(5); //update value
         pidf.setMaxOutput(1);
         pidf.setMinDoneCycles(5);

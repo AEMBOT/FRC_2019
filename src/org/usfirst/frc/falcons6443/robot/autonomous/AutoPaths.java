@@ -24,6 +24,16 @@ class AutoPaths {
 
     //Put initial positions, sensor resets, or other actions needed at the start of EVERY auto path
     private void begin(){
+        turret.reset();
+    }
+
+    void testPath(){
+        begin();
+        autoDrive.setDistance(24, true);
+        waitDrive(true, true, true);
+        waitForTrue(() -> turret.isAtPosition(), () -> turret.roam());
+        waitForTrue(() -> shooter.isCharged(), () -> shooter.charge());
+        shooter.shoot();
     }
 
     void driveToLine(){
@@ -95,14 +105,14 @@ class AutoPaths {
         if (distance){
             waitForTrue(() -> autoDrive.isAtDistance(), () -> {
                 autoDrive.driveToDistance();
-                if (turret) this.turret.moveToHeight(true);
-                if (shooter) this.shooter.autoMoveIntake();
+                if (turret) this.turret.roam();
+                if (shooter) this.shooter.charge();
             });
         } else {
             waitForTrue(() -> autoDrive.isAtAngle(), () -> {
                 autoDrive.turnToAngle();
-                if (turret) this.turret.moveToHeight(true);
-                if (shooter) this.shooter.autoMoveIntake();
+                if (turret) this.turret.roam();
+                if (shooter) this.shooter.charge();
             });
         }
         autoDrive.stop();

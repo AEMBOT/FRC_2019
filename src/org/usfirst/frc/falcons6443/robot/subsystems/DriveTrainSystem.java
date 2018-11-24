@@ -52,6 +52,8 @@ public class DriveTrainSystem{
         leftMotors.setInverted(true);
         leftEncoder = new Encoders(RobotMap.LeftEncoderA, RobotMap.LeftEncoderB);
         rightEncoder = new Encoders(RobotMap.RightEncoderA, RobotMap.RightEncoderB);
+        leftEncoder.setTicksPerRev(850);
+        rightEncoder.setTicksPerRev(850);
         leftEncoder.setDiameter(WheelDiameter);
         rightEncoder.setDiameter(WheelDiameter);
         // the driver station will complain for some reason if this isn't setSpeed so it's pretty necessary.

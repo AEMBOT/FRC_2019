@@ -48,6 +48,8 @@ public class TurretSystem {
 
     private double getDegree() { return encoder.get() * totalDegrees / totalTicks; }
 
+    public void reset() { encoder.reset(); }
+
     public void disable() { isDisabled = true; }
 
     public void roamingToggle(){ isRoaming = !isRoaming; }
