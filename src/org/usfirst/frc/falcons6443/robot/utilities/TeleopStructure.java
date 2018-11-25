@@ -24,14 +24,15 @@ public class TeleopStructure {
 
     public TeleopStructure(){
         //While loops to fill Lists with nulls (allows us to change them later)
-        while(isManualGetter.size() <= ManualControls.values().length) isManualGetter.add(null);
-        while(isManualSetter.size() <= ManualControls.values().length) isManualSetter.add(null);
+        while(isManualGetter.size() < ManualControls.values().length) isManualGetter.add(null);
+        while(isManualSetter.size() < ManualControls.values().length) isManualSetter.add(null);
+        while(isManualLessThanBuffer.size() < ManualControls.values().length) isManualLessThanBuffer.add(null);
     }
 
     //A list of all manual controls of the robot, excluding drive
     //Used for manual controls. Can only have one ManualControls per manual axis (NOT per subsystem!)
     public enum ManualControls {
-        Elevator, Rotate
+        Turret
     }
 
     //adding manual getters and setters to Lists using params:
@@ -63,9 +64,20 @@ public class TeleopStructure {
     //Pairs an action with a manual input (joystick, trigger, etc)
     public void manual(ManualControls manualNumber, double input, Runnable action){
         if(Math.abs(input) > 0.2){
+            isManualSetter.get(manualNumber.ordinal()).accept(true); //keeps update()s and off()s in check
+            isManualLessThanBuffer.set(manualNumber.ordinal(), false); //does not run the off runnable in off()
+            action.run();
+        } else {
+            isManualLessThanBuffer.set(manualNumber.ordinal(), true); //runs the off runnable in off()
+        }
+    }
+
+    //Pairs an action with a manual input (joystick, trigger, etc)
+    public void manual(ManualControls manualNumber, double input, Consumer<Double> action){
+        if(Math.abs(input) > 0.2){
             isManualSetter.get(manualNumber.ordinal()).accept(true);
             isManualLessThanBuffer.set(manualNumber.ordinal(), false);
-            action.run();
+            action.accept(input);
         } else {
             isManualLessThanBuffer.set(manualNumber.ordinal(), true);
         }

@@ -37,6 +37,10 @@ public class RobotMap {
     public static final int TurretLeftSwitch = -1;
     public static final int TurretRightSwitch = -1;
 
+    //intake actuators
+    public static final int IntakeMotor = -1;
+    public static final int IntakePistonPort = -1;
+
     //code settings
     public static final boolean Logger = false;
 }

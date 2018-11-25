@@ -36,9 +36,11 @@ public class Robot extends IterativeRobot {
     private DriveTrainSystem driveTrain;
     private TurretSystem turret;
     private ShooterSystem shooter;
+    private IntakeSystem intake;
     private AutoDrive autoDrive;
     private AutoMain autoMain;
 
+    private boolean babyMode;
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -50,6 +52,9 @@ public class Robot extends IterativeRobot {
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
         driveTrain = new DriveTrainSystem();
+        turret = new TurretSystem();
+        shooter = new ShooterSystem();
+        intake = new IntakeSystem();
         autoDrive = new AutoDrive();
         autoMain = new AutoMain(autoDrive, turret, shooter);
         //CameraServer.getInstance().putVideo();
@@ -81,9 +86,8 @@ public class Robot extends IterativeRobot {
      */
     @Override
     public void teleopInit(){
-        teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.Elevator, () -> elevator.getManual(), (Boolean set) -> elevator.setManual(set));
-        teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.Rotate, () -> rotation.getManual(), (Boolean set) -> rotation.setManual(set));
         Logger.teleopInit();
+        teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.Turret, () -> turret.getManual(), (Boolean set) ->  turret.setManual(set));
     }
     /**
      * This function is called periodically during operator control.
@@ -105,6 +109,7 @@ public class Robot extends IterativeRobot {
         //turret
         teleop.runOncePerPress(primary.eight(), () -> turret.disable(), false);
         teleop.runOncePerPress(primary.Y(), () -> turret.roamingToggle(), false);
+        teleop.manual(TeleopStructure.ManualControls.Turret, primary.rightStickX(), (Double power) -> turret.manualControl(power));
 
         //general periodic functions
         turret.roam();

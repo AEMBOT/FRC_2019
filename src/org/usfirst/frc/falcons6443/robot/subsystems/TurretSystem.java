@@ -22,6 +22,7 @@ public class TurretSystem {
     private boolean movingLeft;
     private boolean isDisabled;
     private boolean isRoaming;
+    private boolean manual;
     private double roamingPower = 0.5;
     private static final int totalTicks = 425; //update value
     private static final double totalDegrees = 180.0; //update value
@@ -56,6 +57,15 @@ public class TurretSystem {
 
     public boolean isAtPosition(){
         return pid.isDone();
+    }
+
+    public boolean getManual(){ return manual; }
+
+    public void setManual(boolean manual) { this.manual = manual; }
+
+    public void manualControl(double power){
+        setManual(true);
+        motor.set(power);
     }
 
     public void roam(){
@@ -96,7 +106,7 @@ public class TurretSystem {
 
         if(power != 0) movingLeft = power < 0;
 
-        if(!isDisabled) motor.set(power);
+        if(!isDisabled && !manual) motor.set(power);
     }
 }
 
