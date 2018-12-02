@@ -82,4 +82,8 @@ public class Encoders extends Encoder{
     public void setTicksPerRev(int ticksPerRev){
         this.ticksPerRev = ticksPerRev;
     }
+
+    public double getRevs(){
+        return (double) this.get() / (double) this.ticksPerRev;
+    }
 }

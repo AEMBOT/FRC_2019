@@ -51,6 +51,8 @@ public class Pixy {
 /*    private double calcDistance() {
           distanceToObject = (focalLength*objectHeight*imagePixelHeight)/(objectPixelHeight*sensorHeight);
           return distanceToObject;
+                  System.out.println("Pixy distance to object: " + distanceToObject);
+
           }
 */
 
