@@ -130,7 +130,7 @@ public class TurretSystem {
         }
     }
 
-    private void roam(){
+    public void roam(){
         if(isRoaming){
             if(movingLeft){
                 power = -roamingPower; //negative is left, positive is right

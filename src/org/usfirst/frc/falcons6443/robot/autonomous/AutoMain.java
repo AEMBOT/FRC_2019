@@ -49,10 +49,7 @@ public class AutoMain {
                 break;
 
             case CENTER:
-                if (FieldData.getChar(FieldData.Object.SCALE) == 'L')
-                    autoPaths.centerToLeftSwitch();
-                else
-                    autoPaths.centerToRightSwitch();
+
                 break;
 
             case RIGHT:

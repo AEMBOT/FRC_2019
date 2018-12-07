@@ -39,7 +39,7 @@ public class RobotMap {
 
     //Intake accuators
     public static final int IntakePistonPort = 0;
-    public static final int IntakeMotor = -1;
+    public static final int IntakeMotor = 6;
 
     //code settings
     public static final boolean Logger = false;

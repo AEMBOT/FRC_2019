@@ -49,6 +49,9 @@ public class ShooterSystem {
         SmartDashboard.putBoolean("Load", false); //true when the ball can be loaded
     }
 
+    public void printRate(){
+        SmartDashboard.putNumber("rate", getRate());
+    }
     public boolean isCharged(){
         return pidf.isDone() && isCharging;
     }

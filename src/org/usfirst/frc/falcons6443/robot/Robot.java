@@ -54,7 +54,7 @@ public class Robot extends IterativeRobot {
         primary = new Xbox(new XboxController(0)); //change controller type here
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
-        driveTrain = new DriveTrainSystem();
+      //  driveTrain = new DriveTrainSystem();
         turret = new TurretSystem();
         shooter = new ShooterSystem();
         intake = new IntakeSystem();
@@ -147,6 +147,7 @@ public class Robot extends IterativeRobot {
         //shooter
         teleop.press(primary.leftBumper(), () -> shooter.charge());
         teleop.runOncePerPress(primary.rightBumper(), () -> shooter.shoot(), true); //resets the dashboard Load boolean
+        teleop.manual(TeleopStructure.ManualControls.Shooter, primary.leftStickY(), (Double power) -> shooter.manual(power));
 
         //turret
         teleop.runOncePerPress(primary.eight(), () -> turret.off(), false);
@@ -157,7 +158,7 @@ public class Robot extends IterativeRobot {
         teleop.press(primary.A(), () -> intake.movePistonIn());
         teleop.press(primary.B(), () -> intake.movePistonOut());
         teleop.press(primary.Y(), () -> intake.startCompressor());
-        teleop.manual(TeleopStructure.ManualControls.Intake, primary.leftStickY(), () -> intake.manual(primary.leftStickY()));
+        //teleop.manual(TeleopStructure.ManualControls.Intake, primary.leftStickY(), () -> intake.manual(primary.leftStickY()));
 
         //off
         teleop.off(() -> intake.stopCompressor(), primary.Y());
@@ -168,6 +169,7 @@ public class Robot extends IterativeRobot {
         //general periodic functions
         turret.update(!primary.seven());
         teleop.periodicEnd();
+        shooter.printRate();
 
         //other junk
         if(shooter.isCharged()) primary.setRumble(XboxRumble.RumbleBoth, 0.4);
