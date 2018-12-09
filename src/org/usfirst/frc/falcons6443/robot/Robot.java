@@ -145,29 +145,30 @@ public class Robot extends IterativeRobot {
         // driveTrain.tankDrive(driveProfile.calculate()); TODO: TEST this cause profiles are cool
 
         //shooter
-        teleop.press(primary.leftBumper(), () -> shooter.charge());
-        teleop.runOncePerPress(primary.rightBumper(), () -> shooter.shoot(), true); //resets the dashboard Load boolean
+   //     teleop.press(primary.leftBumper(), () -> shooter.charge());
+   //     teleop.runOncePerPress(primary.rightBumper(), () -> shooter.shoot(), true); //resets the dashboard Load boolean
         teleop.manual(TeleopStructure.ManualControls.Shooter, primary.leftStickY(), (Double power) -> shooter.manual(power));
 
         //turret
-        teleop.runOncePerPress(primary.eight(), () -> turret.off(), false);
-        teleop.runOncePerPress(primary.X(), () -> turret.roamingToggle(), false);
+   //     teleop.runOncePerPress(primary.eight(), () -> turret.off(), false);
+   //     teleop.runOncePerPress(primary.X(), () -> turret.roamingToggle(), false);
         teleop.manual(TeleopStructure.ManualControls.Turret, primary.rightStickY(), (Double power) -> turret.manual(power));
 
         //intake
         teleop.press(primary.A(), () -> intake.movePistonIn());
         teleop.press(primary.B(), () -> intake.movePistonOut());
         teleop.press(primary.Y(), () -> intake.startCompressor());
-        //teleop.manual(TeleopStructure.ManualControls.Intake, primary.leftStickY(), () -> intake.manual(primary.leftStickY()));
+        teleop.manual(TeleopStructure.ManualControls.Intake, primary.leftTrigger(), (Double power) -> intake.manual(power));
+        teleop.manual(TeleopStructure.ManualControls.Intake, primary.rightTrigger(), (Double power) -> intake.manual(power));
 
         //off
         teleop.off(() -> intake.stopCompressor(), primary.Y());
         teleop.off(() -> shooter.off(), TeleopStructure.ManualControls.Shooter, primary.leftBumper());
-        teleop.off(() -> turret.off(), TeleopStructure.ManualControls.Turret, primary.eight(), primary.Y());
-        teleop.off(() -> intake.off(), TeleopStructure.ManualControls.Intake, primary.X());
+        teleop.off(() -> turret.off(), TeleopStructure.ManualControls.Turret, primary.eight(), primary.X());
+        teleop.off(() -> intake.off(), TeleopStructure.ManualControls.Intake);
 
         //general periodic functions
-        turret.update(!primary.seven());
+    //    turret.update(!primary.seven());
         teleop.periodicEnd();
         shooter.printRate();
 
