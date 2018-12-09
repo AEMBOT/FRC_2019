@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.pneumatics.Piston;
+import org.usfirst.frc.falcons6443.robot.hardware.pneumatics.SingularCompressor;
 
 public class IntakeSystem extends Subsystem {
 
@@ -20,6 +21,10 @@ public class IntakeSystem extends Subsystem {
     public void movePistonOut(){ piston.out(); }
 
     public void movePistonIn(){ piston.in(); }
+
+    public void startCompressor(){ SingularCompressor.get().start(); }
+
+    public void stopCompressor(){ SingularCompressor.get().stop(); }
 
     public void intake(){ motor.set(.7); }
 

@@ -2,6 +2,7 @@ package org.usfirst.frc.falcons6443.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
@@ -44,17 +45,17 @@ public class DriveTrainSystem{
      * Constructor for DriveTrainSystem.
      */
     public DriveTrainSystem() {
-        leftMotors = new SpeedControllerGroup(new Spark(RobotMap.FrontLeftMotor),
-                new Spark(RobotMap.BackLeftMotor));
-        rightMotors = new SpeedControllerGroup(new Spark(RobotMap.FrontRightMotor),
-                new Spark(RobotMap.BackRightMotor));
+        leftMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontLeftMotor),
+                new VictorSP(RobotMap.BackLeftMotor));
+        rightMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontRightMotor),
+                new VictorSP(RobotMap.BackRightMotor));
         drive = new DifferentialDrive(leftMotors, rightMotors);
         leftMotors.setInverted(true);
-        leftEncoder = new Encoders(RobotMap.LeftEncoderA, RobotMap.LeftEncoderB);
+        //leftEncoder = new Encoders(RobotMap.LeftEncoderA, RobotMap.LeftEncoderB);
         rightEncoder = new Encoders(RobotMap.RightEncoderA, RobotMap.RightEncoderB);
-        leftEncoder.setTicksPerRev(850);
+        //leftEncoder.setTicksPerRev(850);
         rightEncoder.setTicksPerRev(850);
-        leftEncoder.setDiameter(WheelDiameter);
+        //leftEncoder.setDiameter(WheelDiameter);
         rightEncoder.setDiameter(WheelDiameter);
         // the driver station will complain for some reason if this isn't setSpeed so it's pretty necessary.
         // [FOR SCIENCE!]
@@ -102,7 +103,7 @@ public class DriveTrainSystem{
 
         first = false;
         //Left encoder is encoderList.get(0). Right encoder is encoderList.get(1)
-        encoderList.get(0).add(leftEncoder.get());
+        //encoderList.get(0).add(leftEncoder.get());
         encoderList.get(1).add(rightEncoder.get());
 
         if(encoderCheck.get() > 1){ //if the function has been running for a second

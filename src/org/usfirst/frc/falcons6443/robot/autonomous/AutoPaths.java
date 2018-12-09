@@ -24,7 +24,7 @@ class AutoPaths {
 
     //Put initial positions, sensor resets, or other actions needed at the start of EVERY auto path
     private void begin(){
-        turret.reset();
+        //turret.reset();
     }
 
     void testPath(){
