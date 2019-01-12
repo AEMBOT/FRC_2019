@@ -13,6 +13,7 @@ import java.util.List;
 import com.revrobotics.*;
 import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
 import org.usfirst.frc.falcons6443.robot.utilities.enums.DriveStyles;
+import com.revrobotics.CANSparkMax;
 
 //import org.usfirst.frc.falcons6443.robot.utilities.Logger;
 
@@ -51,8 +52,15 @@ public class DriveTrainSystem{
      * Constructor for DriveTrainSystem.
      */
     public DriveTrainSystem() {
-        leftMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontLeftMotor), new VictorSP(RobotMap.BackLeftMotor));
-        rightMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontRightMotor), new VictorSP(RobotMap.BackRightMotor));
+        leftMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontLeftMotor, CANSparkMaxLowLevel.MotorType.kBrushless),
+                new CANSparkMax(RobotMap.CenterLeftMotor, CANSparkMaxLowLevel.MotorType.kBrushless),
+                new CANSparkMax(RobotMap.BackLeftMotor, CANSparkMaxLowLevel.MotorType.kBrushless)
+                );
+
+        rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, CANSparkMaxLowLevel.MotorType.kBrushless),
+                new CANSparkMax(RobotMap.CenterRightMotor,CANSparkMaxLowLevel.MotorType.kBrushless),
+                new CANSparkMax(RobotMap.BackRightMotor,CANSparkMaxLowLevel.MotorType.kBrushless));
+
         drive = new DifferentialDrive(leftMotors, rightMotors);
 
         //Flips motor direction to run the left in the right direction

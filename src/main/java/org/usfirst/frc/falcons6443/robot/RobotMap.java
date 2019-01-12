@@ -10,16 +10,20 @@ public class RobotMap {
     //any -1s are not being used and are yet to be specified
 
     //drive train motors
-    public static final int FrontLeftMotor = 4;
-    public static final int BackLeftMotor = 5;
-    public static final int FrontRightMotor = 2;
-    public static final int BackRightMotor = 3;
+    public static final int FrontLeftMotor = -1;
+    public static final int CenterLeftMotor = -1;
+    public static final int BackLeftMotor = -1;
+
+
+    public static final int FrontRightMotor = -1;
+    public static final int CenterRightMotor = -1;
+    public static final int BackRightMotor = -1;
 
     //drive train encoders
     public static final int LeftEncoderA = -1;
     public static final int LeftEncoderB = -1;
-    public static final int RightEncoderA = 8;
-    public static final int RightEncoderB = 9;
+    public static final int RightEncoderA = -1;
+    public static final int RightEncoderB = -1;
 
 
 

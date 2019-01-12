@@ -10,6 +10,7 @@ package org.usfirst.frc.falcons6443.robot;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoDrive;
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoMain;
@@ -17,6 +18,7 @@ import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
 import org.usfirst.frc.falcons6443.robot.subsystems.*;
 import org.usfirst.frc.falcons6443.robot.utilities.TeleopStructure;
 import org.usfirst.frc.falcons6443.robot.utilities.Logger;
+import org.usfirst.frc.falcons6443.robot.utilities.enums.DriveStyles;
 import org.usfirst.frc.falcons6443.robot.utilities.enums.XboxRumble;
 
 
@@ -35,6 +37,7 @@ public class Robot extends TimedRobot {
     private DriveTrainSystem driveTrain;
     private AutoDrive autoDrive;
     private AutoMain autoMain;
+    private DriveStyles controlMethod;
 
     public static Preferences prefs;
 
@@ -94,9 +97,10 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic()
     {
+        controlMethod = DriveStyles.Tank;
 
 
-        driveTrain.generalDrive(primary);
+        driveTrain.generalDrive(primary, controlMethod);
 
 
         //general periodic functions
