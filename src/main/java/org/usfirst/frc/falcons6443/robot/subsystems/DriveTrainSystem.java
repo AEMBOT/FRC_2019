@@ -74,7 +74,13 @@ public class DriveTrainSystem{
         encoderCheck = new Timer();
     }
 
-
+    /**
+     * Singular callable method to quickly change drive styles.
+     *
+     * @param controller controller reference used for power/rotation values
+     * @param style DriveStyles enum, used to easily switch styles
+     *
+     */
     public void generalDrive(Xbox controller, DriveStyles style){
         switch(style){
 
@@ -113,10 +119,26 @@ public class DriveTrainSystem{
 //        Logger.log(LoggerSystems.Drive, "* {" + left + "}[" + right + "]" );
     }
 
+    /**
+     * Allows separate control of forward movement and heading
+     *
+     * @param speed  the robots speed: forward is positive
+     * @param rotation the rate of rotation: clockwise is positive
+     *
+     * Implements the differentialDrive arcadeDrive into a local method
+     */
     private void arcadeDrive(double speed, double rotation){
         drive.arcadeDrive(speed,rotation);
     }
 
+    /**
+     * Allows separate control of forward movement and change in path curvature
+     *
+     * @param speed  the robots speed: forward is positive
+     * @param rotation the rate of rotation: clockwise is positive
+     *
+     * Implements the differentialDrive curvatureDrive into a local method
+     */
     private void curvatureDrive(double speed, double rotation, boolean isQuickTurn){
         drive.curvatureDrive(speed,rotation,isQuickTurn);
     }
