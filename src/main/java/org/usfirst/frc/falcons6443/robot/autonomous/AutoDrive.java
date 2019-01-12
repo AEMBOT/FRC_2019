@@ -1,5 +1,7 @@
 package org.usfirst.frc.falcons6443.robot.autonomous;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.usfirst.frc.falcons6443.robot.Robot;
 import org.usfirst.frc.falcons6443.robot.subsystems.DriveTrainSystem;
 import org.usfirst.frc.falcons6443.robot.hardware.NavX;
 import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
@@ -31,6 +33,18 @@ public class AutoDrive extends DriveTrainSystem {
 
     public AutoDrive(){
         super();
+
+        if(SmartDashboard.getBoolean("Save Prefs", false)) {
+            Robot.prefs.putDouble("Drive P", SmartDashboard.getNumber("Drive P", 0));
+            Robot.prefs.putDouble("Drive I", SmartDashboard.getNumber("Drive I", 0));
+            Robot.prefs.putDouble("Drive D", SmartDashboard.getNumber("Drive D", 0));
+            Robot.prefs.putDouble("Drive Esp", SmartDashboard.getNumber("Drive Esp", 0));
+            Robot.prefs.putDouble("Turn P", SmartDashboard.getNumber("Turn P", 0));
+            Robot.prefs.putDouble("Turn I", SmartDashboard.getNumber("Turn I", 0));
+            Robot.prefs.putDouble("Turn D", SmartDashboard.getNumber("Turn D", 0));
+            Robot.prefs.putDouble("Turn Eps", SmartDashboard.getNumber("Turn Eps", 0));
+        }
+
         distancePID = new PIDTimer(distanceP, distanceI, distanceD, distanceEps, distanceTime);
         distancePID.setMaxOutput(.65);
         distancePID.setMinDoneCycles(5);

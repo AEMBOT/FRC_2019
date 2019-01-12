@@ -32,12 +32,10 @@ public class Robot extends TimedRobot {
     private Xbox secondary;
     private TeleopStructure teleop;
     private DriveTrainSystem driveTrain;
-    private TurretSystem turret;
-    private ShooterSystem shooter;
-    private IntakeSystem intake;
     private AutoDrive autoDrive;
     private AutoMain autoMain;
-    private Preferences prefs;
+
+    public static Preferences prefs;
 
 
     private boolean babyMode = false;
@@ -52,11 +50,9 @@ public class Robot extends TimedRobot {
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
       //  driveTrain = new DriveTrainSystem();
-        turret = new TurretSystem();
-        shooter = new ShooterSystem();
-        intake = new IntakeSystem();
+
         autoDrive = new AutoDrive();
-        autoMain = new AutoMain(autoDrive, turret, shooter);
+        autoMain = new AutoMain(autoDrive);
         //CameraServer.getInstance().putVideo();
         //format 1 is kMJPEG
         VideoMode vm = new VideoMode(1, 640, 480, 60);
@@ -64,25 +60,6 @@ public class Robot extends TimedRobot {
 
         SmartDashboard.putBoolean("Baby Mode", babyMode);
 
-        /*      SmartDashboard.putNumber("Drive P", prefs.getDouble("Drive P", 0));
-        SmartDashboard.putNumber("Drive I", prefs.getDouble("Drive I", 0));
-        SmartDashboard.putNumber("Drive D", prefs.getDouble("Drive D", 0));
-        SmartDashboard.putNumber("Drive Eps", prefs.getDouble("Drive Eps", 0));
-        SmartDashboard.putNumber("Turn P", prefs.getDouble("Turn P", 0));
-        SmartDashboard.putNumber("Turn I", prefs.getDouble("Turn I", 0));
-        SmartDashboard.putNumber("Turn D", prefs.getDouble("Turn D", 0));
-        SmartDashboard.putNumber("Turn Eps", prefs.getDouble("Turn Eps", 0));
-        SmartDashboard.putNumber("Turret P", prefs.getDouble("Turret P", 0));
-        SmartDashboard.putNumber("Turret I", prefs.getDouble("Turret I", 0));
-        SmartDashboard.putNumber("Turret D", prefs.getDouble("Turret D", 0));
-        SmartDashboard.putNumber("Turret Eps", prefs.getDouble("Turret Eps", 0));
-        SmartDashboard.putNumber("Shooter P", prefs.getDouble("Shooter P", 0));
-        SmartDashboard.putNumber("Shooter I", prefs.getDouble("Shooter I", 0));
-        SmartDashboard.putNumber("Shooter D", prefs.getDouble("Shooter D", 0));
-        SmartDashboard.putNumber("Shooter F", prefs.getDouble("Shooter F", 0));
-        SmartDashboard.putNumber("Shooter Eps", prefs.getDouble("Shooter Eps", 0));
-        SmartDashboard.putBoolean("Save Prefs", false);
-*/
     }
 
     /*
@@ -100,25 +77,8 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousPeriodic() {  //what...? where should this go??
-        if(SmartDashboard.getBoolean("Save Prefs", false)){
-            prefs.putDouble("Drive P", SmartDashboard.getNumber("Drive P", 0));
-            prefs.putDouble("Drive I", SmartDashboard.getNumber("Drive I", 0));
-            prefs.putDouble("Drive D", SmartDashboard.getNumber("Drive D", 0));
-            prefs.putDouble("Drive Esp", SmartDashboard.getNumber("Drive Esp", 0));
-            prefs.putDouble("Turn P", SmartDashboard.getNumber("Turn P", 0));
-            prefs.putDouble("Turn I", SmartDashboard.getNumber("Turn I", 0));
-            prefs.putDouble("Turn D", SmartDashboard.getNumber("Turn D", 0));
-            prefs.putDouble("Turn Eps", SmartDashboard.getNumber("Turn Eps", 0));
-            prefs.putDouble("Turret P", SmartDashboard.getNumber("Turret P", 0));
-            prefs.putDouble("Turret I", SmartDashboard.getNumber("Turret I", 0));
-            prefs.putDouble("Turret D", SmartDashboard.getNumber("Turret D", 0));
-            prefs.putDouble("Turret Eps", SmartDashboard.getNumber("Turret Eps", 0));
-            prefs.putDouble("Shooter P", SmartDashboard.getNumber("Shooter P", 0));
-            prefs.putDouble("Shooter I", SmartDashboard.getNumber("Shooter I", 0));
-            prefs.putDouble("Shooter D", SmartDashboard.getNumber("Shooter D", 0));
-            prefs.putDouble("Shooter F", SmartDashboard.getNumber("Shooter F", 0));
-            prefs.putDouble("Shooter Eps", SmartDashboard.getNumber("Shooter Eps", 0));
-        } }
+
+         }
 
     /*
      * Called when the robot first enter teleop mode.
@@ -126,10 +86,6 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit(){
         Logger.teleopInit();
-        teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.Shooter, () -> shooter.getManual(), (Boolean set) ->  shooter.setManual(set));
-        teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.Turret, () -> turret.getManual(), (Boolean set) ->  turret.setManual(set));
-        teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.Intake, () -> intake.getManual(), (Boolean set) -> intake.setManual(set));
-        teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.Turret, () -> turret.getManual(), (Boolean set) ->  turret.setManual(set));
     }
     /**
      * This function is called periodically during operator control.
@@ -141,36 +97,12 @@ public class Robot extends TimedRobot {
       //  driveTrain.falconDrive(primary.leftStickX(), primary.leftTrigger(), primary.rightTrigger());
         // driveTrain.tankDrive(driveProfile.calculate()); TODO: TEST this cause profiles are cool
 
-        //shooter
-   //     teleop.press(primary.leftBumper(), () -> shooter.charge());
-   //     teleop.runOncePerPress(primary.rightBumper(), () -> shooter.shoot(), true); //resets the dashboard Load boolean
-        teleop.manual(TeleopStructure.ManualControls.Shooter, primary.leftStickY(), (Double power) -> shooter.manual(power));
 
-        //turret
-   //     teleop.runOncePerPress(primary.eight(), () -> turret.off(), false);
-   //     teleop.runOncePerPress(primary.X(), () -> turret.roamingToggle(), false);
-        teleop.manual(TeleopStructure.ManualControls.Turret, primary.rightStickY(), (Double power) -> turret.manual(power));
 
-        //intake
-        teleop.press(primary.A(), () -> intake.movePistonIn());
-        teleop.press(primary.B(), () -> intake.movePistonOut());
-        teleop.press(primary.Y(), () -> intake.startCompressor());
-        teleop.manual(TeleopStructure.ManualControls.Intake, primary.leftTrigger(), (Double power) -> intake.manual(power));
-        teleop.manual(TeleopStructure.ManualControls.Intake, primary.rightTrigger(), (Double power) -> intake.manual(power));
-
-        //off
-        teleop.off(() -> intake.stopCompressor(), primary.Y());
-        teleop.off(() -> shooter.off(), TeleopStructure.ManualControls.Shooter, primary.leftBumper());
-        teleop.off(() -> turret.off(), TeleopStructure.ManualControls.Turret, primary.eight(), primary.X());
-        teleop.off(() -> intake.off(), TeleopStructure.ManualControls.Intake);
 
         //general periodic functions
-    //    turret.update(!primary.seven());
         teleop.periodicEnd();
-        shooter.printRate();
 
-        //other junk
-        if(shooter.isCharged()) primary.setRumble(XboxRumble.RumbleBoth, 0.4);
     }
 
     /**

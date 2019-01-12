@@ -2,8 +2,6 @@ package org.usfirst.frc.falcons6443.robot.autonomous;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.falcons6443.robot.subsystems.ShooterSystem;
-import org.usfirst.frc.falcons6443.robot.subsystems.TurretSystem;
 
 /*
  * The main auto class holding the logic to select the auto path and helps pass instances of
@@ -16,8 +14,8 @@ public class AutoMain {
     private AutoPaths autoPaths;
     private static SendableChooser sendable;
 
-    public AutoMain(AutoDrive autoDrive, TurretSystem turret, ShooterSystem shooter) {
-        autoPaths = new AutoPaths(autoDrive, turret, shooter);
+    public AutoMain(AutoDrive autoDrive) {
+        autoPaths = new AutoPaths(autoDrive);
         printAutoSelection();
     }
 
