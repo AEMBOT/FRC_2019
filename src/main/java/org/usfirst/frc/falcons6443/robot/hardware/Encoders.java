@@ -29,13 +29,13 @@ public class Encoders extends Encoder{
     }
 
     //look into counterbase and encoding types
-    public Encoders(int aChannel, int bChannel, CounterBase.EncodingType encodingType, int offset) {
+    public Encoders(int aChannel, int bChannel, EncodingType encodingType, int offset) {
         super(aChannel, bChannel, false, encodingType);
         this.offset = offset;
         this.setDistancePerPulse(1);
     }
 
-    public Encoders(int aChannel, int bChannel, CounterBase.EncodingType encodingType) {
+    public Encoders(int aChannel, int bChannel, EncodingType encodingType) {
         this(aChannel, bChannel, encodingType, 0);
     }
 

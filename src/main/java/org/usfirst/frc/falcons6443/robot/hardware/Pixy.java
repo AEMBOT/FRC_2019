@@ -2,7 +2,6 @@ package org.usfirst.frc.falcons6443.robot.hardware;
 
 import org.usfirst.frc.falcons6443.robot.communication.P_I2C;
 import org.usfirst.frc.falcons6443.robot.utilities.PixyPacket;
-import java.util.function.Consumer;
 
 /**
  * @author Goirick Saha

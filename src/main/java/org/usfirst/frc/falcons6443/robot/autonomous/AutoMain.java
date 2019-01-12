@@ -1,6 +1,5 @@
 package org.usfirst.frc.falcons6443.robot.autonomous;
 
-import org.usfirst.frc.falcons6443.robot.communication.FieldData;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.subsystems.ShooterSystem;

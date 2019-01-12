@@ -7,11 +7,8 @@
 
 package org.usfirst.frc.falcons6443.robot;
 
-import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.cscore.VideoMode;
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoDrive;
@@ -30,7 +27,7 @@ import org.usfirst.frc.falcons6443.robot.utilities.enums.XboxRumble;
  * project.
  */
 // If you rename or move this class, update the build.properties file in the project root
-public class Robot extends IterativeRobot {
+public class Robot extends TimedRobot {
     private Xbox primary;
     private Xbox secondary;
     private TeleopStructure teleop;

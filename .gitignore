@@ -58,6 +58,7 @@ fabric.properties
 
 frc-team6443.iml
 .classpath
+*.iml
 
 # Floobits files
 .floo

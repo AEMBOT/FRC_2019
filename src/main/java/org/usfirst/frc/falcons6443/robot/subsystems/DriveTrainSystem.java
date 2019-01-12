@@ -45,18 +45,20 @@ public class DriveTrainSystem{
      * Constructor for DriveTrainSystem.
      */
     public DriveTrainSystem() {
-        leftMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontLeftMotor),
-                new VictorSP(RobotMap.BackLeftMotor));
-        rightMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontRightMotor),
-                new VictorSP(RobotMap.BackRightMotor));
+        leftMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontLeftMotor), new VictorSP(RobotMap.BackLeftMotor));
+        rightMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontRightMotor), new VictorSP(RobotMap.BackRightMotor));
         drive = new DifferentialDrive(leftMotors, rightMotors);
+
+        //Flips motor direction to run the left in the right direction
         leftMotors.setInverted(true);
+
         //leftEncoder = new Encoders(RobotMap.LeftEncoderA, RobotMap.LeftEncoderB);
         rightEncoder = new Encoders(RobotMap.RightEncoderA, RobotMap.RightEncoderB);
         //leftEncoder.setTicksPerRev(850);
         rightEncoder.setTicksPerRev(850);
         //leftEncoder.setDiameter(WheelDiameter);
         rightEncoder.setDiameter(WheelDiameter);
+
         // the driver station will complain for some reason if this isn't setSpeed so it's pretty necessary.
         // [FOR SCIENCE!]
         drive.setSafetyEnabled(false);
@@ -71,6 +73,8 @@ public class DriveTrainSystem{
      *
      * @param left  the power for the left motors.
      * @param right the power for the right motors.
+     *
+     * Implements the differentialDrive tankDrive into a local method
      */
     public void tankDrive(double left, double right) {
         if (reversed) {
@@ -88,6 +92,9 @@ public class DriveTrainSystem{
         reversed = !reversed;
     }
 
+    /**
+     * Gets the value of the revered var and returns it
+     */
     public boolean isReversed() {
         return reversed;
     }
