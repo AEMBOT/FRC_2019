@@ -94,11 +94,9 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic()
     {
-        //drive
-      //  driveTrain.falconDrive(primary.leftStickX(), primary.leftTrigger(), primary.rightTrigger());
-        // driveTrain.tankDrive(driveProfile.calculate()); TODO: TEST this cause profiles are cool
 
 
+        driveTrain.generalDrive(primary);
 
 
         //general periodic functions

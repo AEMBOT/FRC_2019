@@ -11,6 +11,8 @@ import org.usfirst.frc.falcons6443.robot.hardware.*;
 import java.util.ArrayList;
 import java.util.List;
 import com.revrobotics.*;
+import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
+import org.usfirst.frc.falcons6443.robot.utilities.enums.DriveStyles;
 
 //import org.usfirst.frc.falcons6443.robot.utilities.Logger;
 
@@ -72,6 +74,28 @@ public class DriveTrainSystem{
         encoderCheck = new Timer();
     }
 
+
+    public void generalDrive(Xbox controller, DriveStyles style){
+        switch(style){
+
+            case Tank:
+                tankDrive(controller.leftStickY(),controller.rightStickY());
+                break;
+
+            case Arcade:
+                arcadeDrive(controller.leftStickY(), controller.rightStickX());
+                break;
+
+            case Curve:
+                curvatureDrive(controller.leftStickY(),controller.rightStickX(), false);
+
+            default:
+                tankDrive(controller.leftStickY(),controller.rightStickY());
+        }
+
+    }
+
+
     /**
      * Allows for custom setting of motor power level.
      *
@@ -80,13 +104,21 @@ public class DriveTrainSystem{
      *
      * Implements the differentialDrive tankDrive into a local method
      */
-    public void tankDrive(double left, double right) {
+    private void tankDrive(double left, double right) {
         if (reversed) {
             drive.tankDrive(-left, -right);
         } else {
             drive.tankDrive(left, right);
         }
 //        Logger.log(LoggerSystems.Drive, "* {" + left + "}[" + right + "]" );
+    }
+
+    private void arcadeDrive(double speed, double rotation){
+        drive.arcadeDrive(speed,rotation);
+    }
+
+    private void curvatureDrive(double speed, double rotation, boolean isQuickTurn){
+        drive.curvatureDrive(speed,rotation,isQuickTurn);
     }
 
     /**
