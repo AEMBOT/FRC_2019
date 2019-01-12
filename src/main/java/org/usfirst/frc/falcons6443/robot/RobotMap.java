@@ -21,25 +21,7 @@ public class RobotMap {
     public static final int RightEncoderA = 8;
     public static final int RightEncoderB = 9;
 
-    //shooter motors
-    public static final int ShooterMotor = 0;
 
-    //shooter encoder
-    public static final int ShooterEncoderA = 2;
-    public static final int ShooterEncoderB = 3;
-
-    //turret motor
-    public static final int TurretMotor = 1;
-
-    //turret sensors
-    public static final int TurretEncoderA = 4;
-    public static final int TurretEncoderB = 5;
-    public static final int TurretLeftSwitch = 1;
-    public static final int TurretRightSwitch = 0;
-
-    //Intake accuators
-    public static final int IntakePistonPort = 0;
-    public static final int IntakeMotor = 6;
 
     //code settings
     public static final boolean Logger = false;
