@@ -10,6 +10,8 @@ import org.usfirst.frc.falcons6443.robot.hardware.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.revrobotics.*;
+
 //import org.usfirst.frc.falcons6443.robot.utilities.Logger;
 
 
@@ -24,8 +26,10 @@ import java.util.List;
  */
 public class DriveTrainSystem{
 
+    private CANSparkMax motormax;
     private SpeedControllerGroup leftMotors;
     private SpeedControllerGroup rightMotors;
+
 
     private Encoders leftEncoder; // Encoders clicks per rotation = 850 (default in Encoders class)
     private Encoders rightEncoder;
