@@ -3,8 +3,6 @@ package org.usfirst.frc.falcons6443.robot.autonomous;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.Robot;
 import org.usfirst.frc.falcons6443.robot.subsystems.DriveTrainSystem;
-//import org.usfirst.frc.falcons6443.robot.hardware.NavX;
-import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 import org.usfirst.frc.falcons6443.robot.utilities.pid.PIDTimer;
 
 /*
