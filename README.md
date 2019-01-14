@@ -1,2 +1,2 @@
-# FRC_2019 VS Code Variant
-This branch contains a copy of the GradleRIO branch except it has been ported over to use the more widley supported vscode
+# FRC_2019 IntelliJ Variant
+This branch is almost an exact copy of the VSCODE branch except it contains all the .idea files
