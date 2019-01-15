@@ -4,6 +4,7 @@
     <bytecodeTargetLevel>
       <module name="FRC_2019_main" target="11" />
       <module name="FRC_2019_test" target="11" />
+      <module name="IdeaProjects-FRC_2019_test" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
