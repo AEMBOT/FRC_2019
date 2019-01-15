@@ -32,7 +32,7 @@ public class DriveTrainSystem{
 
 
     private Encoders leftEncoder; // Encoders clicks per rotation = 850 (default in Encoders class)
-    private Encoders rightEncoder;
+    //private Encoders rightEncoder;
     private List<List<Integer>> encoderList = new ArrayList<List<Integer>>();
     public Timer encoderCheck;
 
@@ -57,11 +57,11 @@ public class DriveTrainSystem{
         leftMotors.setInverted(true);
 
         //leftEncoder = new Encoders(RobotMap.LeftEncoderA, RobotMap.LeftEncoderB);
-        rightEncoder = new Encoders(RobotMap.RightEncoderA, RobotMap.RightEncoderB);
+       // rightEncoder = new Encoders(RobotMap.RightEncoderA, RobotMap.RightEncoderB);
         //leftEncoder.setTicksPerRev(850);
-        rightEncoder.setTicksPerRev(850);
+        //rightEncoder.setTicksPerRev(850);
         //leftEncoder.setDiameter(WheelDiameter);
-        rightEncoder.setDiameter(WheelDiameter);
+        //rightEncoder.setDiameter(WheelDiameter);
 
         // the driver station will complain for some reason if this isn't setSpeed so it's pretty necessary.
         // [FOR SCIENCE!]
@@ -115,7 +115,7 @@ public class DriveTrainSystem{
         first = false;
         //Left encoder is encoderList.get(0). Right encoder is encoderList.get(1)
         //encoderList.get(0).add(leftEncoder.get());
-        encoderList.get(1).add(rightEncoder.get());
+        //encoderList.get(1).add(rightEncoder.get());
 
         if(encoderCheck.get() > 1){ //if the function has been running for a second
             double first = encoderList.get(0).get(0);
@@ -134,13 +134,13 @@ public class DriveTrainSystem{
     }
 
     public double getDistanceUnsafe(){
-        if(usingLeftEncoder) return leftEncoder.getDistanceWithDiameter();
-        else return rightEncoder.getDistanceWithDiameter();
+        //if(usingLeftEncoder) return leftEncoder.getDistanceWithDiameter();
+        /*else*/ return 10;//rightEncoder.getDistanceWithDiameter();
     }
 
     public void reset(){
-        leftEncoder.reset();
-        rightEncoder.reset();
+        //leftEncoder.reset();
+        //rightEncoder.reset();
 //        Logger.log(LoggerSystems.Drive, "reset drive encoders");
     }
 
