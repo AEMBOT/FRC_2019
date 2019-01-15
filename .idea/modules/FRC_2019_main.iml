@@ -22,21 +22,5 @@
     <orderEntry type="library" name="Gradle: edu.wpi.first.cameraserver:cameraserver-java:2019.1.1" level="project" />
     <orderEntry type="library" name="Gradle: edu.wpi.first.hal:hal-java:2019.1.1" level="project" />
     <orderEntry type="library" name="Gradle: com.revrobotics.frc:SparkMax-java:1.0.26" level="project" />
-    <orderEntry type="module-library">
-      <library name="WPILib User Lib Directory">
-        <CLASSES>
-          <root url="file://$USER_HOME$/wpilib/user/java/lib" />
-        </CLASSES>
-        <JAVADOC>
-          <root url="file://$USER_HOME$/wpilib/user/java/lib" />
-        </JAVADOC>
-        <SOURCES>
-          <root url="file://$USER_HOME$/wpilib/user/java/lib" />
-        </SOURCES>
-        <jarDirectory url="file://$USER_HOME$/wpilib/user/java/lib" recursive="true" />
-        <jarDirectory url="file://$USER_HOME$/wpilib/user/java/lib" recursive="true" type="JAVADOC" />
-        <jarDirectory url="file://$USER_HOME$/wpilib/user/java/lib" recursive="true" type="SOURCES" />
-      </library>
-    </orderEntry>
   </component>
 </module>
