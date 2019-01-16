@@ -5,7 +5,9 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot;
+package org;
+
+import org.usfirst.frc.falcons6443.robot.Robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
