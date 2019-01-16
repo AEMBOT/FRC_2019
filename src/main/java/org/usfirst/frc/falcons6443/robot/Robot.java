@@ -34,6 +34,11 @@ public class Robot extends TimedRobot {
     private DriveTrainSystem driveTrain;
     private AutoDrive autoDrive;
     private AutoMain autoMain;
+    private ArmadilloClimber climber;
+    private VacuumSystem vacuum;
+
+    boolean toggleOn = false;
+    boolean togglePressed = false;
 
     public static Preferences prefs;
 
@@ -55,8 +60,8 @@ public class Robot extends TimedRobot {
         autoMain = new AutoMain(autoDrive);
         //CameraServer.getInstance().putVideo();
         //format 1 is kMJPEG
-        VideoMode vm = new VideoMode(1, 640, 480, 60);
-        CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
+        //VideoMode vm = new VideoMode(1, 640, 480, 60);
+        //CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
 
         SmartDashboard.putBoolean("Baby Mode", babyMode);
 
@@ -93,16 +98,54 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic()
     {
-        //drive
+        updateToggle(); //checks the toggled button
+
+        //Drive train usage
         //driveTrain.falconDrive(primary.leftStickX(), primary.leftTrigger(), primary.rightTrigger());
         driveTrain.tankDrive(primary.leftStickY(), primary.rightStickY()); //TODO: TEST this cause profiles are cool
 
+        //Run the method that allows the robot to begin its climb
+        teleop.press(primary.A(), () -> climber.enableClimb());
 
+        //Will stop the climb no matter where it is if pressed (E-Stop)
+        teleop.press(primary.B(), () -> climber.enableKillSwitch());
 
+        //Will only fire the method when the button is in the full up position, thus toggling the arm up
+        //teleop.runOncePerPress(primary.X(), () -> toggleX(), true);
+
+        //if the toggle button is on, the vacuum will move the arm up and check if its vertical.
+        if(toggleOn){
+           vacuum.moveArmUp();
+        }
+
+        //Will only run if A has been pressed
+        climber.climb();
 
         //general periodic functions
         teleop.periodicEnd();
 
+    }
+
+    /**
+     *  This function checks if a button is toggled. One button is allowed to be toggled at a time.
+     */
+    public void updateToggle() {
+        if (primary.X()) {
+            if (!togglePressed) {
+                toggleOn = !toggleOn;
+                togglePressed = true;
+            }
+        }
+        else {
+            togglePressed = false;
+        }
+    }
+
+    /**
+     *  This is a simplified version of Goirick's toggle function, Left yours as is for now
+     */
+    public void toggleX(){
+        toggleOn = !toggleOn;
     }
 
     /**
@@ -123,7 +166,6 @@ public class Robot extends TimedRobot {
         }
         Logger.disabled();
     }
-
     /*
      * Called periodically when the robot is in disabled mode.
      */
