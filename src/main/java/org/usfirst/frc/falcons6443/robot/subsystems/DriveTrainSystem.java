@@ -11,6 +11,9 @@ import org.usfirst.frc.falcons6443.robot.hardware.*;
 import java.util.ArrayList;
 import java.util.List;
 import com.revrobotics.*;
+import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
+import org.usfirst.frc.falcons6443.robot.utilities.enums.DriveStyles;
+import com.revrobotics.CANSparkMax;
 
 //import org.usfirst.frc.falcons6443.robot.utilities.Logger;
 
@@ -49,9 +52,10 @@ public class DriveTrainSystem{
      * Constructor for DriveTrainSystem.
      */
     public DriveTrainSystem() {
+
        leftMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontLeftMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(RobotMap.BackLeftMotor, CANSparkMaxLowLevel.MotorType.kBrushless));
        rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(RobotMap.BackRightMotor, CANSparkMaxLowLevel.MotorType.kBrushless));
-        drive = new DifferentialDrive(leftMotors, rightMotors);
+       drive = new DifferentialDrive(leftMotors, rightMotors);
 
         //Flips motor direction to run the left in the right direction
         leftMotors.setInverted(true);
@@ -73,6 +77,34 @@ public class DriveTrainSystem{
     }
 
     /**
+     * Singular callable method to quickly change drive styles.
+     *
+     * @param controller controller reference used for power/rotation values
+     * @param style DriveStyles enum, used to easily switch styles
+     *
+     */
+    public void generalDrive(Xbox controller, DriveStyles style){
+        switch(style){
+
+            case Tank:
+                tankDrive(controller.leftStickY(),controller.rightStickY());
+                break;
+
+            case Arcade:
+                arcadeDrive(controller.leftStickY(), controller.rightStickX());
+                break;
+
+            case Curve:
+                curvatureDrive(controller.leftStickY(),controller.rightStickX(), false);
+
+            default:
+                tankDrive(controller.leftStickY(),controller.rightStickY());
+        }
+
+    }
+
+
+    /**
      * Allows for custom setting of motor power level.
      *
      * @param left  the power for the left motors.
@@ -80,13 +112,37 @@ public class DriveTrainSystem{
      *
      * Implements the differentialDrive tankDrive into a local method
      */
-    public void tankDrive(double left, double right) {
+    private void tankDrive(double left, double right) {
         if (reversed) {
             drive.tankDrive(-left, -right);
         } else {
             drive.tankDrive(left, right);
         }
 //        Logger.log(LoggerSystems.Drive, "* {" + left + "}[" + right + "]" );
+    }
+
+    /**
+     * Allows separate control of forward movement and heading
+     *
+     * @param speed  the robots speed: forward is positive
+     * @param rotation the rate of rotation: clockwise is positive
+     *
+     * Implements the differentialDrive arcadeDrive into a local method
+     */
+    private void arcadeDrive(double speed, double rotation){
+        drive.arcadeDrive(speed,rotation);
+    }
+
+    /**
+     * Allows separate control of forward movement and change in path curvature
+     *
+     * @param speed  the robots speed: forward is positive
+     * @param rotation the rate of rotation: clockwise is positive
+     *
+     * Implements the differentialDrive curvatureDrive into a local method
+     */
+    private void curvatureDrive(double speed, double rotation, boolean isQuickTurn){
+        drive.curvatureDrive(speed,rotation,isQuickTurn);
     }
 
     /**
