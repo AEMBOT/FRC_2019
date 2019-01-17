@@ -14,10 +14,11 @@ import java.util.function.Consumer;
  */
 public class TeleopStructure {
 
-    private int unpressedID = 0;
+    private int[] IDs = new int[2]; //0 is unpressed, 1 is toggle, 2 is toggle periodic
     private boolean first = true;
 
     private List<Boolean> runOnceSavedData = new ArrayList<>();
+    private List<Boolean> toggleData = new ArrayList<>();
     private List<Boolean> isManualLessThanBuffer = new ArrayList<>();
     private List<Callable<Boolean>> isManualGetter = new ArrayList<>(); //add control manual getters
     private List<Consumer<Boolean>> isManualSetter = new ArrayList<>(); //add control manual setters
@@ -107,25 +108,46 @@ public class TeleopStructure {
     //Pairs an action with a button, activated only once unpressed (true) or once pressed (false)
     //This action will only run once, unlike press() which runs periodically until unpressed
     public void runOncePerPress(boolean button, Runnable function, boolean unpressedMode){
-        if(first) runOnceSavedData.add(unpressedID, false);
+        if(first) runOnceSavedData.add(IDs[0], false);
         if(button){
-            if(!unpressedMode && !runOnceSavedData.get(unpressedID)){
+            if(!unpressedMode && !runOnceSavedData.get(IDs[0])){
                 function.run();
             }
-            runOnceSavedData.set(unpressedID, true);
+            runOnceSavedData.set(IDs[0], true);
         } else {
-            if(unpressedMode && runOnceSavedData.get(unpressedID)){
+            if(unpressedMode && runOnceSavedData.get(IDs[0])){
                 function.run();
             }
-            runOnceSavedData.set(unpressedID, false);
+            runOnceSavedData.set(IDs[0], false);
         }
-        unpressedID++;
+        IDs[0]++;
+    }
+
+    public void toggle(boolean button, Runnable function){
+        if(first) toggleData.add(IDs[1], false);
+        if(button){
+            if(toggleData.get(IDs[1])){
+                function.run();
+            }
+            toggleData.set(IDs[1], !toggleData.get(IDs[1]));
+        }
+        IDs[1]++;
+    }
+
+    public void togglePeriodic(boolean button, Runnable function){
+        if(first) toggleData.add(IDs[2], false);
+        if(button)
+            toggleData.set(IDs[2], !toggleData.get(IDs[2]));
+        if(toggleData.get(IDs[2]))
+            function.run();
+        IDs[2]++;
     }
 
     //clears the unpressedID
     public void periodicEnd(){
         first = false;
-        unpressedID = 0;
+        for(int i = 0; i < IDs.length; i++)
+            IDs[i] = 0;
     }
 
     private boolean areAllFalse(boolean[] array) {
