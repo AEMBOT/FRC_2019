@@ -53,7 +53,7 @@ public class Robot extends TimedRobot {
         primary = new Xbox(new XboxController(0)); //change controller type here
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
-      //  driveTrain = new DriveTrainSystem();
+        driveTrain = new DriveTrainSystem();
 
         autoDrive = new AutoDrive();
         autoMain = new AutoMain(autoDrive);
@@ -98,7 +98,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic()
     {
         //Allows for changing of current drive mode
-        controlMethod = DriveStyles.Tank;
+        controlMethod = DriveStyles.Arcade;
 
         //Calls drive method with passed control method
         driveTrain.generalDrive(primary, controlMethod);

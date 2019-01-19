@@ -91,7 +91,7 @@ public class DriveTrainSystem{
                 break;
 
             case Arcade:
-                arcadeDrive(controller.leftStickY(), controller.rightStickX());
+                arcadeDrive(controller.rightStickX(), controller.leftStickY());
                 break;
 
             case Curve:
@@ -112,7 +112,7 @@ public class DriveTrainSystem{
      *
      * Implements the differentialDrive tankDrive into a local method
      */
-    private void tankDrive(double left, double right) {
+    public void tankDrive(double left, double right) {
         if (reversed) {
             drive.tankDrive(-left, -right);
         } else {
@@ -130,7 +130,7 @@ public class DriveTrainSystem{
      * Implements the differentialDrive arcadeDrive into a local method
      */
     private void arcadeDrive(double speed, double rotation){
-        drive.arcadeDrive(speed,rotation);
+        drive.arcadeDrive(-speed,-rotation);
     }
 
     /**
