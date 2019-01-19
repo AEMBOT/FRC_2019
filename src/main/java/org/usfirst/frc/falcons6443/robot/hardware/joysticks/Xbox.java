@@ -122,6 +122,14 @@ public class Xbox {
         return controller.getRawButton(4);
     }
 
+    public boolean dPadUp(){
+        return controller.getPOV(0) != 0;
+    }
+
+    public boolean dPadDown(){
+        return controller.getPOV(270) != 0;
+    }
+
     //PLEASE FIND THE ACTUAL NAME FOR THESE
     public boolean seven() {
         return controller.getRawButton(7);

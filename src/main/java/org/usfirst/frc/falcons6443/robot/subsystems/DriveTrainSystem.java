@@ -39,10 +39,15 @@ public class DriveTrainSystem{
     private List<List<Integer>> encoderList = new ArrayList<List<Integer>>();
     public Timer encoderCheck;
 
+
+
     private boolean usingLeftEncoder = true; //keep true. Left is our default encoder, right is our backup encoder
     private double minEncoderMovement = 20; //ticks //change value
     private boolean reversed;
     private static final double WheelDiameter = 6;
+    private double[] speedLevels = {.25,.5,.75,1};
+    private double currentLevel = speedLevels[3];
+    private int speedIndex = 3;
 
     // A [nice] class in the wpilib that provides numerous driving capabilities.
     // Use it whenever you want your robot to move.
@@ -87,18 +92,18 @@ public class DriveTrainSystem{
         switch(style){
 
             case Tank:
-                tankDrive(controller.leftStickY(),controller.rightStickY());
+                tankDrive(controller.leftStickY() / currentLevel,controller.rightStickY() / currentLevel);
                 break;
 
             case Arcade:
-                arcadeDrive(controller.rightStickX(), controller.leftStickY());
+                arcadeDrive(controller.leftStickY() / currentLevel, controller.rightStickX() / currentLevel);
                 break;
 
             case Curve:
-                curvatureDrive(controller.leftStickY(),controller.rightStickX(), false);
+                curvatureDrive(controller.leftStickY() / currentLevel,controller.rightStickX() / currentLevel, false);
 
             default:
-                tankDrive(controller.leftStickY(),controller.rightStickY());
+                tankDrive(controller.leftStickY() / currentLevel,controller.rightStickY() / currentLevel);
         }
 
     }
@@ -203,9 +208,21 @@ public class DriveTrainSystem{
     //Not sure if good format, but these values are only used for this method
     //Vector2d vector = new Vector2d(0,0);
     //double differential = 0;
-    boolean shifted = false;
-    public void upShift(){ shifted = true;}
-    public void downShift(){shifted = false;}
+    
+    // param upOrDown" false = shift down, true = shift up
+    public void changeSpeed (boolean upOrDown){
+        if(upOrDown && currentLevel != speedLevels[3]){
+            currentLevel = speedLevels[speedIndex + 1];
+        }
+
+        else if(!upOrDown && currentLevel != speedLevels[0]){
+            currentLevel = speedLevels[speedIndex - 1];
+        }
+        else {
+            //redundant but might as well
+            currentLevel = currentLevel;
+        }
+    }
 
     public void falconDrive(double leftStickX, double rightTrigger, double leftTrigger) {
         Vector2d vector = new Vector2d(0,0);

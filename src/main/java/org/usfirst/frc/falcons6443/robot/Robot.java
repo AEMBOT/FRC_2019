@@ -103,6 +103,11 @@ public class Robot extends TimedRobot {
         //Calls drive method with passed control method
         driveTrain.generalDrive(primary, controlMethod);
 
+        // Press Up on Dpad if you want to increase speed
+        teleop.press(primary.dPadUp(), () -> driveTrain.changeSpeed(true));
+
+        // Press Down on Dpad if you want to decrease speed
+        teleop.press(primary.dPadDown(), () -> driveTrain.changeSpeed(false));
 
         //general periodic functions
         teleop.periodicEnd();
