@@ -45,7 +45,7 @@ public class DriveTrainSystem{
     private double minEncoderMovement = 20; //ticks //change value
     private boolean reversed;
     private static final double WheelDiameter = 6;
-    private double[] speedLevels = {.25,.5,.75,1};
+    private double[] speedLevels = {4,2,(4/3),1};
     private double currentLevel = speedLevels[3];
     private int speedIndex = 3;
 
@@ -213,17 +213,19 @@ public class DriveTrainSystem{
     public void changeSpeed (boolean upOrDown){
         if(upOrDown && currentLevel != speedLevels[3]){
             currentLevel = speedLevels[speedIndex + 1];
+            speedIndex += 1;
         }
 
         else if(!upOrDown && currentLevel != speedLevels[0]){
             currentLevel = speedLevels[speedIndex - 1];
+            speedIndex -= 1;
         }
         else {
             //redundant but might as well
             currentLevel = currentLevel;
         }
     }
-
+/*
     public void falconDrive(double leftStickX, double rightTrigger, double leftTrigger) {
         Vector2d vector = new Vector2d(0,0);
         vector.x = 0;
@@ -261,4 +263,5 @@ public class DriveTrainSystem{
 
         tankDrive(vector.y, vector.x);
     }
+    */
 }
