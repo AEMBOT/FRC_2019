@@ -40,6 +40,7 @@ public class Robot extends TimedRobot {
     private DriveStyles controlMethod;
 
     public static Preferences prefs;
+    private SendableChooser driveStyle;
 
 
     private boolean babyMode = false;
@@ -54,6 +55,14 @@ public class Robot extends TimedRobot {
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
         driveTrain = new DriveTrainSystem();
+        driveStyle = new SendableChooser();
+
+        driveStyle.addObject("ArcadeDrive",DriveStyles.Arcade);
+        driveStyle.addObject("Tank Drive",DriveStyles.Tank);
+        driveStyle.addObject("Curve Drive",DriveStyles.Curve);
+        driveStyle.addDefault("Arcade Drive", DriveStyles.Arcade);
+        SmartDashboard.putData("Drive Style", driveStyle);
+
 
         autoDrive = new AutoDrive();
         autoMain = new AutoMain(autoDrive);
@@ -98,7 +107,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic()
     {
         //Allows for changing of current drive mode
-        controlMethod = DriveStyles.Arcade;
+        controlMethod = (DriveStyles) driveStyle.getSelected();
 
         //Calls drive method with passed control method
         driveTrain.generalDrive(primary, controlMethod);

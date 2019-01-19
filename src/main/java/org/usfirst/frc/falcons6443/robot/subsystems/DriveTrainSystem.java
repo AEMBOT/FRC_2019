@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.Vector2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.*;
 
@@ -46,8 +48,8 @@ public class DriveTrainSystem{
     private boolean reversed;
     private static final double WheelDiameter = 6;
     private double[] speedLevels = {4,2,(4/3),1};
-    private double currentLevel = speedLevels[3];
-    private int speedIndex = 3;
+    private double currentLevel = speedLevels[0];
+    private int speedIndex = 0;
 
     // A [nice] class in the wpilib that provides numerous driving capabilities.
     // Use it whenever you want your robot to move.
@@ -57,6 +59,9 @@ public class DriveTrainSystem{
      * Constructor for DriveTrainSystem.
      */
     public DriveTrainSystem() {
+
+        SmartDashboard.putNumber("speedIndex", speedIndex);
+        SmartDashboard.putNumber("currentLvel", currentLevel);
 
        leftMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontLeftMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(RobotMap.BackLeftMotor, CANSparkMaxLowLevel.MotorType.kBrushless));
        rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(RobotMap.BackRightMotor, CANSparkMaxLowLevel.MotorType.kBrushless));
