@@ -57,11 +57,7 @@ public class Robot extends TimedRobot {
         driveTrain = new DriveTrainSystem();
         driveStyle = new SendableChooser();
 
-        driveStyle.addObject("ArcadeDrive",DriveStyles.Arcade);
-        driveStyle.addObject("Tank Drive",DriveStyles.Tank);
-        driveStyle.addObject("Curve Drive",DriveStyles.Curve);
-        driveStyle.addDefault("Arcade Drive", DriveStyles.Arcade);
-        SmartDashboard.putData("Drive Style", driveStyle);
+    
 
 
         autoDrive = new AutoDrive();
@@ -107,16 +103,14 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic()
     {
         //Allows for changing of current drive mode
-        controlMethod = (DriveStyles) driveStyle.getSelected();
+        controlMethod = DriveStyles.RC;
 
         //Calls drive method with passed control method
         driveTrain.generalDrive(primary, controlMethod);
+        System.out.println(driveTrain.moveSpeed);
+        System.out.println("kill me");
 
-        // Press Up on Dpad if you want to increase speed
-        teleop.press(primary.dPadUp(), () -> driveTrain.changeSpeed(true));
-
-        // Press Down on Dpad if you want to decrease speed
-        teleop.press(primary.dPadDown(), () -> driveTrain.changeSpeed(false));
+        //teleop.press()
 
         //general periodic functions
         teleop.periodicEnd();

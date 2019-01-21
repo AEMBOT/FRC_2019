@@ -50,8 +50,10 @@ public class DriveTrainSystem{
 
     //Controls robot movement speed
     private double[] speedLevels = {4, 2, (4/3), 1};
-    private double currentLevel = speedLevels[0];
-    private int speedIndex = 0;
+    private int speedIndex = 3;
+    private double currentLevel = speedLevels[speedIndex];
+    public double moveSpeed = 0;
+   
 
     // A [nice] class in the wpilib that provides numerous driving capabilities.
     // Use it whenever you want your robot to move.
@@ -111,15 +113,22 @@ public class DriveTrainSystem{
                 break;
             
             case RC:
-                if(controller.leftTrigger() > 0.1){
-                    arcadeDrive(controller.leftTrigger() / currentLevel, controller.rightStickX() / currentLevel);
+                if(controller.leftTrigger() > 0){
+                    moveSpeed = controller.leftTrigger();
+                    System.out.println(moveSpeed);
                 }
-                else if(controller.rightTrigger() > 0.1){
-                    arcadeDrive(-controller.rightTrigger() / currentLevel, controller.rightStickX() / currentLevel);
+                else if(controller.rightTrigger() > 0){
+                   moveSpeed = -controller.rightTrigger();
+                   System.out.println(moveSpeed);
                 }
-                else{
-                    arcadeDrive(0, controller.rightStickX() / currentLevel);
+                 else{
+                    moveSpeed = 0;
+                    System.out.println(moveSpeed);
                 }
+                
+
+                arcadeDrive(moveSpeed / currentLevel, controller.rightStickX() / currentLevel);
+                break;
 
             default:
                 tankDrive(controller.leftStickY() / currentLevel,controller.rightStickY() / currentLevel);
@@ -154,7 +163,7 @@ public class DriveTrainSystem{
      * Implements the differentialDrive arcadeDrive into a local method
      */
     private void arcadeDrive(double speed, double rotation){
-        drive.arcadeDrive(-speed,-rotation);
+        drive.arcadeDrive(-rotation,-speed);
     }
 
     /**
