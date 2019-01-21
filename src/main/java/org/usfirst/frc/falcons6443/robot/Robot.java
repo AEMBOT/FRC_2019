@@ -109,7 +109,7 @@ public class Robot extends TimedRobot {
         driveTrain.generalDrive(primary, controlMethod);
        
 
-        //teleop.press()
+        System.out.println("Test");
 
         //general periodic functions
         teleop.periodicEnd();

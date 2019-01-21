@@ -121,9 +121,7 @@ public class Xbox {
     public boolean Y() {
         return controller.getRawButton(4);
     }
-
     
-
     //PLEASE FIND THE ACTUAL NAME FOR THESE
     public boolean seven() {
         return controller.getRawButton(7);
