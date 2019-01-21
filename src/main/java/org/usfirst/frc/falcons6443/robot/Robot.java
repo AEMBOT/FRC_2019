@@ -107,8 +107,7 @@ public class Robot extends TimedRobot {
 
         //Calls drive method with passed control method
         driveTrain.generalDrive(primary, controlMethod);
-        System.out.println(driveTrain.moveSpeed);
-        System.out.println("kill me");
+       
 
         //teleop.press()
 

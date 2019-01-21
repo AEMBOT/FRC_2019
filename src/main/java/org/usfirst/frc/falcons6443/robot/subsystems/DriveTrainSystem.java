@@ -52,7 +52,6 @@ public class DriveTrainSystem{
     private double[] speedLevels = {4, 2, (4/3), 1};
     private int speedIndex = 3;
     private double currentLevel = speedLevels[speedIndex];
-    public double moveSpeed = 0;
    
 
     // A [nice] class in the wpilib that provides numerous driving capabilities.
@@ -105,7 +104,7 @@ public class DriveTrainSystem{
                 break;
 
             case Arcade:
-                arcadeDrive(controller.leftStickY() / currentLevel, controller.rightStickX() / currentLevel);
+                arcadeDrive(controller.rightStickX() / currentLevel, controller.leftStickY() / currentLevel);
                 break;
 
             case Curve:
