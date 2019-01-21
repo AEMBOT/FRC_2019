@@ -52,7 +52,6 @@ public class DriveTrainSystem{
     private double[] speedLevels = {4, 2, 1.3333 , 1};
     private int speedIndex = 3;
     private double currentLevel = speedLevels[speedIndex];
-    private double moveSpeed = 0;
    
 
     // A [nice] class in the wpilib that provides numerous driving capabilities.
@@ -212,25 +211,20 @@ public class DriveTrainSystem{
     public void reset(){
         //leftEncoder.reset();
         //rightEncoder.reset();
-//        Logger.log(LoggerSystems.Drive, "reset drive encoders");
+        //Logger.log(LoggerSystems.Drive, "reset drive encoders");
     }
 
-    //Not sure if good format, but these values are only used for this method
-    //Vector2d vector = new Vector2d(0,0);
-    //double differential = 0;
-    
-    // param upOrDown" false = shift down, true = shift up
+
+    // param upOrDown" false = shift down, true = shift up. changes index of array to give max speed value
     public void changeSpeed (boolean upOrDown){
         if(upOrDown && speedIndex < 3){
             speedIndex += 1;
             currentLevel = speedLevels[speedIndex];
-            System.out.println("up");
         }
 
         else if(!upOrDown && speedIndex > 0){
             speedIndex -= 1;
             currentLevel = speedLevels[speedIndex];
-            System.out.println("down");
         }
         else {
             //redundant but might as well

@@ -108,8 +108,10 @@ public class Robot extends TimedRobot {
         //Calls drive method with passed control method
         driveTrain.generalDrive(primary, controlMethod);
        
-       teleop.runOncePerPress(primary.dPadUp(), ()  -> driveTrain.changeSpeed(true), false);
+        // shifts max speed up
+        teleop.runOncePerPress(primary.dPadUp(), ()  -> driveTrain.changeSpeed(true), false);
 
+        //shight max speed down
         teleop.runOncePerPress(primary.dPadDown(), ()  -> driveTrain.changeSpeed(false), false);
         
         
