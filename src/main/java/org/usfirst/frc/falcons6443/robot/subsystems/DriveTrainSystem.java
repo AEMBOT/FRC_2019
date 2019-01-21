@@ -49,9 +49,10 @@ public class DriveTrainSystem{
     private static final double WheelDiameter = 6;
 
     //Controls robot movement speed
-    private double[] speedLevels = {4, 2, (4/3), 1};
+    private double[] speedLevels = {4, 2, 1.3333 , 1};
     private int speedIndex = 3;
     private double currentLevel = speedLevels[speedIndex];
+    private double moveSpeed = 0;
    
 
     // A [nice] class in the wpilib that provides numerous driving capabilities.
@@ -63,8 +64,7 @@ public class DriveTrainSystem{
      */
     public DriveTrainSystem() {
 
-        SmartDashboard.putNumber("speedIndex", speedIndex);
-        SmartDashboard.putNumber("currentLvel", currentLevel);
+    
 
        leftMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontLeftMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(RobotMap.BackLeftMotor, CANSparkMaxLowLevel.MotorType.kBrushless));
        rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(RobotMap.BackRightMotor, CANSparkMaxLowLevel.MotorType.kBrushless));
@@ -109,7 +109,8 @@ public class DriveTrainSystem{
 
             case Curve:
                 curvatureDrive(controller.leftStickY() / currentLevel,controller.rightStickX() / currentLevel, false);
-                
+                break;
+
             
             default:
                 tankDrive(controller.leftStickY() / currentLevel,controller.rightStickY() / currentLevel);
@@ -220,14 +221,16 @@ public class DriveTrainSystem{
     
     // param upOrDown" false = shift down, true = shift up
     public void changeSpeed (boolean upOrDown){
-        if(upOrDown && currentLevel != speedLevels[3]){
-            currentLevel = speedLevels[speedIndex + 1];
+        if(upOrDown && speedIndex < 3){
             speedIndex += 1;
+            currentLevel = speedLevels[speedIndex];
+            System.out.println("up");
         }
 
-        else if(!upOrDown && currentLevel != speedLevels[0]){
-            currentLevel = speedLevels[speedIndex - 1];
+        else if(!upOrDown && speedIndex > 0){
             speedIndex -= 1;
+            currentLevel = speedLevels[speedIndex];
+            System.out.println("down");
         }
         else {
             //redundant but might as well

@@ -108,8 +108,13 @@ public class Robot extends TimedRobot {
         //Calls drive method with passed control method
         driveTrain.generalDrive(primary, controlMethod);
        
+       teleop.runOncePerPress(primary.dPadUp(), ()  -> driveTrain.changeSpeed(true), false);
 
-        System.out.println("Test");
+        teleop.runOncePerPress(primary.dPadDown(), ()  -> driveTrain.changeSpeed(false), false);
+        
+        
+
+    
 
         //general periodic functions
         teleop.periodicEnd();
