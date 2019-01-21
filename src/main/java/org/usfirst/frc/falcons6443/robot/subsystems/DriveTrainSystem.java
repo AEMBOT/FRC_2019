@@ -110,26 +110,8 @@ public class DriveTrainSystem{
 
             case Curve:
                 curvatureDrive(controller.leftStickY() / currentLevel,controller.rightStickX() / currentLevel, false);
-                break;
-            
-            case RC:
-                if(controller.leftTrigger() > 0){
-                    moveSpeed = controller.leftTrigger();
-                    System.out.println(moveSpeed);
-                }
-                else if(controller.rightTrigger() > 0){
-                   moveSpeed = -controller.rightTrigger();
-                   System.out.println(moveSpeed);
-                }
-                 else{
-                    moveSpeed = 0;
-                    System.out.println(moveSpeed);
-                }
                 
-
-                arcadeDrive(moveSpeed / currentLevel, controller.rightStickX() / currentLevel);
-                break;
-
+            
             default:
                 tankDrive(controller.leftStickY() / currentLevel,controller.rightStickY() / currentLevel);
         }
@@ -163,7 +145,7 @@ public class DriveTrainSystem{
      * Implements the differentialDrive arcadeDrive into a local method
      */
     private void arcadeDrive(double speed, double rotation){
-        drive.arcadeDrive(-rotation,-speed);
+        drive.arcadeDrive(speed,-rotation);
     }
 
     /**

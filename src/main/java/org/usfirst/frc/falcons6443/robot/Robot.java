@@ -55,7 +55,7 @@ public class Robot extends TimedRobot {
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
         driveTrain = new DriveTrainSystem();
-        driveStyle = new SendableChooser();
+        
 
     
 
@@ -65,7 +65,7 @@ public class Robot extends TimedRobot {
         //CameraServer.getInstance().putVideo();
         //format 1 is kMJPEG
         VideoMode vm = new VideoMode(1, 640, 480, 60);
-        CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
+       // CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
 
         SmartDashboard.putBoolean("Baby Mode", babyMode);
 
@@ -103,7 +103,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic()
     {
         //Allows for changing of current drive mode
-        controlMethod = DriveStyles.RC;
+        controlMethod = DriveStyles.Arcade;
 
         //Calls drive method with passed control method
         driveTrain.generalDrive(primary, controlMethod);
