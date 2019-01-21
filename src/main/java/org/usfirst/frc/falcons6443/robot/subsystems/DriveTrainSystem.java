@@ -47,9 +47,13 @@ public class DriveTrainSystem{
     private double minEncoderMovement = 20; //ticks //change value
     private boolean reversed;
     private static final double WheelDiameter = 6;
-    private double[] speedLevels = {4,2,(4/3),1};
-    private double currentLevel = speedLevels[0];
-    private int speedIndex = 0;
+
+    //Controls robot movement speed
+    private double[] speedLevels = {4, 2, (4/3), 1};
+    private int speedIndex = 3;
+    private double currentLevel = speedLevels[speedIndex];
+    public double moveSpeed = 0;
+   
 
     // A [nice] class in the wpilib that provides numerous driving capabilities.
     // Use it whenever you want your robot to move.
@@ -106,7 +110,8 @@ public class DriveTrainSystem{
 
             case Curve:
                 curvatureDrive(controller.leftStickY() / currentLevel,controller.rightStickX() / currentLevel, false);
-
+                
+            
             default:
                 tankDrive(controller.leftStickY() / currentLevel,controller.rightStickY() / currentLevel);
         }
@@ -140,7 +145,7 @@ public class DriveTrainSystem{
      * Implements the differentialDrive arcadeDrive into a local method
      */
     private void arcadeDrive(double speed, double rotation){
-        drive.arcadeDrive(-speed,-rotation);
+        drive.arcadeDrive(speed,-rotation);
     }
 
     /**
