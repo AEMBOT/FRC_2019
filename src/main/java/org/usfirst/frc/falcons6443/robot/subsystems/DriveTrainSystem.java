@@ -47,7 +47,9 @@ public class DriveTrainSystem{
     private double minEncoderMovement = 20; //ticks //change value
     private boolean reversed;
     private static final double WheelDiameter = 6;
-    private double[] speedLevels = {4,2,(4/3),1};
+
+    //Controls robot movement speed
+    private double[] speedLevels = {4, 2, (4/3), 1};
     private double currentLevel = speedLevels[0];
     private int speedIndex = 0;
 
@@ -106,6 +108,18 @@ public class DriveTrainSystem{
 
             case Curve:
                 curvatureDrive(controller.leftStickY() / currentLevel,controller.rightStickX() / currentLevel, false);
+                break;
+            
+            case RC:
+                if(controller.leftTrigger() > 0.1){
+                    arcadeDrive(controller.leftTrigger() / currentLevel, controller.rightStickX() / currentLevel);
+                }
+                else if(controller.rightTrigger() > 0.1){
+                    arcadeDrive(-controller.rightTrigger() / currentLevel, controller.rightStickX() / currentLevel);
+                }
+                else{
+                    arcadeDrive(0, controller.rightStickX() / currentLevel);
+                }
 
             default:
                 tankDrive(controller.leftStickY() / currentLevel,controller.rightStickY() / currentLevel);
