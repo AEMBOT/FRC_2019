@@ -24,9 +24,6 @@ public class ArmadilloClimber {
     //Change to a point where the encoders will stop
     private final int stopTickCount = -1;
 
-    private Piston leftPiston;
-    private Piston rightPiston;
-
     //Set to the diameter of the wheel in inches
     private static final double wheelDiameter = 6;
 
@@ -35,10 +32,6 @@ public class ArmadilloClimber {
         //Assigns the motors to the proper mappings
         rightMotor = new CANSparkMax(RobotMap.RightClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
         leftMotor = new CANSparkMax(RobotMap.LeftClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
-
-        //Assign pistons to a port
-        leftPiston = new Piston(RobotMap.LeftPiston);
-        rightPiston = new Piston(RobotMap.RightPiston);
 
         //maps encoders to ports
         leftEncoder = new Encoders(RobotMap.LeftClimbEncoderA, RobotMap.LeftClimbEncoderB);
@@ -71,9 +64,7 @@ public class ArmadilloClimber {
         if (leftEncoder.getDistanceWithDiameter() >= stopTickCount) {
             leftMotor.set(0);
             leftMotor.set(0);
-
-            leftPiston.out();
-            rightPiston.out();
+            
             isClimbing = false;
         } else {
             //Run both motors at a set speed
