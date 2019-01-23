@@ -68,6 +68,7 @@ public class DriveTrainSystem{
 
        leftMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontLeftMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(RobotMap.BackLeftMotor, CANSparkMaxLowLevel.MotorType.kBrushless));
        rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(RobotMap.BackRightMotor, CANSparkMaxLowLevel.MotorType.kBrushless));
+       
        drive = new DifferentialDrive(leftMotors, rightMotors);
 
         //Flips motor direction to run the left in the right direction
@@ -104,20 +105,22 @@ public class DriveTrainSystem{
                 break;
 
             case Arcade:
-                arcadeDrive(controller.rightStickX() / currentLevel, controller.leftStickY() / currentLevel);
+                arcadeDrive(-controller.rightStickX() / currentLevel, controller.leftStickY() / currentLevel);
                 break;
 
             case Curve:
                 curvatureDrive(controller.leftStickY() / currentLevel,controller.rightStickX() / currentLevel, false);
                 break;
-
+            
+            case RC:
+                rcDrive(controller.leftTrigger(), controller.rightTrigger(), controller.rightStickX());
+                break;
             
             default:
-                tankDrive(controller.leftStickY() / currentLevel,controller.rightStickY() / currentLevel);
+            arcadeDrive(-controller.rightStickX() / currentLevel, controller.leftStickY() / currentLevel);
         }
 
     }
-
 
     /**
      * Allows for custom setting of motor power level.
@@ -146,6 +149,20 @@ public class DriveTrainSystem{
      */
     private void arcadeDrive(double speed, double rotation){
         drive.arcadeDrive(speed,-rotation);
+    }
+
+    private void rcDrive(double leftTrig, double rightTrig, double rotation){
+       if(leftTrig > 0){
+           moveSpeed = leftTrig;
+       }
+       else if(rightTrig > 0){
+           moveSpeed = -rightTrig;
+       }
+       else{
+           moveSpeed = 0;
+       }
+
+       drive.arcadeDrive(-rotation, moveSpeed);
     }
 
     /**

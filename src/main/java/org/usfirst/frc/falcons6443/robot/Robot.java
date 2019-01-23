@@ -103,7 +103,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic()
     {
         //Allows for changing of current drive mode
-        controlMethod = DriveStyles.Arcade;
+        controlMethod = DriveStyles.RC;
 
         //Calls drive method with passed control method
         driveTrain.generalDrive(primary, controlMethod);
@@ -112,10 +112,6 @@ public class Robot extends TimedRobot {
 
         teleop.runOncePerPress(primary.dPadDown(), ()  -> driveTrain.changeSpeed(false), false);
         
-        
-
-    
-
         //general periodic functions
         teleop.periodicEnd();
 
