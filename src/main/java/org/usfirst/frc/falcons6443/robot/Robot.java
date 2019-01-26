@@ -56,7 +56,8 @@ public class Robot extends TimedRobot {
         teleop = new TeleopStructure();
         driveTrain = new DriveTrainSystem();
         
-
+        driveStyle = new SendableChooser();
+        driveStyle.addObject("", object);
     
 
 
@@ -109,10 +110,10 @@ public class Robot extends TimedRobot {
         driveTrain.generalDrive(primary, controlMethod);
        
         // shifts max speed up
-        teleop.runOncePerPress(primary.dPadUp(), ()  -> driveTrain.changeSpeed(true), false);
+        teleop.runOncePerPress(primary.rightBumper(), ()  -> driveTrain.changeSpeed(true), false);
 
         //shight max speed down
-        teleop.runOncePerPress(primary.dPadDown(), ()  -> driveTrain.changeSpeed(false), false);
+        teleop.runOncePerPress(primary.leftBumper(), ()  -> driveTrain.changeSpeed(false), false);
         
         
 
