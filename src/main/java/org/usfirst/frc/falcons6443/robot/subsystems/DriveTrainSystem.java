@@ -16,6 +16,7 @@ import com.revrobotics.*;
 import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
 import org.usfirst.frc.falcons6443.robot.utilities.enums.DriveStyles;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 //import org.usfirst.frc.falcons6443.robot.utilities.Logger;
 
@@ -34,6 +35,7 @@ public class DriveTrainSystem{
     private CANSparkMax motormax;
     private SpeedControllerGroup leftMotors;
     private SpeedControllerGroup rightMotors;
+    private CANSparkMax.IdleMode idleMode = CANSparkMax.IdleMode.kBrake;
 
 
     private Encoders leftEncoder; // Encoders clicks per rotation = 850 (default in Encoders class)
@@ -52,6 +54,7 @@ public class DriveTrainSystem{
     private double[] speedLevels = {4, 2, 1.3333 , 1};
     private int speedIndex = 3;
     private double currentLevel = speedLevels[speedIndex];
+    private double moveSpeed = 0;
    
 
     // A [nice] class in the wpilib that provides numerous driving capabilities.
@@ -247,6 +250,11 @@ public class DriveTrainSystem{
             //redundant but might as well
             currentLevel = currentLevel;
         }
+    }
+
+    public void changeIdle(){
+        if(this.idleMode == IdleMode.kBrake) this.idleMode = IdleMode.kCoast;
+        else if(this.idleMode == IdleMode.kCoast) this.idleMode = IdleMode.kBrake;
     }
 /*
     public void falconDrive(double leftStickX, double rightTrigger, double leftTrigger) {

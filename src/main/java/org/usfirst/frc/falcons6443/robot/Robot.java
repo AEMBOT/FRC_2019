@@ -57,8 +57,13 @@ public class Robot extends TimedRobot {
         driveTrain = new DriveTrainSystem();
         
         driveStyle = new SendableChooser();
-        driveStyle.addObject("", object);
-    
+        driveStyle.addObject("Tank", DriveStyles.Tank);
+        driveStyle.addObject("Arcade", DriveStyles.Arcade);
+        driveStyle.addObject("RC", DriveStyles.RC);
+        driveStyle.addObject("Curve", DriveStyles.Curve);
+        driveStyle.addDefault("Arcade", DriveStyles.Arcade);
+
+        SmartDashboard.putData("driveStyle", driveStyle);
 
 
         autoDrive = new AutoDrive();
@@ -115,6 +120,9 @@ public class Robot extends TimedRobot {
         //shight max speed down
         teleop.runOncePerPress(primary.leftBumper(), ()  -> driveTrain.changeSpeed(false), false);
         
+        //change IdleMode
+        teleop.runOncePerPress(primary.X(), () -> driveTrain.changeIdle(), false);
+
         //general periodic functions
         teleop.periodicEnd();
 
