@@ -54,8 +54,8 @@ public class DriveTrainSystem{
     private double[] speedLevels = {4, 2, 1.3333 , 1};
     private int speedIndex = 3;
     private double currentLevel = speedLevels[speedIndex];
-    private double moveSpeed = 0;
-   
+    private double moveSpeed;
+
 
     // A [nice] class in the wpilib that provides numerous driving capabilities.
     // Use it whenever you want your robot to move.
