@@ -66,8 +66,8 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("driveStyle", driveStyle);
 
 
-        autoDrive = new AutoDrive();
-        autoMain = new AutoMain(autoDrive);
+        //autoDrive = new AutoDrive();
+        //autoMain = new AutoMain(autoDrive);
         //CameraServer.getInstance().putVideo();
         //format 1 is kMJPEG
         VideoMode vm = new VideoMode(1, 640, 480, 60);
@@ -109,11 +109,11 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic()
     {
         //Allows for changing of current drive mode
-        controlMethod = DriveStyles.RC;
+        controlMethod = DriveStyles.Arcade;
 
         //Calls drive method with passed control method
         driveTrain.generalDrive(primary, controlMethod);
-       
+
         // shifts max speed up
         teleop.runOncePerPress(primary.rightBumper(), ()  -> driveTrain.changeSpeed(true), false);
 
@@ -121,7 +121,7 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(primary.leftBumper(), ()  -> driveTrain.changeSpeed(false), false);
         
         //change IdleMode
-        teleop.runOncePerPress(primary.X(), () -> driveTrain.changeIdle(), false);
+       // teleop.runOncePerPress(primary.X(), () -> driveTrain.changeIdle(), false);
 
         //general periodic functions
         teleop.periodicEnd();

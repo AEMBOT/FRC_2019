@@ -1,5 +1,6 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
+import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
@@ -17,6 +18,8 @@ import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
 import org.usfirst.frc.falcons6443.robot.utilities.enums.DriveStyles;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.InputMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 //import org.usfirst.frc.falcons6443.robot.utilities.Logger;
 
@@ -32,11 +35,11 @@ import com.revrobotics.CANSparkMax.IdleMode;
  */
 public class DriveTrainSystem{
 
-    private CANSparkMax motormax;
+   // private CANSparkMax motormax;
     private SpeedControllerGroup leftMotors;
     private SpeedControllerGroup rightMotors;
-    private CANSparkMax.IdleMode idleMode = CANSparkMax.IdleMode.kBrake;
-
+    //private CANSparkMax.IdleMode idleMode = CANSparkMax.IdleMode.kBrake;
+    private Spark spark;
 
     private Encoders leftEncoder; // Encoders clicks per rotation = 850 (default in Encoders class)
     //private Encoders rightEncoder;
@@ -66,16 +69,18 @@ public class DriveTrainSystem{
      */
     public DriveTrainSystem() {
 
-    
+        //2019 Seasson Comp Bot
+        leftMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontLeftMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackLeftMotor, MotorType.kBrushless));
+        rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackRightMotor, MotorType.kBrushless));
 
-       leftMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontLeftMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(RobotMap.BackLeftMotor, CANSparkMaxLowLevel.MotorType.kBrushless));
-       rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(RobotMap.BackRightMotor, CANSparkMaxLowLevel.MotorType.kBrushless));
+        //Practice Bot Drive
+        //leftMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontLeftMotor), new VictorSP(RobotMap.BackLeftMotor));
+        //rightMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontRightMotor), new VictorSP(RobotMap.BackRightMotor));
        
-       drive = new DifferentialDrive(leftMotors, rightMotors);
+        drive = new DifferentialDrive(leftMotors, rightMotors);
 
         //Flips motor direction to run the left in the right direction
-        leftMotors.setInverted(true);
-
+       leftMotors.setInverted(true);
         //leftEncoder = new Encoders(RobotMap.LeftEncoderA, RobotMap.LeftEncoderB);
        // rightEncoder = new Encoders(RobotMap.RightEncoderA, RobotMap.RightEncoderB);
         //leftEncoder.setTicksPerRev(850);
@@ -85,11 +90,13 @@ public class DriveTrainSystem{
 
         // the driver station will complain for some reason if this isn't setSpeed so it's pretty necessary.
         // [FOR SCIENCE!]
+      
         drive.setSafetyEnabled(false);
         reversed = false;
         drive.setMaxOutput(1);
         for(int i = 0; i <= 1; i++) encoderList.add(i, new ArrayList<>());
         encoderCheck = new Timer();
+        
     }
 
     /**
@@ -100,6 +107,8 @@ public class DriveTrainSystem{
      *
      */
     public void generalDrive(Xbox controller, DriveStyles style){
+        leftMotors.set(1);
+        rightMotors.set(1);
         switch(style){
 
             case Tank:
@@ -176,7 +185,7 @@ public class DriveTrainSystem{
      * Implements the differentialDrive curvatureDrive into a local method
      */
     private void curvatureDrive(double speed, double rotation, boolean isQuickTurn){
-        drive.curvatureDrive(speed,rotation,isQuickTurn);
+       drive.curvatureDrive(speed,rotation,isQuickTurn);
     }
 
     /**
@@ -251,12 +260,13 @@ public class DriveTrainSystem{
             currentLevel = currentLevel;
         }
     }
-
+/*
     public void changeIdle(){
         if(this.idleMode == IdleMode.kBrake) this.idleMode = IdleMode.kCoast;
         else if(this.idleMode == IdleMode.kCoast) this.idleMode = IdleMode.kBrake;
     }
-/*
+*/
+    /*
     public void falconDrive(double leftStickX, double rightTrigger, double leftTrigger) {
         Vector2d vector = new Vector2d(0,0);
         vector.x = 0;
