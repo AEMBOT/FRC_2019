@@ -162,6 +162,15 @@ public class DriveTrainSystem{
         drive.arcadeDrive(speed,-rotation);
     }
 
+    /**
+     * Allows for RC car style drive
+     * 
+     * @param leftTrig Left trigger goes forward
+     * @param rightTrig Right trigger goes backward
+     * @param rotation Right stick X-axis
+     * 
+     * Implements arcadeDrive using RC controls
+     */
     private void rcDrive(double leftTrig, double rightTrig, double rotation){
        if(leftTrig > 0){
            moveSpeed = leftTrig;
