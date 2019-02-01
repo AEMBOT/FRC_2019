@@ -107,8 +107,8 @@ public class DriveTrainSystem{
      *
      */
     public void generalDrive(Xbox controller, DriveStyles style){
-        leftMotors.set(1);
-        rightMotors.set(1);
+        //leftMotors.set(1);
+        //rightMotors.set(1);
         switch(style){
 
             case Tank:
@@ -131,6 +131,14 @@ public class DriveTrainSystem{
             arcadeDrive(-controller.rightStickX() / currentLevel, controller.leftStickY() / currentLevel);
         }
 
+    }
+
+    //use "a" as the main value
+    private double hypotenuse(double a , double b){
+        double c = Math.sqrt((a*a) + (b*b));
+        if(c > 1) c = 1;
+        if(a < 0) c *= -1;
+        return c;
     }
 
     /**
