@@ -70,8 +70,8 @@ public class DriveTrainSystem{
     public DriveTrainSystem() {
 
         //2019 Seasson Comp Bot
-        leftMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontLeftMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackLeftMotor, MotorType.kBrushless));
-        rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackRightMotor, MotorType.kBrushless));
+        leftMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontLeftMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackLeftMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.LeftCenterMotor,MotorType.kBrushless));
+        rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.RightCenterMotor, MotorType.kBrushless));
 
         //Practice Bot Drive
         //leftMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontLeftMotor), new VictorSP(RobotMap.BackLeftMotor));
@@ -107,8 +107,6 @@ public class DriveTrainSystem{
      *
      */
     public void generalDrive(Xbox controller, DriveStyles style){
-        leftMotors.set(1);
-        rightMotors.set(1);
         switch(style){
 
             case Tank:
