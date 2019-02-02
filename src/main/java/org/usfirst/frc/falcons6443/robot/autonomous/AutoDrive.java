@@ -30,7 +30,7 @@ public class AutoDrive extends DriveTrainSystem {
     private static final long angleTime = 2;  //ditto
 
     public AutoDrive(){
-        super();
+       // super();
 
         if(SmartDashboard.getBoolean("Save Prefs", false)) {
             Robot.prefs.putDouble("Drive P", SmartDashboard.getNumber("Drive P", 0));
