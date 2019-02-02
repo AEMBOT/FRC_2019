@@ -51,11 +51,12 @@ public class Robot extends TimedRobot {
         primary = new Xbox(new XboxController(0)); //change controller type here
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
-        driveTrain = new DriveTrainSystem();
-        climber = new ArmadilloClimberTest();
+      //  driveTrain = new DriveTrainSystem();
+      //  climber = new ArmadilloClimberTest();
+      vacuum = new VacuumSystem();
 
-        autoDrive = new AutoDrive();
-        autoMain = new AutoMain(autoDrive);
+//        autoDrive = new AutoDrive();
+  //      autoMain = new AutoMain(autoDrive);
         //CameraServer.getInstance().putVideo();
         //format 1 is kMJPEG
         //VideoMode vm = new VideoMode(1, 640, 480, 60);
@@ -99,7 +100,7 @@ public class Robot extends TimedRobot {
 
         //Drive train usage
         //driveTrain.falconDrive(primary.leftStickX(), primary.leftTrigger(), primary.rightTrigger());
-        driveTrain.tankDrive(primary.leftStickY(), primary.rightStickY()); 
+   //     driveTrain.tankDrive(primary.leftStickY(), primary.rightStickY()); 
         
         //Run the method that allows the robot to begin its climb
         //teleop.press(primary.A(), () -> climber.enableClimb());
@@ -110,8 +111,11 @@ public class Robot extends TimedRobot {
         //Toggle on or off the arm up movement
         //teleop.toggle(primary.X(), () -> vacuum.moveArmUp());
 
+        teleop.press(primary.Y(), () -> vacuum.activateHatchSuction());
+        teleop.off(() -> vacuum.deactivateSuction(), primary.Y());
+
         //Will only run if A has been pressed
-        climber.climb(primary);
+      //  climber.climb(primary);
 
         //general periodic functions
         teleop.periodicEnd();

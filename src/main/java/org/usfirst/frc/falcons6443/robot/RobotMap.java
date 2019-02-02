@@ -12,8 +12,10 @@ public class RobotMap {
     //drive train motors
     public static final int FrontLeftMotor = 0;
     public static final int BackLeftMotor = 1;
+  //  public static final int CenterLeftMotor = 1;
     public static final int FrontRightMotor = 2;
     public static final int BackRightMotor = 3;
+   // public static final int CenterLeftMotor = 1;
 
     //climber motors
     public static final int LeftClimbMotor = -1;
@@ -28,8 +30,8 @@ public class RobotMap {
     public static final int RightPiston = -1;
 
     public static final int VacuumBallMotor = -1;
-    public static final int VacuumHatchMotor = -1;
-    public static final int VacuumArmMotor = -1;
+    public static final int VacuumHatchMotor = 8;
+    public static final int VacuumArmMotor = 7;
 
     //drive train encoders
     //public static final int LeftEncoderA = -1;
