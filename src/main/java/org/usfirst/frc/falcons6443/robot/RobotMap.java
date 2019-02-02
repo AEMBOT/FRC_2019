@@ -17,13 +17,17 @@ public class RobotMap {
    public static final int RightCenterMotor = 5;
    public static final int LeftCenterMotor = 2;
 
+    //drive train motors Practice Bot	    
+    public static final int FrontLeftMotorPB = 0;	  
+    public static final int BackLeftMotorPB = 1;	   
+    public static final int FrontRightMotorPB = 2;	   
+    public static final int BackRightMotorPB = 3;
+
     //drive train encoders
     //public static final int LeftEncoderA = -1;
     //public static final int LeftEncoderB = -1;
-    //public static final int RightEncoderA = 8;
-    //public static final int RightEncoderB = 9;
-
-
+    //public static final int RightEncoderA = -1;
+    //public static final int RightEncoderB = -1;
 
     //code settings
     public static final boolean Logger = false;

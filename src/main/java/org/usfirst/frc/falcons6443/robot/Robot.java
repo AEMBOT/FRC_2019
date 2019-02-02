@@ -108,9 +108,6 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic()
     {
-        //Allows for changing of current drive mode
-        controlMethod = DriveStyles.Arcade;
-
         //Calls drive method with passed control method
         driveTrain.generalDrive(primary, controlMethod);
 

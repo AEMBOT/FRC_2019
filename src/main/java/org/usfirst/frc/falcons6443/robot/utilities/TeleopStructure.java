@@ -32,7 +32,6 @@ public class TeleopStructure {
     //A list of all manual controls of the robot, excluding drive
     //Used for manual controls. Can only have one ManualControls per manual axis (NOT per subsystem!)
     public enum ManualControls {
-
     }
 
     //adding manual getters and setters to Lists using params:

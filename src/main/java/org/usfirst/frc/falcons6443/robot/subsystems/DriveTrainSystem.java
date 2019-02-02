@@ -1,11 +1,8 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
-import edu.wpi.first.wpilibj.PWM;
-import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.falcons6443.robot.RobotMap;
@@ -35,22 +32,16 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  */
 public class DriveTrainSystem{
 
-   // private CANSparkMax motormax;
     private SpeedControllerGroup leftMotors;
     private SpeedControllerGroup rightMotors;
-    //private CANSparkMax.IdleMode idleMode = CANSparkMax.IdleMode.kBrake;
-    private Spark spark;
 
-    private Encoders leftEncoder; // Encoders clicks per rotation = 850 (default in Encoders class)
+    private Encoders leftEncoder; // Encoders clicks per rotation = 49
     //private Encoders rightEncoder;
     private List<List<Integer>> encoderList = new ArrayList<List<Integer>>();
     public Timer encoderCheck;
 
-
-
     private boolean usingLeftEncoder = true; //keep true. Left is our default encoder, right is our backup encoder
-    private double minEncoderMovement = 20; //ticks //change value
-    private boolean reversed;
+    private double minEncoderMovement = 5; //ticks //change value
     private static final double WheelDiameter = 6;
 
     //Controls robot movement speed
@@ -58,7 +49,6 @@ public class DriveTrainSystem{
     private int speedIndex = 3;
     private double currentLevel = speedLevels[speedIndex];
     private double moveSpeed;
-
 
     // A [nice] class in the wpilib that provides numerous driving capabilities.
     // Use it whenever you want your robot to move.
@@ -74,29 +64,26 @@ public class DriveTrainSystem{
         rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.RightCenterMotor, MotorType.kBrushless));
 
         //Practice Bot Drive
-        //leftMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontLeftMotor), new VictorSP(RobotMap.BackLeftMotor));
-        //rightMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontRightMotor), new VictorSP(RobotMap.BackRightMotor));
+        //leftMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontLeftMotorPB), new VictorSP(RobotMap.BackLeftMotorPB));
+        //rightMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontRightMotorPB), new VictorSP(RobotMap.BackRightMotorPB));
        
         drive = new DifferentialDrive(leftMotors, rightMotors);
 
-        //Flips motor direction to run the left in the right direction
+        //Flips motor direction to run the left in the correct direction
        leftMotors.setInverted(true);
         //leftEncoder = new Encoders(RobotMap.LeftEncoderA, RobotMap.LeftEncoderB);
        // rightEncoder = new Encoders(RobotMap.RightEncoderA, RobotMap.RightEncoderB);
-        //leftEncoder.setTicksPerRev(850);
-        //rightEncoder.setTicksPerRev(850);
+        //leftEncoder.setTicksPerRev(49);
+        //rightEncoder.setTicksPerRev(49);
         //leftEncoder.setDiameter(WheelDiameter);
         //rightEncoder.setDiameter(WheelDiameter);
 
         // the driver station will complain for some reason if this isn't setSpeed so it's pretty necessary.
         // [FOR SCIENCE!]
-      
         drive.setSafetyEnabled(false);
-        reversed = false;
         drive.setMaxOutput(1);
         for(int i = 0; i <= 1; i++) encoderList.add(i, new ArrayList<>());
         encoderCheck = new Timer();
-        
     }
 
     /**
@@ -132,6 +119,7 @@ public class DriveTrainSystem{
     }
 
     //use "a" as the main value
+    //finds the hypotenuse for drive controls (joysticks)
     private double hypotenuse(double a , double b){
         double c = Math.sqrt((a*a) + (b*b));
         if(c > 1) c = 1;
@@ -148,12 +136,7 @@ public class DriveTrainSystem{
      * Implements the differentialDrive tankDrive into a local method
      */
     public void tankDrive(double left, double right) {
-        if (reversed) {
-            drive.tankDrive(-left, -right);
-        } else {
             drive.tankDrive(left, right);
-        }
-//        Logger.log(LoggerSystems.Drive, "* {" + left + "}[" + right + "]" );
     }
 
     /**
@@ -203,20 +186,6 @@ public class DriveTrainSystem{
        drive.curvatureDrive(speed,rotation,isQuickTurn);
     }
 
-    /**
-     * Toggles the motors to go in reverse.
-     */
-    public void reverse() {
-        reversed = !reversed;
-    }
-
-    /**
-     * Gets the value of the revered var and returns it
-     */
-    public boolean isReversed() {
-        return reversed;
-    }
-
     public boolean first; //set true in AutoPaths.WaitDrive()
     private int strikes; //how many times the encoder did not move enough in 1 second
     //In progress. Needs to be tested
@@ -258,7 +227,6 @@ public class DriveTrainSystem{
         //Logger.log(LoggerSystems.Drive, "reset drive encoders");
     }
 
-
     // param upOrDown" false = shift down, true = shift up. changes index of array to give max speed value
     public void changeSpeed (boolean upOrDown){
         if(upOrDown && speedIndex < 3){
@@ -281,43 +249,4 @@ public class DriveTrainSystem{
         else if(this.idleMode == IdleMode.kCoast) this.idleMode = IdleMode.kBrake;
     }
 */
-    /*
-    public void falconDrive(double leftStickX, double rightTrigger, double leftTrigger) {
-        Vector2d vector = new Vector2d(0,0);
-        vector.x = 0;
-        vector.y = 0;
-        double differential;
-        double power = 1;
-
-        if (Math.abs(leftStickX) < .15) {
-            differential = 0;
-        } else {
-            differential = Math.abs(leftStickX);
-        }
-        if(!shifted){ power = .7; }
-
-        if (rightTrigger > 0) {//forward
-            vector.x = rightTrigger*power+.1 - Math.pow(Math.E,-rightTrigger)*.5*differential*Math.signum(leftStickX)*-1;
-            vector.y = rightTrigger*power+.1 - Math.pow(Math.E,-rightTrigger)*.5*differential*Math.signum(leftStickX);
-            vector.x *= -1;
-            vector.y *= -1;
-        } else if (leftTrigger > 0) { //reverse
-            vector.x = leftTrigger*power+.1 - Math.pow(Math.E,-leftTrigger)*.5*differential*Math.signum(leftStickX);
-            vector.y = leftTrigger*power+.1 - Math.pow(Math.E,-leftTrigger)*.5*differential*Math.signum(leftStickX)*-1;
-            //vector.x *= -1;
-            //vector.y *= -1;ghtTrigger() * 1.2 * (primary.rightTrigger() * .7 + .44f) + (differential + .71 * primary.rightTrigger());//x is right
-            //drive.y = primary.ri
-        } else { //no trigger values, stationary rotation
-            //  drive.x = primary.rightTrigger() * 1.2 * (primary.rightTrigger() * .7 + .44f) - (differential - .71 * primary.rightTrigger());//y is left
-            // drive.x = 2*differential;
-            //drive.y = -2*differential;
-            if(Math.abs(leftStickX) > .2){
-                vector.x = -leftStickX/1.28-(.1*Math.signum(leftStickX));
-                vector.y = leftStickX/1.28+(.1*Math.signum(leftStickX));
-            }
-        }
-
-        tankDrive(vector.y, vector.x);
-    }
-    */
 }
