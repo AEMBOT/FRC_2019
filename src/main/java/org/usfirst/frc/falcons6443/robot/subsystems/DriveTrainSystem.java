@@ -131,6 +131,14 @@ public class DriveTrainSystem{
 
     }
 
+    //use "a" as the main value
+    private double hypotenuse(double a , double b){
+        double c = Math.sqrt((a*a) + (b*b));
+        if(c > 1) c = 1;
+        if(a < 0) c *= -1;
+        return c;
+    }
+
     /**
      * Allows for custom setting of motor power level.
      *
