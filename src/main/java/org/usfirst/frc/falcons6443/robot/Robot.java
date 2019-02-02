@@ -10,6 +10,7 @@ package org.usfirst.frc.falcons6443.robot;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoDrive;
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoMain;
@@ -17,6 +18,8 @@ import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
 import org.usfirst.frc.falcons6443.robot.subsystems.*;
 import org.usfirst.frc.falcons6443.robot.utilities.TeleopStructure;
 import org.usfirst.frc.falcons6443.robot.utilities.Logger;
+import org.usfirst.frc.falcons6443.robot.utilities.enums.DriveStyles;
+import org.usfirst.frc.falcons6443.robot.utilities.enums.XboxRumble;
 
 
 /**
@@ -36,8 +39,10 @@ public class Robot extends TimedRobot {
     private AutoMain autoMain;
     private ArmadilloClimberTest climber;
     private VacuumSystem vacuum;
+    private DriveStyles controlMethod;
 
     public static Preferences prefs;
+    private SendableChooser driveStyle;
 
 
     private boolean babyMode = false;
@@ -51,7 +56,6 @@ public class Robot extends TimedRobot {
         primary = new Xbox(new XboxController(0)); //change controller type here
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
-      //  driveTrain = new DriveTrainSystem();
       //  climber = new ArmadilloClimberTest();
       vacuum = new VacuumSystem();
 
@@ -61,6 +65,24 @@ public class Robot extends TimedRobot {
         //format 1 is kMJPEG
         //VideoMode vm = new VideoMode(1, 640, 480, 60);
         //CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
+        driveTrain = new DriveTrainSystem();
+        
+        driveStyle = new SendableChooser();
+        driveStyle.addObject("Tank", DriveStyles.Tank);
+        driveStyle.addObject("Arcade", DriveStyles.Arcade);
+        driveStyle.addObject("RC", DriveStyles.RC);
+        driveStyle.addObject("Curve", DriveStyles.Curve);
+        driveStyle.addDefault("Arcade", DriveStyles.Arcade);
+
+        SmartDashboard.putData("driveStyle", driveStyle);
+
+
+        //autoDrive = new AutoDrive();
+        //autoMain = new AutoMain(autoDrive);
+        //CameraServer.getInstance().putVideo();
+        //format 1 is kMJPEG
+        VideoMode vm = new VideoMode(1, 640, 480, 60);
+       // CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
 
         SmartDashboard.putBoolean("Baby Mode", babyMode);
 
@@ -96,12 +118,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopPeriodic()
-    {
-
-        //Drive train usage
-        //driveTrain.falconDrive(primary.leftStickX(), primary.leftTrigger(), primary.rightTrigger());
-   //     driveTrain.tankDrive(primary.leftStickY(), primary.rightStickY()); 
-        
+    {        
         //Run the method that allows the robot to begin its climb
         //teleop.press(primary.A(), () -> climber.enableClimb());
 
@@ -116,6 +133,17 @@ public class Robot extends TimedRobot {
 
         //Will only run if A has been pressed
       //  climber.climb(primary);
+        //Calls drive method with passed control method
+        driveTrain.generalDrive(primary, controlMethod);
+
+        // shifts max speed up
+        teleop.runOncePerPress(primary.rightBumper(), ()  -> driveTrain.changeSpeed(true), false);
+
+        //shight max speed down
+        teleop.runOncePerPress(primary.leftBumper(), ()  -> driveTrain.changeSpeed(false), false);
+        
+        //change IdleMode
+       // teleop.runOncePerPress(primary.X(), () -> driveTrain.changeIdle(), false);
 
         //general periodic functions
         teleop.periodicEnd();

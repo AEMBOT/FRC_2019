@@ -1,16 +1,22 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
-import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.drive.Vector2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import com.revrobotics.*;
+import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
+import org.usfirst.frc.falcons6443.robot.utilities.enums.DriveStyles;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.InputMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 //import org.usfirst.frc.falcons6443.robot.utilities.Logger;
 
@@ -26,20 +32,23 @@ import com.revrobotics.*;
  */
 public class DriveTrainSystem{
 
-    private CANSparkMax motormax;
     private SpeedControllerGroup leftMotors;
     private SpeedControllerGroup rightMotors;
 
-
-    private Encoders leftEncoder; // Encoders clicks per rotation = 850 (default in Encoders class)
+    private Encoders leftEncoder; // Encoders clicks per rotation = 49
     //private Encoders rightEncoder;
     private List<List<Integer>> encoderList = new ArrayList<List<Integer>>();
     public Timer encoderCheck;
 
     private boolean usingLeftEncoder = true; //keep true. Left is our default encoder, right is our backup encoder
-    private double minEncoderMovement = 20; //ticks //change value
-    private boolean reversed;
+    private double minEncoderMovement = 5; //ticks //change value
     private static final double WheelDiameter = 6;
+
+    //Controls robot movement speed
+    private double[] speedLevels = {4, 2, 1.3333 , 1};
+    private int speedIndex = 3;
+    private double currentLevel = speedLevels[speedIndex];
+    private double moveSpeed;
 
     // A [nice] class in the wpilib that provides numerous driving capabilities.
     // Use it whenever you want your robot to move.
@@ -49,27 +58,73 @@ public class DriveTrainSystem{
      * Constructor for DriveTrainSystem.
      */
     public DriveTrainSystem() {
-      // leftMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontLeftMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(RobotMap.BackLeftMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(RobotMap.CenterLeftMotor, CANSparkMaxLowLevel.MotorType.kBrushless));
-      // rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(RobotMap.BackRightMotor, CANSparkMaxLowLevel.MotorType.kBrushless), new CANSparkMax(RobotMap.CenterRightMotor, CANSparkMaxLowLevel.MotorType.kBrushless));
+        
+        //2019 Seasson Comp Bot
+        leftMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontLeftMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackLeftMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.LeftCenterMotor,MotorType.kBrushless));
+        rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.RightCenterMotor, MotorType.kBrushless));
+
+        //Practice Bot Drive
+        //leftMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontLeftMotorPB), new VictorSP(RobotMap.BackLeftMotorPB));
+        //rightMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontRightMotorPB), new VictorSP(RobotMap.BackRightMotorPB));
+       
         drive = new DifferentialDrive(leftMotors, rightMotors);
 
-        //Flips motor direction to run the left in the right direction
-        leftMotors.setInverted(true);
-
+        //Flips motor direction to run the left in the correct direction
+       leftMotors.setInverted(true);
         //leftEncoder = new Encoders(RobotMap.LeftEncoderA, RobotMap.LeftEncoderB);
        // rightEncoder = new Encoders(RobotMap.RightEncoderA, RobotMap.RightEncoderB);
-        //leftEncoder.setTicksPerRev(850);
-        //rightEncoder.setTicksPerRev(850);
+        //leftEncoder.setTicksPerRev(49);
+        //rightEncoder.setTicksPerRev(49);
         //leftEncoder.setDiameter(WheelDiameter);
         //rightEncoder.setDiameter(WheelDiameter);
 
         // the driver station will complain for some reason if this isn't setSpeed so it's pretty necessary.
         // [FOR SCIENCE!]
         drive.setSafetyEnabled(false);
-        reversed = false;
         drive.setMaxOutput(1);
         for(int i = 0; i <= 1; i++) encoderList.add(i, new ArrayList<>());
         encoderCheck = new Timer();
+    }
+
+    /**
+     * Singular callable method to quickly change drive styles.
+     *
+     * @param controller controller reference used for power/rotation values
+     * @param style DriveStyles enum, used to easily switch styles
+     *
+     */
+    public void generalDrive(Xbox controller, DriveStyles style){
+        switch(style){
+
+            case Tank:
+                tankDrive(controller.leftStickY() / currentLevel,controller.rightStickY() / currentLevel);
+                break;
+
+            case Arcade:
+                arcadeDrive(-controller.rightStickX() / currentLevel, controller.leftStickY() / currentLevel);
+                break;
+
+            case Curve:
+                curvatureDrive(controller.leftStickY() / currentLevel,controller.rightStickX() / currentLevel, false);
+                break;
+            
+            case RC:
+                rcDrive(controller.leftTrigger(), controller.rightTrigger(), controller.rightStickX());
+                break;
+            
+            default:
+            arcadeDrive(-controller.rightStickX() / currentLevel, controller.leftStickY() / currentLevel);
+        }
+
+    }
+
+    //use "a" as the main value
+    //finds the hypotenuse for drive controls (joysticks)
+    private double hypotenuse(double a , double b){
+        double c = Math.sqrt((a*a) + (b*b));
+        if(c > 1) c = 1;
+        if(a < 0) c *= -1;
+        return c;
     }
 
     /**
@@ -81,26 +136,54 @@ public class DriveTrainSystem{
      * Implements the differentialDrive tankDrive into a local method
      */
     public void tankDrive(double left, double right) {
-        if (reversed) {
-            drive.tankDrive(-left, -right);
-        } else {
             drive.tankDrive(left, right);
-        }
-//        Logger.log(LoggerSystems.Drive, "* {" + left + "}[" + right + "]" );
     }
 
     /**
-     * Toggles the motors to go in reverse.
+     * Allows separate control of forward movement and heading
+     *
+     * @param speed  the robots speed: forward is positive
+     * @param rotation the rate of rotation: clockwise is positive
+     *
+     * Implements the differentialDrive arcadeDrive into a local method
      */
-    public void reverse() {
-        reversed = !reversed;
+    private void arcadeDrive(double speed, double rotation){
+        drive.arcadeDrive(speed,-rotation);
     }
 
     /**
-     * Gets the value of the revered var and returns it
+     * Allows for RC car style drive
+     * 
+     * @param leftTrig Left trigger goes forward
+     * @param rightTrig Right trigger goes backward
+     * @param rotation Right stick X-axis
+     * 
+     * Implements arcadeDrive using RC controls
      */
-    public boolean isReversed() {
-        return reversed;
+    private void rcDrive(double leftTrig, double rightTrig, double rotation){
+       if(leftTrig > 0){
+           moveSpeed = leftTrig;
+       }
+       else if(rightTrig > 0){
+           moveSpeed = -rightTrig;
+       }
+       else{
+           moveSpeed = 0;
+       }
+
+       drive.arcadeDrive(-rotation, moveSpeed);
+    }
+
+    /**
+     * Allows separate control of forward movement and change in path curvature
+     *
+     * @param speed  the robots speed: forward is positive
+     * @param rotation the rate of rotation: clockwise is positive
+     *
+     * Implements the differentialDrive curvatureDrive into a local method
+     */
+    private void curvatureDrive(double speed, double rotation, boolean isQuickTurn){
+       drive.curvatureDrive(speed,rotation,isQuickTurn);
     }
 
     public boolean first; //set true in AutoPaths.WaitDrive()
@@ -141,51 +224,29 @@ public class DriveTrainSystem{
     public void reset(){
         //leftEncoder.reset();
         //rightEncoder.reset();
-//        Logger.log(LoggerSystems.Drive, "reset drive encoders");
+        //Logger.log(LoggerSystems.Drive, "reset drive encoders");
     }
 
-    //Not sure if good format, but these values are only used for this method
-    //Vector2d vector = new Vector2d(0,0);
-    //double differential = 0;
-    boolean shifted = false;
-    public void upShift(){ shifted = true;}
-    public void downShift(){shifted = false;}
-
-    public void falconDrive(double leftStickX, double rightTrigger, double leftTrigger) {
-        Vector2d vector = new Vector2d(0,0);
-        vector.x = 0;
-        vector.y = 0;
-        double differential;
-        double power = 1;
-
-        if (Math.abs(leftStickX) < .15) {
-            differential = 0;
-        } else {
-            differential = Math.abs(leftStickX);
-        }
-        if(!shifted){ power = .7; }
-
-        if (rightTrigger > 0) {//forward
-            vector.x = rightTrigger*power+.1 - Math.pow(Math.E,-rightTrigger)*.5*differential*Math.signum(leftStickX)*-1;
-            vector.y = rightTrigger*power+.1 - Math.pow(Math.E,-rightTrigger)*.5*differential*Math.signum(leftStickX);
-            vector.x *= -1;
-            vector.y *= -1;
-        } else if (leftTrigger > 0) { //reverse
-            vector.x = leftTrigger*power+.1 - Math.pow(Math.E,-leftTrigger)*.5*differential*Math.signum(leftStickX);
-            vector.y = leftTrigger*power+.1 - Math.pow(Math.E,-leftTrigger)*.5*differential*Math.signum(leftStickX)*-1;
-            //vector.x *= -1;
-            //vector.y *= -1;ghtTrigger() * 1.2 * (primary.rightTrigger() * .7 + .44f) + (differential + .71 * primary.rightTrigger());//x is right
-            //drive.y = primary.ri
-        } else { //no trigger values, stationary rotation
-            //  drive.x = primary.rightTrigger() * 1.2 * (primary.rightTrigger() * .7 + .44f) - (differential - .71 * primary.rightTrigger());//y is left
-            // drive.x = 2*differential;
-            //drive.y = -2*differential;
-            if(Math.abs(leftStickX) > .2){
-                vector.x = -leftStickX/1.28-(.1*Math.signum(leftStickX));
-                vector.y = leftStickX/1.28+(.1*Math.signum(leftStickX));
-            }
+    // param upOrDown" false = shift down, true = shift up. changes index of array to give max speed value
+    public void changeSpeed (boolean upOrDown){
+        if(upOrDown && speedIndex < 3){
+            speedIndex += 1;
+            currentLevel = speedLevels[speedIndex];
         }
 
-        tankDrive(vector.y, vector.x);
+        else if(!upOrDown && speedIndex > 0){
+            speedIndex -= 1;
+            currentLevel = speedLevels[speedIndex];
+        }
+        else {
+            //redundant but might as well
+            currentLevel = currentLevel;
+        }
     }
+/*
+    public void changeIdle(){
+        if(this.idleMode == IdleMode.kBrake) this.idleMode = IdleMode.kCoast;
+        else if(this.idleMode == IdleMode.kCoast) this.idleMode = IdleMode.kBrake;
+    }
+*/
 }

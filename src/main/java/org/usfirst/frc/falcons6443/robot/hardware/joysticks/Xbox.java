@@ -121,7 +121,7 @@ public class Xbox {
     public boolean Y() {
         return controller.getRawButton(4);
     }
-
+    
     //PLEASE FIND THE ACTUAL NAME FOR THESE
     public boolean seven() {
         return controller.getRawButton(7);
@@ -130,6 +130,13 @@ public class Xbox {
         return controller.getRawButton(8);
     }
 
+    public boolean dPadUp(){
+        return controller.getPOV(0) == 0;
+    }
+
+    public boolean dPadDown(){
+        return controller.getPOV(0) == 180;
+    }
 
     public void setRumble(XboxRumble rumble, double value){
         switch (rumble){
