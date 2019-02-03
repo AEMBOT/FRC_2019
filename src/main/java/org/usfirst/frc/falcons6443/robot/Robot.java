@@ -42,7 +42,7 @@ public class Robot extends TimedRobot {
     private DriveStyles controlMethod;
 
     public static Preferences prefs;
-    private SendableChooser driveStyle;
+    private SendableChooser<DriveStyles> driveStyle;
 
 
     private boolean babyMode = false;
@@ -67,12 +67,12 @@ public class Robot extends TimedRobot {
         //CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
         driveTrain = new DriveTrainSystem();
         
-        driveStyle = new SendableChooser();
-        driveStyle.addObject("Tank", DriveStyles.Tank);
-        driveStyle.addObject("Arcade", DriveStyles.Arcade);
-        driveStyle.addObject("RC", DriveStyles.RC);
-        driveStyle.addObject("Curve", DriveStyles.Curve);
-        driveStyle.addDefault("Arcade", DriveStyles.Arcade);
+        driveStyle = new SendableChooser<DriveStyles>();
+        driveStyle.addOption("Tank", DriveStyles.Tank);
+        driveStyle.addOption("Arcade", DriveStyles.Arcade);
+        driveStyle.addOption("RC", DriveStyles.RC);
+        driveStyle.addOption("Curve", DriveStyles.Curve);
+        driveStyle.setDefaultOption("Arcade", DriveStyles.Arcade);
 
         SmartDashboard.putData("driveStyle", driveStyle);
 
@@ -134,6 +134,7 @@ public class Robot extends TimedRobot {
         //Will only run if A has been pressed
       //  climber.climb(primary);
         //Calls drive method with passed control method
+        controlMethod = (DriveStyles) driveStyle.getSelected();
         driveTrain.generalDrive(primary, controlMethod);
 
         // shifts max speed up

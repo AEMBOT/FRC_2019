@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class AutoMain {
 
     private AutoPaths autoPaths;
-    private static SendableChooser sendable;
+    private static SendableChooser<Position> sendable;
 
     public AutoMain(AutoDrive autoDrive) {
         autoPaths = new AutoPaths(autoDrive);
@@ -27,11 +27,11 @@ public class AutoMain {
     //sets up the dashboard for auto path choices
     //Test and see where these should be created!!
     private void printAutoSelection() {
-        sendable = new SendableChooser();
-        sendable.addObject("Left", Position.LEFT);
-        sendable.addObject("Center", Position.CENTER);
-        sendable.addObject("Right", Position.RIGHT);
-        sendable.addDefault("Line", Position.DEFAULT);
+        sendable = new SendableChooser<Position>();
+        sendable.addOption("Left", Position.LEFT);
+        sendable.addOption("Center", Position.CENTER);
+        sendable.addOption("Right", Position.RIGHT);
+        sendable.setDefaultOption("Line", Position.DEFAULT);
         SmartDashboard.putData("Auto Path", sendable);
     }
 
