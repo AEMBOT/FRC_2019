@@ -10,11 +10,14 @@ import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.Encoders;
 import org.usfirst.frc.falcons6443.robot.hardware.SpeedControllerGroup;
 import org.usfirst.frc.falcons6443.robot.hardware.pneumatics.Piston;
+import org.usfirst.frc.falcons6443.robot.utilities.enums.LoggerSystems;
+import org.usfirst.frc.falcons6443.robot.utilities.Logger;
 
 public class ArmadilloClimber {
 
     private CANSparkMax leftMotor;
     private CANSparkMax rightMotor;
+
 
     private CANEncoder leftEncoder;
 
@@ -65,15 +68,20 @@ public class ArmadilloClimber {
         isClimbing = false;
     }
 
+    public double updatePosition(double climbDegree){
+        return leftEncoder.getPosition() - climbDegree;
+    }
+
     //Begin climb
     public void climb(){
-    
+     double climbDegree = leftEncoder.getPosition();
     if(isClimbing == true) {
         //run motors until a certain encoder value is reached
-        while(leftEncoder.getPosition() <= stopTickCount){
+        while(updatePosition(climbDegree) <= stopTickCount){
             leftMotor.set(climbSpeed);
             rightMotor.set(climbSpeed);
-            System.out.println(leftEncoder.getPosition());
+            System.out.println(updatePosition(climbDegree));
+            Logger.log(LoggerSystems.Climb,"" + updatePosition(climbDegree));
              } 
         isClimbing = false;
         isClimbingArmDown = true;
@@ -84,11 +92,13 @@ public class ArmadilloClimber {
      }
 
      public void bringArmUp(){
+        double climbDegree = leftEncoder.getPosition();
         if(isClimbing == false && isClimbingArmDown == true){
-            while(leftEncoder.getPosition() >= armUpTickCount){
+            while(updatePosition(climbDegree) >= armUpTickCount){
                 leftMotor.set(-climbSpeed);
                 rightMotor.set(-climbSpeed);
-                System.out.println(leftEncoder.getPosition());
+                System.out.println(updatePosition(climbDegree));
+                Logger.log(LoggerSystems.Climb,"" + updatePosition(climbDegree));
             }
      }
 
