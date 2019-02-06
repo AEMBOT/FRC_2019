@@ -1,5 +1,6 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.Encoder;
@@ -12,17 +13,21 @@ import org.usfirst.frc.falcons6443.robot.hardware.pneumatics.Piston;
 
 public class ArmadilloClimber {
 
-    private SpeedController leftMotor;
-    private SpeedController rightMotor;
+    private CANSparkMax leftMotor;
+    private CANSparkMax rightMotor;
 
-    private Encoders leftEncoder;
+    private CANEncoder leftEncoder;
 
     private boolean isClimbing = false;
+    private boolean isClimbingArmDown = false;
 
     private final int encoderTicks = 256;
+    
 
     //Change to a point where the encoders will stop
-    private final int stopTickCount = -1;
+    private final int stopTickCount = 270;
+    private double climbSpeed = 1;
+    private int armUpTickCount = 95;
 
     //Set to the diameter of the wheel in inches
     private static final double wheelDiameter = 6;
@@ -30,22 +35,25 @@ public class ArmadilloClimber {
     public ArmadilloClimber() {
 
         //Assigns the motors to the proper mappings
-        rightMotor = new CANSparkMax(RobotMap.RightClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
-        leftMotor = new CANSparkMax(RobotMap.LeftClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
+        rightMotor = new CANSparkMax(RobotMap.RightClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
+        leftMotor = new CANSparkMax(RobotMap.LeftClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+        isClimbing = false;
+        isClimbingArmDown = false;
 
         //maps encoders to ports
-        leftEncoder = new Encoders(RobotMap.LeftClimbEncoderA, RobotMap.LeftClimbEncoderB);
+        leftEncoder = leftMotor.getEncoder();
 
         //set encoder ticks per rev
-        leftEncoder.setTicksPerRev(encoderTicks);
+       // leftEncoder.setTicksPerRev(encoderTicks);
 
         //set wheel diameters
-        leftEncoder.setDiameter(wheelDiameter);
+        //leftEncoder.setDiameter(wheelDiameter);
 
-        leftEncoder.reset();
+        //leftEncoder.reset();
 
         //Flips the left motor so it is running the right direction
-        leftMotor.setInverted(true);
+        rightMotor.setInverted(true);
 
     }
 
@@ -59,19 +67,33 @@ public class ArmadilloClimber {
 
     //Begin climb
     public void climb(){
+    
     if(isClimbing == true) {
         //run motors until a certain encoder value is reached
-        if (leftEncoder.getDistanceWithDiameter() >= stopTickCount) {
-            leftMotor.set(0);
-            leftMotor.set(0);
-            
-            isClimbing = false;
-        } else {
-            //Run both motors at a set speed
-            rightMotor.set(0.5);
-            leftMotor.set(0.5);
-        }
-    }
-    }
+        while(leftEncoder.getPosition() <= stopTickCount){
+            leftMotor.set(climbSpeed);
+            rightMotor.set(climbSpeed);
+            System.out.println(leftEncoder.getPosition());
+             } 
+        isClimbing = false;
+        isClimbingArmDown = true;
+        leftMotor.set(0);
+        rightMotor.set(0);
+     }
+    
+     }
 
+     public void bringArmUp(){
+        if(isClimbing == false && isClimbingArmDown == true){
+            while(leftEncoder.getPosition() >= armUpTickCount){
+                leftMotor.set(-climbSpeed);
+                rightMotor.set(-climbSpeed);
+                System.out.println(leftEncoder.getPosition());
+            }
+     }
+
+    
 }
+}
+
+

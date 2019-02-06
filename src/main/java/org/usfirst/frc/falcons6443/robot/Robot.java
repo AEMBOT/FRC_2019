@@ -37,9 +37,10 @@ public class Robot extends TimedRobot {
     private DriveTrainSystem driveTrain;
     private AutoDrive autoDrive;
     private AutoMain autoMain;
-    private ArmadilloClimberTest climber;
+    //private ArmadilloClimberTest climber;
     private VacuumSystem vacuum;
     private DriveStyles controlMethod;
+    private ArmadilloClimber climber;
 
     public static Preferences prefs;
     private SendableChooser<DriveStyles> driveStyle;
@@ -56,8 +57,8 @@ public class Robot extends TimedRobot {
         primary = new Xbox(new XboxController(0)); //change controller type here
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
-      //  climber = new ArmadilloClimberTest();
-      vacuum = new VacuumSystem();
+        climber = new ArmadilloClimber();
+       vacuum = new VacuumSystem();
 
 //        autoDrive = new AutoDrive();
   //      autoMain = new AutoMain(autoDrive);
@@ -128,8 +129,8 @@ public class Robot extends TimedRobot {
         //Toggle on or off the arm up movement
         //teleop.toggle(primary.X(), () -> vacuum.moveArmUp());
 
-        teleop.press(primary.Y(), () -> vacuum.activateHatchSuction());
-        teleop.off(() -> vacuum.deactivateSuction(), primary.Y());
+        //teleop.press(primary.Y(), () -> vacuum.activateHatchSuction());
+        //teleop.off(() -> vacuum.deactivateSuction(), primary.Y());
 
         //Will only run if A has been pressed
       //  climber.climb(primary);
@@ -143,6 +144,11 @@ public class Robot extends TimedRobot {
         //shight max speed down
         teleop.runOncePerPress(primary.leftBumper(), ()  -> driveTrain.changeSpeed(false), false);
         
+        climber.enableClimb();
+        teleop.runOncePerPress(primary.X(), () -> climber.climb(), false);
+        teleop.runOncePerPress(primary.Y(), () -> climber.bringArmUp(), false);
+
+
         //change IdleMode
        // teleop.runOncePerPress(primary.X(), () -> driveTrain.changeIdle(), false);
 
