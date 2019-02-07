@@ -12,11 +12,15 @@ import org.usfirst.frc.falcons6443.robot.hardware.SpeedControllerGroup;
 import org.usfirst.frc.falcons6443.robot.hardware.pneumatics.Piston;
 import org.usfirst.frc.falcons6443.robot.utilities.enums.LoggerSystems;
 import org.usfirst.frc.falcons6443.robot.utilities.Logger;
+import org.usfirst.frc.falcons6443.robot.hardware.LimitSwitch;
 
 public class ArmadilloClimber {
 
     private CANSparkMax leftMotor;
     private CANSparkMax rightMotor;
+    private LimitSwitch bellySwitch;
+    private LimitSwitch extensionSwitch;
+
 
 
     private CANEncoder leftEncoder;
@@ -43,6 +47,9 @@ public class ArmadilloClimber {
 
         isClimbing = false;
         isClimbingArmDown = false;
+
+        extensionSwitch = new LimitSwitch(RobotMap.ClimbArmExtensionSwitch);
+        bellySwitch = new LimitSwitch(RobotMap.ClimbArmBellySwitch);
 
         //maps encoders to ports
         leftEncoder = leftMotor.getEncoder();
@@ -77,7 +84,7 @@ public class ArmadilloClimber {
      double climbDegree = leftEncoder.getPosition();
     if(isClimbing == true) {
         //run motors until a certain encoder value is reached
-        while(updatePosition(climbDegree) <= stopTickCount){
+        while(updatePosition(climbDegree) <= stopTickCount && extensionSwitch.get() == false){
             leftMotor.set(climbSpeed);
             rightMotor.set(climbSpeed);
             System.out.println(updatePosition(climbDegree));
@@ -94,11 +101,13 @@ public class ArmadilloClimber {
      public void bringArmUp(){
         double climbDegree = leftEncoder.getPosition();
         if(isClimbing == false && isClimbingArmDown == true){
-            while(updatePosition(climbDegree) >= armUpTickCount){
+            while(updatePosition(climbDegree) >= armUpTickCount && bellySwitch.get() == false){
                 leftMotor.set(-climbSpeed);
                 rightMotor.set(-climbSpeed);
                 System.out.println(updatePosition(climbDegree));
                 Logger.log(LoggerSystems.Climb,"" + updatePosition(climbDegree));
+                rightMotor.set(0);
+                leftMotor.set(0);
             }
      }
 

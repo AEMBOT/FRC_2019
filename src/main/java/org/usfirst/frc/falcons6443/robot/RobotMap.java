@@ -27,8 +27,8 @@ public class RobotMap {
     public static final int LeftClimbMotor = 7;
     public static final int RightClimbMotor = 8;
 
-    public static final int VacuumHatchMotor = -1;
-    
+    public static final int ClimbArmExtensionSwitch= -1;
+    public static final int ClimbArmBellySwitch = -1;
     //drive train encoders
     //public static final int LeftEncoderA = -1;
     //public static final int LeftEncoderB = -1;
@@ -39,10 +39,12 @@ public class RobotMap {
     public static final int VacuumArmTopSwitch = -1;
     public static final int VacuumArmBottomSwitch = -1;
 
+
     //code settings
     public static final boolean Logger = false;
 
     //vacuum encoders
     public static final int VacuumArmEncoderA = -1;
     public static final int VacuumArmEncoderB = -1;
+    public static final int VacuumHatchMotor = -1;
 }
