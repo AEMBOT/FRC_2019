@@ -27,7 +27,7 @@ public class RobotMap {
     public static final int LeftClimbMotor = 7;
     public static final int RightClimbMotor = 8;
 
-    public static final int ClimbArmExtensionSwitch= -1;
+    public static final int ClimbArmExtensionBeam= -1;
     public static final int ClimbArmBellySwitch = -1;
     //drive train encoders
     //public static final int LeftEncoderA = -1;

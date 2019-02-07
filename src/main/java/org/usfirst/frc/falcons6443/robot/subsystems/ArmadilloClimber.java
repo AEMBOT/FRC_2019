@@ -19,7 +19,7 @@ public class ArmadilloClimber {
     private CANSparkMax leftMotor;
     private CANSparkMax rightMotor;
     private LimitSwitch bellySwitch;
-    private LimitSwitch extensionSwitch;
+    private LimitSwitch extensionBeam;
 
 
 
@@ -32,7 +32,7 @@ public class ArmadilloClimber {
     
 
     //Change to a point where the encoders will stop
-    private final int stopTickCount = 270;
+    private final int stopTickCount = 80;
     private double climbSpeed = 1;
     private int armUpTickCount = 95;
 
@@ -48,8 +48,8 @@ public class ArmadilloClimber {
         isClimbing = false;
         isClimbingArmDown = false;
 
-        extensionSwitch = new LimitSwitch(RobotMap.ClimbArmExtensionSwitch);
-        bellySwitch = new LimitSwitch(RobotMap.ClimbArmBellySwitch);
+        extensionBeam = new LimitSwitch(RobotMap.ClimbArmExtensionBeam, false);
+        bellySwitch = new LimitSwitch(RobotMap.ClimbArmBellySwitch, false);
 
         //maps encoders to ports
         leftEncoder = leftMotor.getEncoder();
@@ -82,28 +82,37 @@ public class ArmadilloClimber {
     //Begin climb
     public void climb(){
      double climbDegree = leftEncoder.getPosition();
-    if(isClimbing == true) {
+     if(isClimbing == true) {
         //run motors until a certain encoder value is reached
-        while(updatePosition(climbDegree) <= stopTickCount && extensionSwitch.get() == false){
+        while(updatePosition(climbDegree) <= stopTickCount && extensionBeam.get() == false){
+            if(stopTickCount - updatePosition(climbDegree) >= 15){
             leftMotor.set(climbSpeed);
             rightMotor.set(climbSpeed);
+             }  
+            else{
+            leftMotor.set(climbSpeed/3);
+            rightMotor.set(climbSpeed/3);
+            }
+
+            }
             System.out.println(updatePosition(climbDegree));
             Logger.log(LoggerSystems.Climb,"" + updatePosition(climbDegree));
              } 
+        
         isClimbing = false;
         isClimbingArmDown = true;
         leftMotor.set(0);
         rightMotor.set(0);
      }
     
-     }
+     
 
      public void bringArmUp(){
         double climbDegree = leftEncoder.getPosition();
         if(isClimbing == false && isClimbingArmDown == true){
             while(updatePosition(climbDegree) >= armUpTickCount && bellySwitch.get() == false){
-                leftMotor.set(-climbSpeed);
-                rightMotor.set(-climbSpeed);
+                leftMotor.set(-climbSpeed/2);
+                rightMotor.set(-climbSpeed/2);
                 System.out.println(updatePosition(climbDegree));
                 Logger.log(LoggerSystems.Climb,"" + updatePosition(climbDegree));
                 rightMotor.set(0);
