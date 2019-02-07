@@ -32,8 +32,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  */
 public class DriveTrainSystem{
 
-    private SpeedControllerGroup leftMotors;
-    private SpeedControllerGroup rightMotors;
+    SpeedControllerGroup leftMotors;
+    SpeedControllerGroup rightMotors;
 
     private Encoders leftEncoder; // Encoders clicks per rotation = 49
     //private Encoders rightEncoder;
