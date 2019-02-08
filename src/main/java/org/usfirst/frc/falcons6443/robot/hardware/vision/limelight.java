@@ -10,7 +10,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
  * @author Will Richards, Goirick Saha
  */
 
-public class limelight{
+public class Limelight{
 
     //Creates uninitilized variables to hold limelight table, x offset, y offset and object area
     private NetworkTable limelightTable;
@@ -18,14 +18,21 @@ public class limelight{
     private NetworkTableEntry ty;
     private NetworkTableEntry ta;
 
+    //Variables for calculating distance
+    private double fAngle;
+    private double sAngle;
+    private double fHeight;
+    private double sHeight;
+    private double Distance; 
 
-    public limelight(){
+
+    public Limelight(){
         limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
 
         //Initilizes entries for limelight values
-        tx = limelightTable.getEntry("tx");
-        ty = limelightTable.getEntry("ty");
-        ta = limelightTable.getEntry("ta");
+        tx = limelightTable.getEntry("tx"); //X degrees
+        ty = limelightTable.getEntry("ty"); //Y degrees
+        ta = limelightTable.getEntry("ta"); //Target area
     }
 
     //Will get the current X offset value if no object is detected it will default to 0
@@ -41,6 +48,11 @@ public class limelight{
     //Will get the current area value if no object is detected it will default to 0
     public double getArea(){
         return ta.getDouble(0.0);
+    }
+
+    public double getDistance(){
+        Distance = (sHeight - fHeight)/Math.tan(fAngle + sAngle); 
+        return Distance; 
     }
 
     //Turns on the LED so we can see the refelctive tape 

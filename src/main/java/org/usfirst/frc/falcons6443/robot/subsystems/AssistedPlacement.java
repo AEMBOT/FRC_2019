@@ -1,6 +1,7 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Ultrasonic;
+import org.usfirst.frc.falcons6443.robot.hardware.vision.*;
 
 /**
  * This class uses the limelight vision camera to help place hatches
@@ -15,6 +16,15 @@ public class AssistedPlacement{
     private Ultrasonic ultrasonic;
 
     DriveTrainSystem drive;
+
+    //Variables for basic PID
+    private Limelight lime;
+    private double Kp = -0.0;
+    private double minCommand = 0.05;
+    private double headingError = -lime.getX();
+    private double stearingAdjust = 0; 
+    private double right_command = 0;
+    private double left_command = 0;
 
     public AssistedPlacement(DriveTrainSystem drive){
         ultrasonic = new Ultrasonic(trigPin, echoPin);
@@ -51,4 +61,21 @@ public class AssistedPlacement{
         drive.leftMotors.set(0);
         drive.rightMotors.set(0);
     }
+
+    //Keeps target in the center of camera vision using proportional values
+    public void trackTarget() {
+        if(lime.getX() > 1.0) {
+            stearingAdjust = Kp*headingError - minCommand; 
+        }
+        else if (lime.getX() < 1.0) {
+            stearingAdjust = Kp*headingError + minCommand; 
+        }
+
+        left_command += stearingAdjust;
+        right_command -= stearingAdjust; 
+
+        drive.leftMotors.set(left_command);
+        drive.rightMotors.set(right_command); 
+    }
+
 }
