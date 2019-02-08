@@ -25,8 +25,15 @@ public class AssistedPlacement{
 
     //This method mainly serves the purpose of testing however it will drive straight upon a button press until a specific distance is reached
     public void runToDistance(){
-        if(ultrasonic.getRangeMM() > 229){
-            DriveForward(0.5);
+
+        System.out.println(ultrasonic.getRangeInches());
+
+        if(ultrasonic.getRangeInches() > 35.6){
+            DriveForward(-0.5);
+        }
+
+        else if(ultrasonic.getRangeInches() < 35.6 && ultrasonic.getRangeInches() > 9.6){
+            DriveForward(-0.1);
         }
         else{
             Stop();

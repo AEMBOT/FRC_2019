@@ -35,6 +35,7 @@ public class Robot extends TimedRobot {
     private Xbox secondary;
     private TeleopStructure teleop;
     private DriveTrainSystem driveTrain;
+    private AssistedPlacement assistedPlacement;
     private AutoDrive autoDrive;
     private AutoMain autoMain;
     private DriveStyles controlMethod;
@@ -55,6 +56,7 @@ public class Robot extends TimedRobot {
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
         driveTrain = new DriveTrainSystem();
+        assistedPlacement = new AssistedPlacement(driveTrain);
         
         driveStyle = new SendableChooser();
         driveStyle.addObject("Tank", DriveStyles.Tank);
@@ -109,6 +111,8 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic()
     {
         //Calls drive method with passed control method
+        controlMethod = DriveStyles.Arcade;
+
         driveTrain.generalDrive(primary, controlMethod);
 
         // shifts max speed up
@@ -116,6 +120,8 @@ public class Robot extends TimedRobot {
 
         //shight max speed down
         teleop.runOncePerPress(primary.leftBumper(), ()  -> driveTrain.changeSpeed(false), false);
+
+        teleop.press(primary.X(), () -> assistedPlacement.runToDistance());
         
         //change IdleMode
        // teleop.runOncePerPress(primary.X(), () -> driveTrain.changeIdle(), false);
