@@ -148,6 +148,9 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(primary.X(), () -> climber.climb(), false);
         teleop.runOncePerPress(primary.Y(), () -> climber.bringArmUp(), false);
 
+        teleop.runOncePerPress(primary.leftBumper(), () -> vacuum.moveArmDown(), false);
+        teleop.runOncePerPress(primary.rightBumper(), () -> vacuum.moveArmUp(), false);
+
 
         //change IdleMode
        // teleop.runOncePerPress(primary.X(), () -> driveTrain.changeIdle(), false);

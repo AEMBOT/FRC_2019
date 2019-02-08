@@ -1,9 +1,12 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
+import javax.sound.sampled.AudioFormat.Encoding;
+
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.CAN;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 
 import org.usfirst.frc.falcons6443.robot.Robot;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
@@ -27,14 +30,14 @@ public class VacuumSystem {
     private final int armStopPosition = -1;
 
     public VacuumSystem() {
-   //     armMotor = new CANSparkMax(RobotMap.VacuumArmMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
-  //      ballVacuumMotor = new CANSparkMax(RobotMap.VacuumBallMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
+        armMotor = new CANSparkMax(RobotMap.VacuumArmMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
+       // ballVacuumMotor = new CANSparkMax(RobotMap.VacuumBallMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
         hatchVacuumMotor = new CANSparkMax(RobotMap.VacuumHatchMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
 
-  //      topSwitch = new LimitSwitch(RobotMap.VacuumArmTopSwitch);
-  //      bottomSwitch = new LimitSwitch(RobotMap.VacuumArmBottomSwitch);
+        topSwitch = new LimitSwitch(RobotMap.VacuumArmTopSwitch);
+        bottomSwitch = new LimitSwitch(RobotMap.VacuumArmBottomSwitch);
 
-    //    armEncoder = Encoders(RobotMap.VacuumArmEncoderA, RobotMap.VacuumArmEncoderB);
+       armEncoder = new Encoders(RobotMap.VacuumArmEncoderA, RobotMap.VacuumArmEncoderB,EncodingType.k4X);
     }
 
     public void activateBallSuction() {
@@ -54,6 +57,7 @@ public class VacuumSystem {
 
     public void moveArmDown() {
         armMotor.set(1);
+        System.out.println(armEncoder.get());
         if (bottomSwitch.get()) {
             armMotor.set(0);
             armEncoder.reset();
@@ -61,9 +65,9 @@ public class VacuumSystem {
     }
 
     public void moveArmUp() {
-            if(armEncoder.getDistanceWithDiameter() >= armStopPosition) {
+            if(armEncoder.get() >= armStopPosition) {
                 armMotor.set(-0.75); //move arm forwards until vertical position
-            } else if (armEncoder.getDistanceWithDiameter() <= armStopPosition) {
+            } else if (armEncoder.get() <= armStopPosition) {
                 armMotor.set(-0.75); //move arm backwards until vertical position
             } else {
                 armMotor.set(0); //Stop arm at vertical position
@@ -73,7 +77,8 @@ public class VacuumSystem {
 
     public void moveArmBack() {
         armMotor.set(-0.75);
-        if (bottomSwitch.get()) {
+        System.out.println(armEncoder.get());
+        if (topSwitch.get()) {
             armMotor.set(0);
             armEncoder.reset();
         }

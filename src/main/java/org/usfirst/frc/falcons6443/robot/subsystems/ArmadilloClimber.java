@@ -115,9 +115,10 @@ public class ArmadilloClimber {
                 rightMotor.set(-climbSpeed/2);
                 System.out.println(updatePosition(climbDegree));
                 Logger.log(LoggerSystems.Climb,"" + updatePosition(climbDegree));
-                rightMotor.set(0);
-                leftMotor.set(0);
+            
             }
+            rightMotor.set(0);
+            leftMotor.set(0);
      }
 
     

@@ -29,6 +29,7 @@ public class RobotMap {
 
     public static final int ClimbArmExtensionBeam= -1;
     public static final int ClimbArmBellySwitch = -1;
+
     //drive train encoders
     //public static final int LeftEncoderA = -1;
     //public static final int LeftEncoderB = -1;
@@ -47,4 +48,5 @@ public class RobotMap {
     public static final int VacuumArmEncoderA = -1;
     public static final int VacuumArmEncoderB = -1;
     public static final int VacuumHatchMotor = -1;
+    public static final int VacuumArmMotor = -1;
 }
