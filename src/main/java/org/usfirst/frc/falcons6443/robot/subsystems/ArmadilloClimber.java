@@ -35,6 +35,11 @@ public class ArmadilloClimber {
     private double climbSpeed = 1;
     private int armUpTickCount = 95;
 
+    private ClimbEnum position;
+    private boolean first;
+
+    public boolean secondary;
+
     //Set to the diameter of the wheel in inches
     private static final double wheelDiameter = 6;
 
@@ -64,10 +69,12 @@ public class ArmadilloClimber {
         //Flips the left motor so it is running the right direction
         rightMotor.setInverted(true);
 
+        position = ClimbEnum.Steady;
+        first = true;
+        secondary = false;
     }
 
     public void steady(){
-
         if(steady){
         if(!bellySwitch.get()) {
             leftMotor.set(-.3);
@@ -96,53 +103,63 @@ public class ArmadilloClimber {
         return leftEncoder.getPosition() - climbDegree;
     }
 
-    
+    public enum ClimbEnum{
+        ClimbHab, ContractArm, Steady, Off
+    }
+
+    public void setClimb(ClimbEnum num){
+        position = num;
+    }
 
     //Begin climb
+    double climbDegree;
     public void climb(){
-        steady = false;
-     double climbDegree = leftEncoder.getPosition();
-     if(isClimbing == true) {
-        //run motors until a certain encoder value is reached
-        while(updatePosition(climbDegree) <= stopTickCount && extensionBeam.get() == false){
-            if(stopTickCount - updatePosition(climbDegree) >= 15){
-            leftMotor.set(climbSpeed);
-            rightMotor.set(climbSpeed);
-             }  
-            else{
-            leftMotor.set(climbSpeed/3);
-            rightMotor.set(climbSpeed/3);
-            }
-
-            }
-            System.out.println(updatePosition(climbDegree));
-            Logger.log(LoggerSystems.Climb,"" + updatePosition(climbDegree));
-             } 
-        
-        isClimbing = false;
-        isClimbingArmDown = true;
-        leftMotor.set(0);
-        rightMotor.set(0);
-     }
-    
-     
-
-     public void bringArmUp(){
-        double climbDegree = leftEncoder.getPosition();
-        if(isClimbing == false && isClimbingArmDown == true){
-            while(updatePosition(climbDegree) >= armUpTickCount && bellySwitch.get() == false){
-                leftMotor.set(-climbSpeed/2);
-                rightMotor.set(-climbSpeed/2);
-                System.out.println(updatePosition(climbDegree));
-                Logger.log(LoggerSystems.Climb,"" + updatePosition(climbDegree));
-            
-            }
-            rightMotor.set(0);
-            leftMotor.set(0);
-     }
-
-    
- }
+        switch(position){
+            case Steady:
+                steady = true;
+                steady();
+                break;
+            case ClimbHab:
+                steady = false;
+                if(first) climbDegree = leftEncoder.getPosition();
+                if(updatePosition(climbDegree) <= stopTickCount && extensionBeam.get() == false){
+                    if(stopTickCount - updatePosition(climbDegree) >= 15){
+                        leftMotor.set(climbSpeed);
+                        rightMotor.set(climbSpeed);
+                         }  
+                        else{
+                        leftMotor.set(climbSpeed/3);
+                        rightMotor.set(climbSpeed/3);
+                        }
+                } else {
+                    isClimbing = false;
+                isClimbingArmDown = true;
+                leftMotor.set(0);
+                rightMotor.set(0);
+                }
+                break;
+            case ContractArm:
+                if(isClimbing == false && isClimbingArmDown == true){
+                    if(updatePosition(climbDegree) >= armUpTickCount && bellySwitch.get() == false){
+                        leftMotor.set(-climbSpeed/2);
+                        rightMotor.set(-climbSpeed/2);
+                        System.out.println(updatePosition(climbDegree));
+                        Logger.log(LoggerSystems.Climb,"" + updatePosition(climbDegree));
+                    }
+                } else {
+                    rightMotor.set(0);
+                    leftMotor.set(0);
+                }
+                break;
+                case Off:
+                    leftMotor.set(0);
+                    rightMotor.set(0);
+                    break;
+                default:
+                    position = ClimbEnum.Off;
+                    break;    
+            }        
+        }
 
     public void manualControl(double power){
         leftMotor.set(power);
