@@ -98,7 +98,7 @@ public class AssistedPlacement{
         rcw = P*error + I*integral + D*derivative;
         previous_error = (int)error;
 
-        drive.arcadeDrivePID(0, rcw);
+        drive.arcadeDrive(0, rcw);
     }
 
 }
