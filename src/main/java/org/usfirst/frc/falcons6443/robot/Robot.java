@@ -136,7 +136,6 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(primary.seven(), () -> isKillSwitchEnabled = false, false);    
 
         }
-
        
         teleop.periodicEnd();
     }
@@ -150,8 +149,10 @@ public class Robot extends TimedRobot {
  teleop.runOncePerPress(primary.rightBumper(), () -> driveTrain.changeSpeed(true), false);
 
  //climb control
- teleop.runOncePerPress(primary.B() && secondary.dPadRight(), () -> climber.climb(), false);
- teleop.runOncePerPress(primary.Y(), () -> climber.enableKillSwitch(), false);
+ if(secondary.dPadRight()) climber.secondary = true;
+ else climber.secondary = false;
+ if(climber.secondary && primary.B()) climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbHab);
+ teleop.runOncePerPress(primary.Y(), () -> climber.setClimb(ArmadilloClimber.ClimbEnum.Off), false);
 
  // Arm control
  //teleop.press(TeleopStructure.ManualControls.VACUUM, secondary.A(), () -> vacuum.moveArmDown());
@@ -163,10 +164,11 @@ public class Robot extends TimedRobot {
  else vacuum.manual(0);
  //teleop.off(() -> vacuum.manual(0), TeleopStructure.ManualControls.VACUUM/*, secondary.A(), secondary.B(), secondary.Y()*/);
  // Vacumm control
- teleop.press(secondary.rightBumper(), () -> vacuum.activateHatchSuction());
+ teleop.runOncePerPress(secondary.rightBumper(), () -> vacuum.toggleSuction(), false);
  teleop.off(() -> vacuum.deactivateSuction(), secondary.rightBumper());
 
- climber.steady();
+ climber.climb();
+ vacuum.suck();
  climber.bbtest();
 //    teleop.press(secondary.leftBumper(), () -> vacuum.activateBallSuction());
 

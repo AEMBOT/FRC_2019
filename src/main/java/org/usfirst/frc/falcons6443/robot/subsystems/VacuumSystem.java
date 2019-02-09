@@ -30,6 +30,8 @@ public class VacuumSystem {
     private LimitSwitch bottomSwitch;
     private boolean isManual = true;
 
+    private boolean toggle;
+
   //  private Encoders armEncoder;
 
     private final int armStopPosition = -1;
@@ -45,6 +47,7 @@ public class VacuumSystem {
     //    bottomSwitch = new LimitSwitch(RobotMap.VacuumArmBottomSwitch);
 
        //armEncoder = new Encoders(RobotMap.VacuumArmEncoderA, RobotMap.VacuumArmEncoderB,EncodingType.k4X);
+       toggle = false;
     }
 
     public void setManual(boolean set){
@@ -53,6 +56,15 @@ public class VacuumSystem {
 
     public boolean getManual() {
         return isManual;
+    }
+
+    public void toggleSuction(){
+        toggle = !toggle;
+    }
+
+    public void suck(){
+        if(toggle) hatchVacuumMotor.set(1);
+        else hatchVacuumMotor.set(0);
     }
 
     public void activateBallSuction() {
