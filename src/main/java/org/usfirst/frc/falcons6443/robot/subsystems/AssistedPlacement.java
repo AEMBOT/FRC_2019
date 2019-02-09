@@ -24,7 +24,7 @@ public class AssistedPlacement{
     private double stearingAdjust = 0.0; 
     private double right_command = 0.0;
     private double left_command = 0.0;
-    private double headingError; 
+
 
     public AssistedPlacement(DriveTrainSystem drive){
         ultrasonic = new Ultrasonic(trigPin, echoPin);
@@ -62,35 +62,6 @@ public class AssistedPlacement{
         drive.rightMotors.set(0);
     }
 
-    //Keeps target in the center of camera vision using proportional values
-    public void trackTarget() {
-        headingError = -lime.getX();
-        if(lime.getX() > 1.0) {
-            stearingAdjust = Kp*headingError - minCommand; 
-        }
-        else if (lime.getX() < 1.0) {
-            stearingAdjust = Kp*headingError + minCommand; 
-        }
-
-        left_command += stearingAdjust;
-        right_command -= stearingAdjust; 
-
-        drive.leftMotors.set(left_command);
-        drive.rightMotors.set(right_command); 
-    }
-
-    public void trackTargetSlow() {
-        headingError = lime.getX();
-        stearingAdjust = Kp * lime.getX(); 
-
-        left_command += stearingAdjust;
-        right_command -= stearingAdjust; 
-
-        drive.leftMotors.set(left_command);
-        drive.rightMotors.set(right_command);
-        
-    }
-
     public void trackTargetPixy() {
         double x = lime.getX();
         double approxRange = 1.5; 
@@ -107,6 +78,27 @@ public class AssistedPlacement{
             drive.rightMotors.set(-0.15); 
             drive.leftMotors.set(0.15);
         }
+    }
+
+    //All variables for the PID method are here, temporary just for testing
+    int P,I,D = 0;
+    int integral, previous_error, targetAngle = 0;
+    double error, rcw ,derivative = 0;
+
+    public void trackTargetPID(){
+        double x = lime.getX();
+        P = 1; //Tune this first
+        
+        //sets the margin equal to the targetValue - theCurrentAngle
+        error = targetAngle - x;
+        
+        integral += (error*0.2); // Integral is increased by the error*time (which is .02 seconds using normal IterativeRobot)
+
+        derivative = (error - previous_error) / 0.2;
+        rcw = P*error + I+integral + D*derivative;
+        
+        drive.leftMotors.set(-rcw);
+        drive.rightMotors.set(rcw);
     }
 
 }
