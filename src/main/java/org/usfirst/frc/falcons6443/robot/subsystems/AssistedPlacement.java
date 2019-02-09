@@ -97,8 +97,7 @@ public class AssistedPlacement{
         derivative = (error - previous_error) / 0.2;
         rcw = P*error + I+integral + D*derivative;
         
-        drive.leftMotors.set(-rcw);
-        drive.rightMotors.set(rcw);
+        drive.arcadeDrivePID(0, rcw);
     }
 
 }

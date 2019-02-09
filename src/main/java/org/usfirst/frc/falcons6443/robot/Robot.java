@@ -93,7 +93,7 @@ public class Robot extends TimedRobot {
     /**
      * This function is called periodically during autonomous.
      */
-    @Override
+    @OverrideOk
     public void autonomousPeriodic() {  //what...? where should this go??
 
          }
