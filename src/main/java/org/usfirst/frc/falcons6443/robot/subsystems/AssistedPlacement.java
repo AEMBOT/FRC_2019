@@ -50,35 +50,25 @@ public class AssistedPlacement{
         }
     }
 
-    //Template for driving forward
-    private void DriveForward(double speed){
-        drive.leftMotors.set(-speed);
-        drive.rightMotors.set(-speed);
-    }
-
-    //Sets motor power back to zero
-    private void Stop(){
-        drive.leftMotors.set(0);
-        drive.rightMotors.set(0);
-    }
+   
 
     public void trackTargetPixy() {
         double x = lime.getX();
         double approxRange = 1.2; 
         double power = 0.25; //compensated for carpet
-        
-        if (x < approxRange && x > -approxRange) {
-            drive.leftMotors.set(0);
-            drive.rightMotors.set(0); 
-        }
-        else if(x > approxRange) {
-            drive.leftMotors.set(-power);
-            drive.rightMotors.set(power);
 
+        //Prints out distance to target we will check and see when we need to switch to using the ultrasonic 
+        System.out.println(calcDistance());
+
+        //Order of ifs should be like this so it corrects first and then drives
+        if(x > approxRange) {
+            TurnLeft(power);
         } else if (x < approxRange) {
-            drive.rightMotors.set(-power); 
-            drive.leftMotors.set(power);
+            TurnRight(power);
         }
+        else if (x < approxRange && x > -approxRange) {
+            DriveForward(power);
+        }        
     }
 
     private double baseAngleRad, angle, baseAngleTan, distance;
@@ -94,4 +84,25 @@ public class AssistedPlacement{
         return distance; 
     }
 
+    private void TurnRight(double power){
+        drive.rightMotors.set(-power); 
+        drive.leftMotors.set(power);
+    }
+
+    private void TurnLeft(double power){
+        drive.leftMotors.set(-power);
+        drive.rightMotors.set(power);
+    }
+
+     //Template for driving forward
+    private void DriveForward(double power){
+        drive.leftMotors.set(power);
+        drive.rightMotors.set(power);
+    }
+
+    //Sets motor power back to zero
+    private void Stop(){
+        drive.leftMotors.set(0);
+        drive.rightMotors.set(0);
+    }
 }

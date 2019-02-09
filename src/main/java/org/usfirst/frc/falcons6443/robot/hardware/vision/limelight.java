@@ -17,13 +17,14 @@ public class Limelight{
     private NetworkTableEntry tx;
     private NetworkTableEntry ty;
     private NetworkTableEntry ta;
+    private NetworkTableEntry tv;
 
     //Variables for calculating distance
     private double fAngle;
     private double sAngle;
     private double fHeight;
     private double sHeight;
-    private double Distance; 
+    private double Distance;
 
 
     public Limelight(){
@@ -38,6 +39,11 @@ public class Limelight{
     //Will get the current X offset value if no object is detected it will default to 0
     public double getX(){
         return tx.getDouble(0.0);
+    }
+
+    //Will get the current X offset value if no object is detected it will default to 0
+    public double getValidTarget(){
+        return tv.getDouble(0.0);
     }
 
     //Will get the current Y offset value if no object is detected it will default to 0
