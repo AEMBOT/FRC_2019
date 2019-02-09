@@ -40,6 +40,7 @@ public class Robot extends TimedRobot {
     private AutoMain autoMain;
     private DriveStyles controlMethod;
 
+
     public static Preferences prefs;
     private SendableChooser driveStyle;
 
@@ -121,7 +122,9 @@ public class Robot extends TimedRobot {
         //shight max speed down
         teleop.runOncePerPress(primary.leftBumper(), ()  -> driveTrain.changeSpeed(false), false);
 
-        teleop.press(primary.X(), () -> assistedPlacement.runToDistance());
+        assistedPlacement.trackTargetPixy(); 
+
+      //  teleop.press(primary.X(), () -> assistedPlacement.runToDistance());
         
         //change IdleMode
        // teleop.runOncePerPress(primary.X(), () -> driveTrain.changeIdle(), false);
