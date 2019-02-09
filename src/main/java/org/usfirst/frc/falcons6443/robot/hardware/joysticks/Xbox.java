@@ -138,6 +138,10 @@ public class Xbox {
         return controller.getPOV(0) == 180;
     }
 
+    public boolean dPadRight(){
+        return controller.getPOV(0) == 90;
+    }
+
     public void setRumble(XboxRumble rumble, double value){
         switch (rumble){
             case RumbleLeft:

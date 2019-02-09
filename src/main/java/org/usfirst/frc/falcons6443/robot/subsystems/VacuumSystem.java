@@ -55,6 +55,8 @@ public class VacuumSystem {
      //   ballVacuumMotor.set(0);
     }
 
+
+    //moves arm for floor pickup 
     public void moveArmDown() {
         armMotor.set(1);
         System.out.println(armEncoder.get());
@@ -64,6 +66,7 @@ public class VacuumSystem {
         }
     }
 
+    //moves arm for hatch placement/retrieval
     public void moveArmUp() {
             if(armEncoder.get() >= armStopPosition) {
                 armMotor.set(-0.75); //move arm forwards until vertical position
@@ -75,6 +78,7 @@ public class VacuumSystem {
             }
         }
 
+    //moves arm back to starting postion
     public void moveArmBack() {
         armMotor.set(-0.75);
         System.out.println(armEncoder.get());

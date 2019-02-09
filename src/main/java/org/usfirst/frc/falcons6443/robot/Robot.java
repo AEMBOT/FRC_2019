@@ -44,6 +44,7 @@ public class Robot extends TimedRobot {
 
     public static Preferences prefs;
     private SendableChooser<DriveStyles> driveStyle;
+    public static boolean isKillSwitchEnabled = false;
 
 
     private boolean babyMode = false;
@@ -120,42 +121,44 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic()
     {        
-        //Run the method that allows the robot to begin its climb
-        //teleop.press(primary.A(), () -> climber.enableClimb());
-
-        //Will stop the climb no matter where it is if pressed (E-Stop)
-        //teleop.press(primary.B(), () -> climber.enableKillSwitch());
-
-        //Toggle on or off the arm up movement
-        //teleop.toggle(primary.X(), () -> vacuum.moveArmUp());
-
-        //teleop.press(primary.Y(), () -> vacuum.activateHatchSuction());
-        //teleop.off(() -> vacuum.deactivateSuction(), primary.Y());
-
-        //Will only run if A has been pressed
-      //  climber.climb(primary);
-        //Calls drive method with passed control method
         controlMethod = (DriveStyles) driveStyle.getSelected();
+
+        if(!isKillSwitchEnabled){
+        //Drive controlled by Left and Right joysticks
         driveTrain.generalDrive(primary, controlMethod);
 
-        // shifts max speed up
-        teleop.runOncePerPress(primary.rightBumper(), ()  -> driveTrain.changeSpeed(true), false);
+        //Drive Shifting
+        teleop.runOncePerPress(primary.leftBumper(), () -> driveTrain.changeSpeed(false), false);
+        teleop.runOncePerPress(primary.rightBumper(), () -> driveTrain.changeSpeed(true), false);
 
-        //shight max speed down
-        teleop.runOncePerPress(primary.leftBumper(), ()  -> driveTrain.changeSpeed(false), false);
-        
-        climber.enableClimb();
-        teleop.runOncePerPress(primary.X(), () -> climber.climb(), false);
-        teleop.runOncePerPress(primary.Y(), () -> climber.bringArmUp(), false);
+        //climb control
+        teleop.runOncePerPress(primary.B() && secondary.dPadRight(), () -> climber.climb(), false);
+        teleop.runOncePerPress(primary.Y(), () -> climber.enableKillSwitch(), false);
 
-        teleop.runOncePerPress(primary.leftBumper(), () -> vacuum.moveArmDown(), false);
-        teleop.runOncePerPress(primary.rightBumper(), () -> vacuum.moveArmUp(), false);
+        // Arm control
+        teleop.runOncePerPress(secondary.A(), () -> vacuum.moveArmDown(), false);
+        teleop.runOncePerPress(secondary.B(), () -> vacuum.moveArmUp(), false);
+        teleop.runOncePerPress(secondary.Y(), () -> vacuum.moveArmBack(), false);
 
+        // Vacumm control
+        teleop.press(secondary.rightBumper(), () -> vacuum.activateHatchSuction());
+        teleop.press(secondary.leftBumper(), () -> vacuum.activateBallSuction());
 
-        //change IdleMode
-       // teleop.runOncePerPress(primary.X(), () -> driveTrain.changeIdle(), false);
+        //Alignment Controls (primary - A) (secondary - triggers)
+        //__teleop.runOncePerPress(primary.A(), () -> TBDFUNCTION, false);
+        //__teleop.runOncePerPress(secondary.rightTrigger(), () -> TBDFUNCTION, false);
+    
+        } else{
 
-        //general periodic functions
+        //manual climber control
+        climber.manualControl(primary.rightStickY());
+
+        //control reset
+        teleop.runOncePerPress(primary.seven(), () -> isKillSwitchEnabled = false, false);    
+
+        }
+
+       
         teleop.periodicEnd();
     }
 

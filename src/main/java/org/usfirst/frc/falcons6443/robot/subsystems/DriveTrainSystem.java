@@ -227,7 +227,7 @@ public class DriveTrainSystem{
         //Logger.log(LoggerSystems.Drive, "reset drive encoders");
     }
 
-    // param upOrDown" false = shift down, true = shift up. changes index of array to give max speed value
+    // param upOrDown: false = shift down, true = shift up. changes index of array to give max speed value
     public void changeSpeed (boolean upOrDown){
         if(upOrDown && speedIndex < 3){
             speedIndex += 1;

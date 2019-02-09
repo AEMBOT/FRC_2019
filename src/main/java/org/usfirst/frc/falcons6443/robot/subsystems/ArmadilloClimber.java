@@ -27,6 +27,7 @@ public class ArmadilloClimber {
 
     private boolean isClimbing = false;
     private boolean isClimbingArmDown = false;
+    
 
     private final int encoderTicks = 256;
     
@@ -73,11 +74,15 @@ public class ArmadilloClimber {
 
     public void enableKillSwitch(){
         isClimbing = false;
+        isClimbingArmDown = false;
+        Robot.isKillSwitchEnabled = true;
     }
 
     public double updatePosition(double climbDegree){
         return leftEncoder.getPosition() - climbDegree;
     }
+
+    
 
     //Begin climb
     public void climb(){
@@ -122,7 +127,13 @@ public class ArmadilloClimber {
      }
 
     
-}
+ }
+
+    public void manualControl(double power){
+        leftMotor.set(power);
+        rightMotor.set(power);
+    }
+
 }
 
 
