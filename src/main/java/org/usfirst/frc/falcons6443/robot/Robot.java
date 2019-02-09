@@ -97,6 +97,7 @@ public class Robot extends TimedRobot {
     public void autonomousInit()
     {
         Logger.autoInit();
+       // teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.VACUUM, () -> vacuum.getManual(), (Boolean bool) -> vacuum.setManual(bool));
         autoMain.runAutoPath();
     }
 
@@ -104,8 +105,8 @@ public class Robot extends TimedRobot {
      * This function is called periodically during autonomous.
      */
     @Override
-    public void autonomousPeriodic() {  //what...? where should this go??
-
+    public void autonomousPeriodic() {  
+            controls();
          }
 
     /*
@@ -124,29 +125,7 @@ public class Robot extends TimedRobot {
         controlMethod = (DriveStyles) driveStyle.getSelected();
 
         if(!isKillSwitchEnabled){
-        //Drive controlled by Left and Right joysticks
-        driveTrain.generalDrive(primary, controlMethod);
-
-        //Drive Shifting
-        teleop.runOncePerPress(primary.leftBumper(), () -> driveTrain.changeSpeed(false), false);
-        teleop.runOncePerPress(primary.rightBumper(), () -> driveTrain.changeSpeed(true), false);
-
-        //climb control
-        teleop.runOncePerPress(primary.B() && secondary.dPadRight(), () -> climber.climb(), false);
-        teleop.runOncePerPress(primary.Y(), () -> climber.enableKillSwitch(), false);
-
-        // Arm control
-        teleop.runOncePerPress(secondary.A(), () -> vacuum.moveArmDown(), false);
-        teleop.runOncePerPress(secondary.B(), () -> vacuum.moveArmUp(), false);
-        teleop.runOncePerPress(secondary.Y(), () -> vacuum.moveArmBack(), false);
-
-        // Vacumm control
-        teleop.press(secondary.rightBumper(), () -> vacuum.activateHatchSuction());
-        teleop.press(secondary.leftBumper(), () -> vacuum.activateBallSuction());
-
-        //Alignment Controls (primary - A) (secondary - triggers)
-        //__teleop.runOncePerPress(primary.A(), () -> TBDFUNCTION, false);
-        //__teleop.runOncePerPress(secondary.rightTrigger(), () -> TBDFUNCTION, false);
+        controls();
     
         } else{
 
@@ -160,6 +139,40 @@ public class Robot extends TimedRobot {
 
        
         teleop.periodicEnd();
+    }
+
+    private void controls(){
+        //Drive controlled by Left and Right joysticks
+ driveTrain.generalDrive(primary, controlMethod);
+
+ //Drive Shifting
+ teleop.runOncePerPress(primary.leftBumper(), () -> driveTrain.changeSpeed(false), false);
+ teleop.runOncePerPress(primary.rightBumper(), () -> driveTrain.changeSpeed(true), false);
+
+ //climb control
+ teleop.runOncePerPress(primary.B() && secondary.dPadRight(), () -> climber.climb(), false);
+ teleop.runOncePerPress(primary.Y(), () -> climber.enableKillSwitch(), false);
+
+ // Arm control
+ //teleop.press(TeleopStructure.ManualControls.VACUUM, secondary.A(), () -> vacuum.moveArmDown());
+// teleop.press(TeleopStructure.ManualControls.VACUUM, secondary.B(), () -> vacuum.moveArmUp());
+// teleop.press(TeleopStructure.ManualControls.VACUUM, secondary.Y(), () -> vacuum.moveArmBack());
+// teleop.manual(TeleopStructure.ManualControls.VACUUM, secondary.leftStickY(), (Double val) -> vacuum.manual(val));
+
+ if(Math.abs(secondary.leftStickY()) > .2) vacuum.manual(secondary.leftStickY());
+ else vacuum.manual(0);
+ //teleop.off(() -> vacuum.manual(0), TeleopStructure.ManualControls.VACUUM/*, secondary.A(), secondary.B(), secondary.Y()*/);
+ // Vacumm control
+ teleop.press(secondary.rightBumper(), () -> vacuum.activateHatchSuction());
+ teleop.off(() -> vacuum.deactivateSuction(), secondary.rightBumper());
+
+ climber.steady();
+ climber.bbtest();
+//    teleop.press(secondary.leftBumper(), () -> vacuum.activateBallSuction());
+
+ //Alignment Controls (primary - A) (secondary - triggers)
+ //__teleop.runOncePerPress(primary.A(), () -> TBDFUNCTION, false);
+ //__teleop.runOncePerPress(secondary.rightTrigger(), () -> TBDFUNCTION, false);
     }
 
     /**

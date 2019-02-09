@@ -18,19 +18,17 @@ public class ArmadilloClimber {
 
     private CANSparkMax leftMotor;
     private CANSparkMax rightMotor;
+
     private LimitSwitch bellySwitch;
     private LimitSwitch extensionBeam;
-
-
 
     private CANEncoder leftEncoder;
 
     private boolean isClimbing = false;
     private boolean isClimbingArmDown = false;
-    
 
     private final int encoderTicks = 256;
-    
+    private boolean steady = true;   
 
     //Change to a point where the encoders will stop
     private final int stopTickCount = 80;
@@ -68,8 +66,24 @@ public class ArmadilloClimber {
 
     }
 
+    public void steady(){
+
+        if(steady){
+        if(!bellySwitch.get()) {
+            leftMotor.set(-.3);
+            rightMotor.set(-.3);
+        }else {
+            leftMotor.set(0);
+            rightMotor.set(0);
+        } }
+    }
+
     public void enableClimb(){
         isClimbing = true;
+    }
+
+    public void bbtest(){
+        System.out.println(extensionBeam.get());
     }
 
     public void enableKillSwitch(){
@@ -86,6 +100,7 @@ public class ArmadilloClimber {
 
     //Begin climb
     public void climb(){
+        steady = false;
      double climbDegree = leftEncoder.getPosition();
      if(isClimbing == true) {
         //run motors until a certain encoder value is reached

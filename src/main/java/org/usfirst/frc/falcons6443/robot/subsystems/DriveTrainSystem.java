@@ -101,7 +101,7 @@ public class DriveTrainSystem{
                 break;
 
             case Arcade:
-                arcadeDrive(-controller.rightStickX() / currentLevel, controller.leftStickY() / currentLevel);
+                arcadeDrive(-controller.rightStickX() / currentLevel, -controller.leftStickY() / currentLevel);
                 break;
 
             case Curve:

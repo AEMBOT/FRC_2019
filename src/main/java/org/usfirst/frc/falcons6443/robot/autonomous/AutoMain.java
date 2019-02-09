@@ -27,35 +27,11 @@ public class AutoMain {
     //sets up the dashboard for auto path choices
     //Test and see where these should be created!!
     private void printAutoSelection() {
-        sendable = new SendableChooser<Position>();
-        sendable.addOption("Left", Position.LEFT);
-        sendable.addOption("Center", Position.CENTER);
-        sendable.addOption("Right", Position.RIGHT);
-        sendable.setDefaultOption("Line", Position.DEFAULT);
-        SmartDashboard.putData("Auto Path", sendable);
+        SmartDashboard.putNumber("speed", 0);
     }
 
     //runs the auto path selected in the dashboard
     public void runAutoPath() {
-        Position position = (Position) sendable.getSelected();
-
-        switch (position) {
-            //handles which code to run depending on result of the specified switch/scale
-            case LEFT:
-                //enter left auto path
-                break;
-
-            case CENTER:
-
-                break;
-
-            case RIGHT:
-                //enter right auto path
-                break;
-
-            case DEFAULT:
-                autoPaths.driveToLine();
-                break;
-        }
+        autoPaths.driveForTime(1, SmartDashboard.getNumber("speed", 0));
     }
 }
