@@ -95,8 +95,9 @@ public class AssistedPlacement{
         integral += (error*0.2); // Integral is increased by the error*time (which is .02 seconds using normal IterativeRobot)
 
         derivative = (error - previous_error) / 0.2;
-        rcw = P*error + I+integral + D*derivative;
-        
+        rcw = P*error + I*integral + D*derivative;
+        previous_error = (int)error;
+
         drive.arcadeDrivePID(0, rcw);
     }
 
