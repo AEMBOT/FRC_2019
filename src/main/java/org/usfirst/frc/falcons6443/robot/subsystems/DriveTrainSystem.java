@@ -151,7 +151,7 @@ public class DriveTrainSystem{
         drive.arcadeDrive(speed,-rotation);
     }
 
-    private void arcadeDrivePID(double speed, double rotation){
+    public void arcadeDrivePID(double speed, double rotation){
         drive.arcadeDrive(speed,rotation);
     }
 
