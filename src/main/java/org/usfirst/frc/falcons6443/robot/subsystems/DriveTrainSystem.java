@@ -147,7 +147,7 @@ public class DriveTrainSystem{
      *
      * Implements the differentialDrive arcadeDrive into a local method
      */
-    public void arcadeDrive(double speed, double rotation){
+    private void arcadeDrive(double speed, double rotation){
         drive.arcadeDrive(speed,-rotation);
     }
 
