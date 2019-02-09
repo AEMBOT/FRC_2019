@@ -64,7 +64,7 @@ public class AssistedPlacement{
 
     public void trackTargetPixy() {
         double x = lime.getX();
-        double approxRange = 1.5; 
+        double approxRange = 1.25;
         
         if (x < approxRange && x > -approxRange) {
             drive.leftMotors.set(0);
@@ -79,26 +79,4 @@ public class AssistedPlacement{
             drive.leftMotors.set(0.15);
         }
     }
-
-    //All variables for the PID method are here, temporary just for testing
-    int P,I,D = 0;
-    int integral, previous_error, targetAngle = 0;
-    double error, rcw ,derivative = 0;
-
-    public void trackTargetPID(){
-        double x = lime.getX();
-        P = 1; //Tune this first
-        
-        //sets the margin equal to the targetValue - theCurrentAngle
-        error = targetAngle - x;
-        
-        integral += (error*0.2); // Integral is increased by the error*time (which is .02 seconds using normal IterativeRobot)
-
-        derivative = (error - previous_error) / 0.2;
-        rcw = P*error + I*integral + D*derivative;
-        previous_error = (int)error;
-
-        drive.arcadeDrive(0, rcw);
-    }
-
 }
