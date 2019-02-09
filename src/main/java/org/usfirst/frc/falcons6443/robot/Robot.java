@@ -124,7 +124,8 @@ public class Robot extends TimedRobot {
 
         //assistedPlacement.trackTargetPixy(); 
 
-        assistedPlacement.trackTargetPID();
+        assistedPlacement.trackTargetPixy();
+         //System.out.println(assistedPlacement.calcDistance()); 
       //  teleop.press(primary.X(), () -> assistedPlacement.runToDistance());
         
         //change IdleMode

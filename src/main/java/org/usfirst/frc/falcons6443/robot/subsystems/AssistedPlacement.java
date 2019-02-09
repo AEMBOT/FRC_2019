@@ -64,41 +64,34 @@ public class AssistedPlacement{
 
     public void trackTargetPixy() {
         double x = lime.getX();
-        double approxRange = 1.5; 
+        double approxRange = 1.2; 
+        double power = 0.25; //compensated for carpet
         
         if (x < approxRange && x > -approxRange) {
             drive.leftMotors.set(0);
             drive.rightMotors.set(0); 
         }
         else if(x > approxRange) {
-            drive.leftMotors.set(-0.15);
-            drive.rightMotors.set(0.15);
+            drive.leftMotors.set(-power);
+            drive.rightMotors.set(power);
 
         } else if (x < approxRange) {
-            drive.rightMotors.set(-0.15); 
-            drive.leftMotors.set(0.15);
+            drive.rightMotors.set(-power); 
+            drive.leftMotors.set(power);
         }
     }
 
-    //All variables for the PID method are here, temporary just for testing
-    int P,I,D = 0;
-    int integral, previous_error, targetAngle = 0;
-    double error, rcw ,derivative = 0;
+    private double baseAngleRad, angle, baseAngleTan, distance;
+    private double camHeight = 6.8; //temporary values
+    private double targetHeight = 40; //temporary values
+    private double camAngle = 30; //approximate camAngle
 
-    public void trackTargetPID(){
-        double x = lime.getX();
-        P = 1; //Tune this first
-        
-        //sets the margin equal to the targetValue - theCurrentAngle
-        error = targetAngle - x;
-        
-        integral += (error*0.2); // Integral is increased by the error*time (which is .02 seconds using normal IterativeRobot)
-
-        derivative = (error - previous_error) / 0.2;
-        rcw = P*error + I*integral + D*derivative;
-        previous_error = (int)error;
-
-        drive.arcadeDrive(0, rcw);
+    public double calcDistance() {
+        angle = lime.getY(); 
+        baseAngleRad = Math.toRadians(camAngle + angle); // Convert total camera angle to radians
+        baseAngleTan = Math.tan(baseAngleRad); // Take the tangent of total angle
+        distance = (targetHeight - camHeight)/baseAngleTan; 
+        return distance; 
     }
 
 }
