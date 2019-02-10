@@ -112,9 +112,10 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic()
     {
         //Calls drive method with passed control method
-        //controlMethod = DriveStyles.Arcade;
+        controlMethod = DriveStyles.Arcade;
 
-        //driveTrain.generalDrive(primary, controlMethod);
+        if(assistedPlacement.isPlacing == false)
+            driveTrain.generalDrive(primary, controlMethod);
 
         // shifts max speed up
         teleop.runOncePerPress(primary.rightBumper(), ()  -> driveTrain.changeSpeed(true), false);
@@ -122,9 +123,17 @@ public class Robot extends TimedRobot {
         //shight max speed down
         teleop.runOncePerPress(primary.leftBumper(), ()  -> driveTrain.changeSpeed(false), false);
 
-        //assistedPlacement.trackTargetPixy(); 
 
-        assistedPlacement.trackTargetPixy();
+        if(primary.A()){
+            assistedPlacement.isPlacing = true;
+        }
+
+        if(primary.B()){
+            assistedPlacement.isPlacing = false;
+        }
+
+        if(assistedPlacement.isPlacing == true)
+            assistedPlacement.trackTargetPixy();
          //System.out.println(assistedPlacement.calcDistance()); 
       //  teleop.press(primary.X(), () -> assistedPlacement.runToDistance());
         

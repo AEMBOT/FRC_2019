@@ -14,6 +14,7 @@ public class AssistedPlacement{
     private final int trigPin = 1;
 
     private Ultrasonic ultrasonic; 
+    public boolean isPlacing = false;
 
     DriveTrainSystem drive;
 
@@ -54,21 +55,33 @@ public class AssistedPlacement{
 
     public void trackTargetPixy() {
         double x = lime.getX();
-        double approxRange = 1.2; 
-        double power = 0.25; //compensated for carpet
+        double approxRange = 1.5; 
+        double power = 0.15; //compensated for carpet
 
-        //Prints out distance to target we will check and see when we need to switch to using the ultrasonic 
-        System.out.println(calcDistance());
-
-        //Order of ifs should be like this so it corrects first and then drives
-        if(x > approxRange) {
-            TurnLeft(power);
-        } else if (x < approxRange) {
-            TurnRight(power);
+        if(lime.getValidTarget() > 0){
+            isPlacing = true;
+            //Order of ifs should be like this so it corrects first and then drives
+            if (x < approxRange && x > -approxRange) {
+                DriveForward(0.15);
+            }   
+            else if(x > approxRange && lime.getArea() > 1) {
+                TurnLeft(power);
+            } else if (x < approxRange && lime.getArea() > 1) {
+                TurnRight(power);
+            }
         }
-        else if (x < approxRange && x > -approxRange) {
-            DriveForward(power);
-        }        
+        else{
+            //Check if bot is withing 9 inches, 3 inch buffer
+           if(ultrasonic.getRangeInches() < 20 && ultrasonic.getRangeInches() > 12){
+                DriveForward(0.15);
+           }
+
+           //if it is not back up and attempt to relocate vision tape
+           else{
+               isPlacing = false;
+           }
+        }
+          
     }
 
     private double baseAngleRad, angle, baseAngleTan, distance;
@@ -96,8 +109,8 @@ public class AssistedPlacement{
 
      //Template for driving forward
     private void DriveForward(double power){
-        drive.leftMotors.set(power);
-        drive.rightMotors.set(power);
+        drive.leftMotors.set(-power);
+        drive.rightMotors.set(-power);
     }
 
     //Sets motor power back to zero

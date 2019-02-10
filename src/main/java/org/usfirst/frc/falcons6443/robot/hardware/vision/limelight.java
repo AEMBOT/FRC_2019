@@ -34,6 +34,7 @@ public class Limelight{
         tx = limelightTable.getEntry("tx"); //X degrees
         ty = limelightTable.getEntry("ty"); //Y degrees
         ta = limelightTable.getEntry("ta"); //Target area
+        tv = limelightTable.getEntry("tv");
     }
 
     //Will get the current X offset value if no object is detected it will default to 0
