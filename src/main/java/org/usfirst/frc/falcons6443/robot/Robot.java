@@ -12,6 +12,7 @@ import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoDrive;
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoMain;
 import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
@@ -114,8 +115,8 @@ public class Robot extends TimedRobot {
         //Calls drive method with passed control method
         controlMethod = DriveStyles.Arcade;
 
-        if(assistedPlacement.isPlacing == false)
-            driveTrain.generalDrive(primary, controlMethod);
+        if(assistedPlacement.getPlacing() == false)
+          driveTrain.generalDrive(primary, controlMethod);
 
         // shifts max speed up
         teleop.runOncePerPress(primary.rightBumper(), ()  -> driveTrain.changeSpeed(true), false);
@@ -123,17 +124,16 @@ public class Robot extends TimedRobot {
         //shight max speed down
         teleop.runOncePerPress(primary.leftBumper(), ()  -> driveTrain.changeSpeed(false), false);
 
+        teleop.runOncePerPress(primary.A(), () -> assistedPlacement.enablePlacing(), false);
+        
+        teleop.runOncePerPress(primary.B(), () -> assistedPlacement.disablePlacing(), false);
 
-        if(primary.A()){
-            assistedPlacement.isPlacing = true;
+        teleop.runOncePerPress(primary.dPadDown(), () -> assistedPlacement.swapCamera(), false);
+
+        if(assistedPlacement.getPlacing() == true){
+          assistedPlacement.trackTargetPixy();
         }
 
-        if(primary.B()){
-            assistedPlacement.isPlacing = false;
-        }
-
-        if(assistedPlacement.isPlacing == true)
-            assistedPlacement.trackTargetPixy();
          //System.out.println(assistedPlacement.calcDistance()); 
       //  teleop.press(primary.X(), () -> assistedPlacement.runToDistance());
         

@@ -8,30 +8,55 @@ import org.usfirst.frc.falcons6443.robot.hardware.vision.*;
  * 
  * @author Will Richards, Goirick Saha
  */
-public class AssistedPlacement{
+public class AssistedPlacement {
 
     private final int echoPin = 0;
     private final int trigPin = 1;
 
-    private Ultrasonic ultrasonic; 
-    public boolean isPlacing = false;
+    private Ultrasonic ultrasonic;
+    private boolean isPlacing = false;
+    private boolean isInDriverMode = false;
 
     DriveTrainSystem drive;
 
-    //Variables for basic PID
+    // Variables for basic PID
     private Limelight lime;
     private double Kp = -0.1;
     private double minCommand = 0.05;
-    private double stearingAdjust = 0.0; 
+    private double stearingAdjust = 0.0;
     private double right_command = 0.0;
     private double left_command = 0.0;
 
-
-    public AssistedPlacement(DriveTrainSystem drive){
+    public AssistedPlacement(DriveTrainSystem drive) {
         ultrasonic = new Ultrasonic(trigPin, echoPin);
         ultrasonic.setAutomaticMode(true);
+
         lime = new Limelight();
         this.drive = drive;
+    }
+
+    public void enablePlacing() {
+        if (lime.getCamMode() == 1.0) {
+            lime.swapCamera();
+        }
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+        }
+        isPlacing = true;
+    }
+    public void disablePlacing(){
+        isPlacing = false;
+    }
+
+    public boolean getPlacing(){
+        return isPlacing;
+    }
+
+    public void swapCamera(){
+        lime.swapCamera();
+        isInDriverMode = !isInDriverMode;
+        System.out.println(isInDriverMode);
     }
 
     //This method mainly serves the purpose of testing however it will drive straight upon a button press until a specific distance is reached
@@ -51,11 +76,10 @@ public class AssistedPlacement{
         }
     }
 
-   
-
     public void trackTargetPixy() {
+        
         double x = lime.getX();
-        double approxRange = 1.5; 
+        double approxRange = 1.45; 
         double power = 0.15; //compensated for carpet
 
         if(lime.getValidTarget() > 0){
@@ -79,11 +103,11 @@ public class AssistedPlacement{
            //if it is not back up and attempt to relocate vision tape
            else{
                isPlacing = false;
+               Stop();
            }
         }
           
     }
-
     private double baseAngleRad, angle, baseAngleTan, distance;
     private double camHeight = 6.8; //temporary values
     private double targetHeight = 40; //temporary values

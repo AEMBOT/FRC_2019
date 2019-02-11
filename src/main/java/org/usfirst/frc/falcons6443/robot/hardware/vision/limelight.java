@@ -34,7 +34,7 @@ public class Limelight{
         tx = limelightTable.getEntry("tx"); //X degrees
         ty = limelightTable.getEntry("ty"); //Y degrees
         ta = limelightTable.getEntry("ta"); //Target area
-        tv = limelightTable.getEntry("tv");
+        tv = limelightTable.getEntry("tv"); //Target vlaid
     }
 
     //Will get the current X offset value if no object is detected it will default to 0
@@ -70,5 +70,21 @@ public class Limelight{
     //Turns off the LED so we dont blind everyone when we are not using it
     public void turnOffLED(){
         limelightTable.getEntry("ledMode").setNumber(1);
+    }
+
+    public void swapCamera(){
+
+        if(limelightTable.getEntry("camMode").getDouble(0.0) == 1.0){
+            limelightTable.getEntry("camMode").setNumber(0.0);
+            turnOnLED();
+        }
+        else{
+            limelightTable.getEntry("camMode").setNumber(1.0);
+            turnOffLED();
+        }
+    }
+
+    public double getCamMode(){
+       return limelightTable.getEntry("camMode").getDouble(0.0);
     }
 }
