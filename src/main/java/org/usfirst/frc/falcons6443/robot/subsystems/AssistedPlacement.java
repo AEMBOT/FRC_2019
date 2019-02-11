@@ -40,11 +40,12 @@ public class AssistedPlacement {
             lime.swapCamera();
         }
         try {
-            Thread.sleep(100);
+            Thread.sleep(250);
         } catch (InterruptedException e) {
         }
         isPlacing = true;
     }
+
     public void disablePlacing(){
         isPlacing = false;
     }
@@ -56,7 +57,6 @@ public class AssistedPlacement {
     public void swapCamera(){
         lime.swapCamera();
         isInDriverMode = !isInDriverMode;
-        System.out.println(isInDriverMode);
     }
 
     //This method mainly serves the purpose of testing however it will drive straight upon a button press until a specific distance is reached
@@ -95,15 +95,24 @@ public class AssistedPlacement {
             }
         }
         else{
-            //Check if bot is withing 9 inches, 3 inch buffer
-           if(ultrasonic.getRangeInches() < 20 && ultrasonic.getRangeInches() > 12){
+            //Check if bot is within 17 inches
+           if(ultrasonic.getRangeInches() < 20){
+               //If so check if it is within 9 if so stop if not drive
+               if(ultrasonic.getRangeInches() <= 12){
+                    isPlacing = false;
+                    Stop();
+                    swapCamera();
+               }
+               else{
                 DriveForward(0.15);
+               }
            }
 
-           //if it is not back up and attempt to relocate vision tape
+           //if it is not in view return control to the driver and swap vision mode
            else{
                isPlacing = false;
                Stop();
+               swapCamera();
            }
         }
           

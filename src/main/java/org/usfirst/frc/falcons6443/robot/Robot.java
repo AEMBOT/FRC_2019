@@ -128,8 +128,6 @@ public class Robot extends TimedRobot {
         
         teleop.runOncePerPress(primary.B(), () -> assistedPlacement.disablePlacing(), false);
 
-        teleop.runOncePerPress(primary.dPadDown(), () -> assistedPlacement.swapCamera(), false);
-
         if(assistedPlacement.getPlacing() == true){
           assistedPlacement.trackTargetPixy();
         }
