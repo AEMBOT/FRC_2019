@@ -87,4 +87,8 @@ public class Limelight{
     public double getCamMode(){
        return limelightTable.getEntry("camMode").getDouble(0.0);
     }
+
+    public void setCamMode(double mode){
+        limelightTable.getEntry("camMode").setNumber(mode);
+    }
 }
