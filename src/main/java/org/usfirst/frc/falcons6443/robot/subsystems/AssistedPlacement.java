@@ -64,7 +64,7 @@ public class AssistedPlacement {
         if(isPlacing == true){
             isPlacing = false;
             //lime.swapCamera();
-            //Stop();
+            Stop();
         }
     }
 

@@ -37,57 +37,91 @@ public class Limelight{
         tv = limelightTable.getEntry("tv"); //Target vlaid
     }
 
-    //Will get the current X offset value if no object is detected it will default to 0
+    /**
+     *  Will get the current X offset value if no object is detected it will default to 0
+     *  @return the X offset in degrees to the target
+     */
     public double getX(){
         return tx.getDouble(0.0);
     }
 
-    //Will get the current X offset value if no object is detected it will default to 0
+    /**
+     * Gets the number 1 or 0 (true or false) if the target is visible or not
+     * @return the visibility of the target
+     */
     public double getValidTarget(){
         return tv.getDouble(0.0);
     }
 
-    //Will get the current Y offset value if no object is detected it will default to 0
+    /**
+     * Will get the current Y offset value if no object is detected it will default to 0
+     * @return Y offset to target in degrees
+     */
     public double getY(){
         return ty.getDouble(0.0);
     }
 
-    //Will get the current area value if no object is detected it will default to 0
+    /**
+     * Will get the current area value
+     * @return returns area, if no objects are detected it returns 0
+     */
     public double getArea(){
         return ta.getDouble(0.0);
     }
 
+    /**
+     * Unused Method to calculate the distance to an object, Math needs work
+     * @return returns distance in inches to target
+     */
     public double getDistance(){
         Distance = (sHeight - fHeight)/Math.tan(fAngle + sAngle); 
         return Distance; 
     }
 
-    //Turns on the LED so we can see the refelctive tape 
+    /**
+     * Will turn on the LED so the camera can track the refelctive tape
+     */
     public void turnOnLED(){
         limelightTable.getEntry("ledMode").setNumber(3);
     }
 
-    //Turns off the LED so we dont blind everyone when we are not using it
+    /**
+     * Will turn off the LED so we dont blind everyone as the LED is very bright
+     */
     public void turnOffLED(){
         limelightTable.getEntry("ledMode").setNumber(1);
     }
 
+    /**
+     * Will swap the current camera mode to the opposite of its current, eg. between driver and vision
+     */
     public void swapCamera(){
 
+        //Getst he current camera mode and checks if it is in driver mode, if so it sets it to vision, and turns the LED back on
         if(limelightTable.getEntry("camMode").getDouble(0.0) == 1.0){
             limelightTable.getEntry("camMode").setNumber(0.0);
             turnOnLED();
         }
+
+        //If it is already in drfiver mode it swaps back to driver mode
         else{
             limelightTable.getEntry("camMode").setNumber(1.0);
             turnOffLED();
         }
     }
 
+    /**
+     * Allows for getting the current camera mode
+     * @return an int (1 or 0) that specifies what mode it is in
+     */
     public double getCamMode(){
        return limelightTable.getEntry("camMode").getDouble(0.0);
     }
 
+    /**
+     * Allows for manual camera mode setting
+     * @param mode pass in 1 or 0 to switch
+     */
     public void setCamMode(double mode){
         limelightTable.getEntry("camMode").setNumber(mode);
     }
