@@ -6,7 +6,7 @@ import org.usfirst.frc.falcons6443.robot.utilities.enums.XboxRumble;
 
 /**
  * Wrapper for an Xbox 360 Xbox. Provides clearer interface with button and axis inputs.
- *
+ * 
  * @author Patrick Higgins
  */
 public class Xbox {
@@ -126,20 +126,25 @@ public class Xbox {
     public boolean seven() {
         return controller.getRawButton(7);
     }
+
     public boolean eight() {
         return controller.getRawButton(8);
     }
 
+
+    /**
+     * @return if the dpad is pushed up
+     */
     public boolean dPadUp(){
         return controller.getPOV(0) == 0;
     }
 
+    /**
+     * @return if the dpad is pushed down
+     */
     public boolean dPadDown(){
         return controller.getPOV(0) == 180;
     }
-
-
-
 
     public void setRumble(XboxRumble rumble, double value){
         switch (rumble){
