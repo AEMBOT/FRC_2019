@@ -47,13 +47,13 @@ public class AssistedPlacement {
      *  Then it will wait 250ms to allow enough time for the vision camera to begin tracking the new object
      */
     public void enablePlacing() {
-        if (lime.getCamMode() == 1.0) {
-            lime.swapCamera();
-        }
-        try {
-            Thread.sleep(250);
-        } catch (InterruptedException e) {
-        }
+        //if (lime.getCamMode() == 1.0) {
+          //  lime.swapCamera();
+        //}
+        //try {
+          //  Thread.sleep(250);
+        //} catch (InterruptedException e) {
+        //}
         isPlacing = true;
     }
 
@@ -63,8 +63,8 @@ public class AssistedPlacement {
     public void disablePlacing(){
         if(isPlacing == true){
             isPlacing = false;
-            lime.swapCamera();
-            Stop();
+            //lime.swapCamera();
+            //Stop();
         }
     }
 
@@ -96,26 +96,35 @@ public class AssistedPlacement {
             DriveForward(-0.5);
         }
 
+        //If the ultrasonic sensor returns a value in between 32 inches and 9 inches slow down for final alignment 
         else if(ultrasonic.getRangeInches() < 35.6 && ultrasonic.getRangeInches() > 9.6){
             DriveForward(-0.1);
         }
+        
+        //If not in this range stop
         else{
             Stop();
         }
     }
 
-    public void trackTargetPixy() {
-        
-        double x = lime.getX();
-        double approxRange = 1.45; 
-        double power = 0.15; //compensated for carpet
+    /**
+     * Tracks the vision tape centers and drives forward to the center
+     */
+    public void trackTarget() {
+        double x = lime.getX(); // Grabs the current degrees to the x value from the limelight class
+        double approxRange = 1.75; // Acceptable range around the target, prevents oscilation
+        double power = 0.15; // Power of the motors
 
+        //Checks if the limelight can see the target
         if(lime.getValidTarget() > 0){
-            isPlacing = true;
-            //Order of ifs should be like this so it corrects first and then drives
+            isPlacing = true; // Sets the is placing variable to true thus locking out normal drivercontrol, kill switch still works
+            
+            //Order of ifs should be like this so it drives first and then corrects 
             if (x < approxRange && x > -approxRange) {
                 DriveForward(0.15);
             }   
+            
+            //Makes sure area is greater than one to limit random small objects being tracked
             else if(x > approxRange && lime.getArea() > 1) {
                 TurnLeft(power);
             } else if (x < approxRange && lime.getArea() > 1) {
@@ -123,16 +132,22 @@ public class AssistedPlacement {
             }
         }
         else{
-            //Check if bot is within 17 inches
-           if(ultrasonic.getRangeInches() < 20){
+
+            //Check if bot is within 19 inches
+           if(ultrasonic.getRangeInches() < 22){
+
                //If so check if it is within 9 if so stop if not drive
                if(ultrasonic.getRangeInches() <= 12){
                     isPlacing = false;
                     Stop();
-                    swapCamera();
+                    //swapCamera();
                }
                else{
-                DriveForward(0.15);
+
+                    //If it less than 30 then continue to drive
+                   if(ultrasonic.getRangeInches() < 30){
+                        DriveForward(0.15);
+                   }
                }
            }
 
@@ -140,16 +155,22 @@ public class AssistedPlacement {
            else{
                isPlacing = false;
                Stop();
-               swapCamera();
+               //swapCamera();
            }
         }
           
     }
+
+    
     private double baseAngleRad, angle, baseAngleTan, distance;
     private double camHeight = 6.8; //temporary values
     private double targetHeight = 40; //temporary values
     private double camAngle = 30; //approximate camAngle
 
+    /**
+     * Not fully functional method that is meant to calculate distance to an objec, doesnt work quite right
+     * @return distance to tracked object
+     */
     public double calcDistance() {
         angle = lime.getY(); 
         baseAngleRad = Math.toRadians(camAngle + angle); // Convert total camera angle to radians
@@ -158,23 +179,37 @@ public class AssistedPlacement {
         return distance; 
     }
 
+    /**
+     * Method in place to allow for easy turning to the right 
+     * @param power motor power level
+     */
     private void TurnRight(double power){
         drive.rightMotors.set(-power); 
         drive.leftMotors.set(power);
     }
 
+    /**
+     * Method in place to allow for easy turning to the left 
+     * @param power motor power level
+     */
     private void TurnLeft(double power){
         drive.leftMotors.set(-power);
         drive.rightMotors.set(power);
     }
 
-     //Template for driving forward
+    /**
+     * Method in place to allow for easy driving straight
+     * @param power motor power level
+     */
     private void DriveForward(double power){
         drive.leftMotors.set(-power);
         drive.rightMotors.set(-power);
     }
 
-    //Sets motor power back to zero
+    /**
+     * Method in place to allow for easy stopping of the motors 
+     * @param power motor power level
+     */
     private void Stop(){
         drive.leftMotors.set(0);
         drive.rightMotors.set(0);

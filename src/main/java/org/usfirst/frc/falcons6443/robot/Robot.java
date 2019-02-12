@@ -129,7 +129,7 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(primary.B(), () -> assistedPlacement.disablePlacing(), false);
 
         if(assistedPlacement.getPlacing() == true){
-          assistedPlacement.trackTargetPixy();
+          assistedPlacement.trackTarget();
         }
 
          //System.out.println(assistedPlacement.calcDistance()); 
