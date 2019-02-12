@@ -44,16 +44,16 @@ public class AssistedPlacement {
 
     /**
      *  This method is called when the 'A' button (will be changed) is pressed and does as follows, it will swap the camera mode from vision into tracking mode
-     *  Then it will wait 250ms to allow enough time for the vision camera to begin tracking the new object
+     *  Then it will wait 300ms to allow enough time for the vision camera to begin tracking the new object
      */
     public void enablePlacing() {
-        //if (lime.getCamMode() == 1.0) {
-          //  lime.swapCamera();
-        //}
-        //try {
-          //  Thread.sleep(250);
-        //} catch (InterruptedException e) {
-        //}
+        if (lime.getCamMode() == 1.0) {
+           lime.setCamMode(0);
+        }
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+        }
         isPlacing = true;
     }
 
@@ -63,7 +63,7 @@ public class AssistedPlacement {
     public void disablePlacing(){
         if(isPlacing == true){
             isPlacing = false;
-            //lime.swapCamera();
+            lime.setCamMode(1);
             Stop();
         }
     }
@@ -74,13 +74,6 @@ public class AssistedPlacement {
      */
     public boolean getPlacing(){
         return isPlacing;
-    }
-
-    /**
-     * Creates a runable refernce to the swap camera method in Limelight.java
-     */
-    public void swapCamera(){
-        lime.swapCamera();
     }
 
     /**

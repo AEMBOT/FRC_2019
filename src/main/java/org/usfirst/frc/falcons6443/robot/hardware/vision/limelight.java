@@ -91,25 +91,7 @@ public class Limelight{
     public void turnOffLED(){
         limelightTable.getEntry("ledMode").setNumber(1);
     }
-
-    /**
-     * Will swap the current camera mode to the opposite of its current, eg. between driver and vision
-     */
-    public void swapCamera(){
-
-        //Getst he current camera mode and checks if it is in driver mode, if so it sets it to vision, and turns the LED back on
-        if(limelightTable.getEntry("camMode").getDouble(0.0) == 1.0){
-            limelightTable.getEntry("camMode").setNumber(0.0);
-            turnOnLED();
-        }
-
-        //If it is already in drfiver mode it swaps back to driver mode
-        else{
-            limelightTable.getEntry("camMode").setNumber(1.0);
-            turnOffLED();
-        }
-    }
-
+    
     /**
      * Allows for getting the current camera mode
      * @return an int (1 or 0) that specifies what mode it is in

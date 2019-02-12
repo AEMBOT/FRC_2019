@@ -27,10 +27,10 @@ import org.usfirst.frc.falcons6443.robot.utilities.enums.XboxRumble;
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
  * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the build.properties file in the
+ * creating this project, you must also update the Main.java file in the
  * project.
  */
-// If you rename or move this class, update the build.properties file in the project root
+// If you rename or move this class, update the Main.java file in the org folder
 public class Robot extends TimedRobot {
     private Xbox primary;
     private Xbox secondary;
@@ -83,21 +83,24 @@ public class Robot extends TimedRobot {
 
     /*
      * Called when the robot first enters autonomous mode.
-            */
+    */
     @Override
     public void autonomousInit()
     {
+        //Starts inits logger and starts the auto path
         Logger.autoInit();
         autoMain.runAutoPath();
     }
 
     /**
      * This function is called periodically during autonomous.
+     * For 2019 season put all driver code in this block
      */
     @Override
-    public void autonomousPeriodic() {  //what...? where should this go??
+    public void autonomousPeriodic() 
+    {  
 
-         }
+    }
 
     /*
      * Called when the robot first enter teleop mode.
@@ -106,6 +109,7 @@ public class Robot extends TimedRobot {
     public void teleopInit(){
         Logger.teleopInit();
     }
+
     /**
      * This function is called periodically during operator control.
      */
@@ -115,30 +119,31 @@ public class Robot extends TimedRobot {
         //Calls drive method with passed control method
         controlMethod = DriveStyles.Arcade;
 
+        //Check if the driver has initated placing, if so block normal driver controls
         if(assistedPlacement.getPlacing() == false)
           driveTrain.generalDrive(primary, controlMethod);
 
-        // shifts max speed up
+        // Shifts max speed up
         teleop.runOncePerPress(primary.rightBumper(), ()  -> driveTrain.changeSpeed(true), false);
 
-        //shight max speed down
+        //Shift max speed down, more precise
         teleop.runOncePerPress(primary.leftBumper(), ()  -> driveTrain.changeSpeed(false), false);
 
+        //When pressed initiates placement/retrival for hatch, stops all other driver control apart from kill switch
         teleop.runOncePerPress(primary.A(), () -> assistedPlacement.enablePlacing(), false);
         
+        //When pressed it will kill the hatch placement
         teleop.runOncePerPress(primary.B(), () -> assistedPlacement.disablePlacing(), false);
 
+        //Checks if the driver has initated hatch placement
         if(assistedPlacement.getPlacing() == true){
           assistedPlacement.trackTarget();
         }
-
-         //System.out.println(assistedPlacement.calcDistance()); 
-      //  teleop.press(primary.X(), () -> assistedPlacement.runToDistance());
         
         //change IdleMode
        // teleop.runOncePerPress(primary.X(), () -> driveTrain.changeIdle(), false);
 
-        //general periodic functions
+        //Tells the telop class that the loop has completed
         teleop.periodicEnd();
 
     }
