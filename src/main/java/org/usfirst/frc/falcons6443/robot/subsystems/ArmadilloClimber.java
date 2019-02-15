@@ -27,16 +27,16 @@ public class ArmadilloClimber {
     private boolean isClimbing = false;
     private boolean isClimbingArmDown = false;
 
-    private final int encoderTicks = 256;
     private boolean steady = true;   
 
     //Change to a point where the encoders will stop
-    private final int stopTickCount = 80;
+    private final int stopTickCount = 285;
     private double climbSpeed = 1;
     private int armUpTickCount = 95;
 
     private ClimbEnum position;
     private boolean first;
+    private boolean bbTriggered;
 
     public boolean secondary;
 
@@ -72,6 +72,7 @@ public class ArmadilloClimber {
         position = ClimbEnum.Steady;
         first = true;
         secondary = false;
+        bbTriggered = false;
     }
 
     public void steady(){
@@ -87,10 +88,6 @@ public class ArmadilloClimber {
 
     public void enableClimb(){
         isClimbing = true;
-    }
-
-    public void bbtest(){
-        System.out.println(extensionBeam.get());
     }
 
     public void enableKillSwitch(){
@@ -122,7 +119,10 @@ public class ArmadilloClimber {
             case ClimbHab:
                 steady = false;
                 if(first) climbDegree = leftEncoder.getPosition();
-                if(updatePosition(climbDegree) <= stopTickCount && extensionBeam.get() == false){
+                first = false;
+
+                if(extensionBeam.get()) bbTriggered = true;
+                if(updatePosition(climbDegree) <= stopTickCount && extensionBeam.get() == false && !bbTriggered){
                     if(stopTickCount - updatePosition(climbDegree) >= 15){
                         leftMotor.set(climbSpeed);
                         rightMotor.set(climbSpeed);
@@ -167,5 +167,3 @@ public class ArmadilloClimber {
     }
 
 }
-
-

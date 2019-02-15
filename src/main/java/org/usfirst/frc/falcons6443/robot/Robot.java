@@ -139,7 +139,7 @@ public class Robot extends TimedRobot {
     private SendableChooser<DriveStyles> driveStyle;
     public static boolean isKillSwitchEnabled = false;
 
-
+private boolean armOut;
     private boolean babyMode = false;
     /**
      * This function is run when the robot is first started up and should be
@@ -153,6 +153,7 @@ public class Robot extends TimedRobot {
         teleop = new TeleopStructure();
         climber = new ArmadilloClimber();
        vacuum = new VacuumSystem();
+
 
 //        autoDrive = new AutoDrive();
   //      autoMain = new AutoMain(autoDrive);
@@ -180,7 +181,8 @@ public class Robot extends TimedRobot {
        // CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
 
         SmartDashboard.putBoolean("Baby Mode", babyMode);
-
+armOut = false;
+controlMethod = (DriveStyles) driveStyle.getSelected();
     }
 
     /*
@@ -191,7 +193,10 @@ public class Robot extends TimedRobot {
     {
         Logger.autoInit();
        // teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.VACUUM, () -> vacuum.getManual(), (Boolean bool) -> vacuum.setManual(bool));
-        autoMain.runAutoPath();
+       // autoMain.runAutoPath();
+       loopCount = 0;
+        
+        
     }
 
     /**
@@ -199,8 +204,17 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousPeriodic() {  
-            controls();
-         }
+        climber.climb();
+     //   vacuum.toggleSuction();
+     //   vacuum.suck();
+//Drive controlled by Left and Right joysticks
+        if(hasLanded == false)
+            land();
+        if(hasLanded == true){
+            driveTrain.generalDrive(primary, controlMethod);
+            //controls();
+        }
+    }
 
     /*
      * Called when the robot first enter teleop mode.
@@ -208,7 +222,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit(){
         Logger.teleopInit();
-        loopCount = 0;
+       
     }
     /**
      * This function is called periodically during operator control.
@@ -216,7 +230,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic()
     {        
-        controlMethod = (DriveStyles) driveStyle.getSelected();
+      
 
         if(!isKillSwitchEnabled){
         controls();
@@ -244,11 +258,8 @@ public class Robot extends TimedRobot {
         }
 
     private void controls(){
-        //Drive controlled by Left and Right joysticks
-       // if(hasLanded == false)
-            //land();
-       // if(hasLanded == true)
-            driveTrain.generalDrive(primary, controlMethod);
+        
+        driveTrain.generalDrive(primary, controlMethod);
 
  //Drive Shifting
  teleop.runOncePerPress(primary.leftBumper(), () -> driveTrain.changeSpeed(false), false);
@@ -257,9 +268,14 @@ public class Robot extends TimedRobot {
  //climb control
  if(secondary.dPadRight()) climber.secondary = true;
  else climber.secondary = false;
- if(climber.secondary && primary.B()) climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbHab);
+ if(climber.secondary && primary.B()){
+     climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbHab);
+     armOut = true;
+ } 
  teleop.runOncePerPress(primary.Y(), () -> climber.setClimb(ArmadilloClimber.ClimbEnum.Off), false);
 
+// if(armOut)
+ //teleop.runOncePerPress(primary.X(),  () -> climber.setClimb(ArmadilloClimber.ClimbEnum.ContractArm), false);
  // Arm control
  //teleop.press(TeleopStructure.ManualControls.VACUUM, secondary.A(), () -> vacuum.moveArmDown());
 // teleop.press(TeleopStructure.ManualControls.VACUUM, secondary.B(), () -> vacuum.moveArmUp());
@@ -275,7 +291,6 @@ public class Robot extends TimedRobot {
 
  climber.climb();
  vacuum.suck();
- climber.bbtest();
 //    teleop.press(secondary.leftBumper(), () -> vacuum.activateBallSuction());
 
  //Alignment Controls (primary - A) (secondary - triggers)
