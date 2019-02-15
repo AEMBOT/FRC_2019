@@ -10,12 +10,12 @@ public class RobotMap {
     //any -1s are not being used and are yet to be specified
 
     //drive train motors
-    public static final int FrontLeftMotor = 3;
-    public static final int BackLeftMotor = 1;
-    public static final int FrontRightMotor = 4;
-    public static final int BackRightMotor = 6;
-    public static final int RightCenterMotor = 5;
-    public static final int LeftCenterMotor = 2;
+    public static final int FrontLeftMotor = 8;
+    public static final int BackLeftMotor = 6;
+    public static final int FrontRightMotor = 1;
+    public static final int BackRightMotor = 3;
+    public static final int RightCenterMotor = 2;
+    public static final int LeftCenterMotor = 7;
 
     //drive train motors Practice Bot	    
     public static final int FrontLeftMotorPB = 0;	  
@@ -24,8 +24,8 @@ public class RobotMap {
     public static final int BackRightMotorPB = 3;
 
     //climber motors
-    public static final int LeftClimbMotor = 7;
-    public static final int RightClimbMotor = 8;
+    public static final int LeftClimbMotor = 5;
+    public static final int RightClimbMotor = 4;
 
     public static final int ClimbArmExtensionBeam= 0;
     public static final int ClimbArmBellySwitch = 2;
@@ -47,6 +47,6 @@ public class RobotMap {
     //vacuum encoders
     public static final int VacuumArmEncoderA = -1;
     public static final int VacuumArmEncoderB = -1;
-    public static final int VacuumHatchMotor = 9;
+    public static final int VacuumHatchMotor = 10;
     public static final int VacuumArmMotor = 11;
 }
