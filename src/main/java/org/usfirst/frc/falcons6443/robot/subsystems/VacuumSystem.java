@@ -48,6 +48,7 @@ public class VacuumSystem {
 
        //armEncoder = new Encoders(RobotMap.VacuumArmEncoderA, RobotMap.VacuumArmEncoderB,EncodingType.k4X);
        toggle = false;
+       hatchVacuumMotor.setInverted(true);
     }
 
     public void setManual(boolean set){
