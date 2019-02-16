@@ -1,6 +1,9 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Ultrasonic;
+
+import javax.sound.sampled.LineEvent;
+
 import org.usfirst.frc.falcons6443.robot.hardware.vision.*;
 
 /**
@@ -49,6 +52,7 @@ public class AssistedPlacement {
     public void enablePlacing() {
         if (lime.getCamMode() == 1.0) {
            lime.setCamMode(0);
+           lime.turnOnLED();
         }
         try {
             Thread.sleep(300);
@@ -64,6 +68,7 @@ public class AssistedPlacement {
         if(isPlacing == true){
             isPlacing = false;
             lime.setCamMode(1);
+            lime.turnOffLED();
             Stop();
         }
     }
@@ -97,6 +102,7 @@ public class AssistedPlacement {
         //If not in this range stop
         else{
             Stop();
+            enableDriverMode();
         }
     }
 
@@ -106,7 +112,7 @@ public class AssistedPlacement {
     public void trackTarget() {
         double x = lime.getX(); // Grabs the current degrees to the x value from the limelight class
         double approxRange = 1.75; // Acceptable range around the target, prevents oscilation
-        double power = 0.15; // Power of the motors
+        double power = 0.08; // Power of the motors
 
         //Checks if the limelight can see the target
         if(lime.getValidTarget() > 0){
@@ -118,9 +124,9 @@ public class AssistedPlacement {
             }   
             
             //Makes sure area is greater than one to limit random small objects being tracked
-            else if(x > approxRange && lime.getArea() > 1) {
+            else if(x > approxRange) {
                 TurnLeft(power);
-            } else if (x < approxRange && lime.getArea() > 1) {
+            } else if (x < approxRange) {
                 TurnRight(power);
             }
         }
@@ -133,7 +139,7 @@ public class AssistedPlacement {
                if(ultrasonic.getRangeInches() <= 12){
                     isPlacing = false;
                     Stop();
-                    //swapCamera();
+                    enableDriverMode();
                }
                else{
 
@@ -148,7 +154,7 @@ public class AssistedPlacement {
            else{
                isPlacing = false;
                Stop();
-               //swapCamera();
+               enableDriverMode();
            }
         }
           
@@ -189,6 +195,17 @@ public class AssistedPlacement {
         drive.leftMotors.set(-power);
         drive.rightMotors.set(power);
     }
+
+    public void enableDriverMode(){
+        lime.turnOffLED();
+        lime.setCamMode(1);
+    }
+
+    public void disableDriverMode(){
+        lime.turnOnLED();
+        lime.setCamMode(0);
+    }
+
 
     /**
      * Method in place to allow for easy driving straight

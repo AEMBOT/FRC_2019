@@ -60,12 +60,12 @@ public class DriveTrainSystem{
     public DriveTrainSystem() {
 
         //2019 Seasson Comp Bot
-        //leftMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontLeftMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackLeftMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.LeftCenterMotor,MotorType.kBrushless));
-        //rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.RightCenterMotor, MotorType.kBrushless));
+        leftMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontLeftMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackLeftMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.LeftCenterMotor,MotorType.kBrushless));
+        rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.RightCenterMotor, MotorType.kBrushless));
 
         //Practice Bot Drive
-        leftMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontLeftMotorPB), new VictorSP(RobotMap.BackLeftMotorPB));
-        rightMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontRightMotorPB), new VictorSP(RobotMap.BackRightMotorPB));
+        //leftMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontLeftMotorPB), new VictorSP(RobotMap.BackLeftMotorPB));
+        //rightMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontRightMotorPB), new VictorSP(RobotMap.BackRightMotorPB));
        
         drive = new DifferentialDrive(leftMotors, rightMotors);
 
