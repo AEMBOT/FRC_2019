@@ -32,8 +32,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  */
 public class DriveTrainSystem{
 
-    private SpeedControllerGroup leftMotors;
-    private SpeedControllerGroup rightMotors;
+    SpeedControllerGroup leftMotors;
+    SpeedControllerGroup rightMotors;
 
     private Encoders leftEncoder; // Encoders clicks per rotation = 49
     //private Encoders rightEncoder;
@@ -86,6 +86,13 @@ public class DriveTrainSystem{
         encoderCheck = new Timer();
     }
 
+    public SpeedControllerGroup getLeftMotors(){
+       return leftMotors;
+    }
+    public SpeedControllerGroup getRightMotors(){
+        return rightMotors;
+     }
+
     /**
      * Singular callable method to quickly change drive styles.
      *
@@ -95,7 +102,8 @@ public class DriveTrainSystem{
      */
     public void generalDrive(Xbox controller, DriveStyles style){
         switch(style){
-
+        
+            
             case Tank:
                 tankDrive(controller.leftStickY() / currentLevel,controller.rightStickY() / currentLevel);
                 break;

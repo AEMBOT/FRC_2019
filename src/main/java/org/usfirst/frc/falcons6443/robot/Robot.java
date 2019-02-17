@@ -12,6 +12,7 @@ import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoDrive;
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoMain;
 import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
@@ -25,11 +26,10 @@ import org.usfirst.frc.falcons6443.robot.utilities.enums.XboxRumble;
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
  * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the build.properties file in the
+ * creating this project, you must also update the Main.java file in the
  * project.
  */
-// If you rename or move this class, update the build.properties file in the
-// project root
+// If you rename or move this class, update the Main.java file in the org folder
 public class Robot extends TimedRobot {
     private Xbox primary;
     private Xbox secondary;
@@ -52,6 +52,7 @@ public class Robot extends TimedRobot {
             0.007874015718698502, 0.007874015718698502, 0.007874015718698502, 0.007874015718698502 };
     private TeleopStructure teleop;
     private DriveTrainSystem driveTrain;
+    private AssistedPlacement assistedPlacement;
     private AutoDrive autoDrive;
     private AutoMain autoMain;
     // private ArmadilloClimberTest climber;
@@ -79,6 +80,8 @@ public class Robot extends TimedRobot {
         teleop = new TeleopStructure();
         vacuum = new VacuumSystem();
         climber = new ArmadilloClimber(vacuum);
+        driveTrain = new DriveTrainSystem();
+        assistedPlacement = new AssistedPlacement(driveTrain);
         
 
         ultrasonic = new Ultrasonic(RobotMap.UltrasonicEchoPin, RobotMap.UltrasonicTrigPin);
@@ -117,9 +120,11 @@ public class Robot extends TimedRobot {
 
     /*
      * Called when the robot first enters autonomous mode.
-     */
+    */
     @Override
-    public void autonomousInit() {
+    public void autonomousInit()
+    {
+        //Starts inits logger and starts the auto path
         Logger.autoInit();
         // teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.VACUUM, () ->
         // vacuum.getManual(), (Boolean bool) -> vacuum.setManual(bool));
@@ -130,11 +135,12 @@ public class Robot extends TimedRobot {
 
     /**
      * This function is called periodically during autonomous.
+     * For 2019 season put all driver code in this block
      */
     @Override
     public void autonomousPeriodic() {
         climber.climb();
-        // vacuum.toggleSuction();
+        vacuum.toggleSuction();
         // vacuum.suck();
         // Drive controlled by Left and Right joysticks
         if (hasLanded == false)
@@ -152,6 +158,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         Logger.teleopInit();
 
+        assistedPlacement.enableDriverMode();
     }
 
     /**
@@ -194,21 +201,42 @@ public class Robot extends TimedRobot {
         }
     }
 
+    /**
+     * This method is where all the driver controls go to allow for driver controlled mode in auto, because sand storm
+     */
     private void controls() {
 
-        driveTrain.generalDrive(primary, controlMethod);
+        //Check if the driver has initated placing, if so block normal driver controls, if not proceede as normal
+        if(assistedPlacement.getPlacing() == false){
+          driveTrain.generalDrive(primary, controlMethod);
+        }
 
-        // Drive Shifting
+        //When pressed initiates placement/retrival for hatch, stops all other driver control apart from kill switch
+        teleop.runOncePerPress(primary.A(), () -> assistedPlacement.enablePlacing(), false);
+        
+        //When pressed it will kill the hatch placement
+        teleop.runOncePerPress(primary.B(), () -> assistedPlacement.disablePlacing(), false);
+
+        //Checks if the driver has initated hatch placement, if so actually track it
+        if(assistedPlacement.getPlacing() == true){
+          assistedPlacement.trackTarget();
+        }
+
+        // Drive Shifting, wasnt working, TODO: Test again
         // teleop.runOncePerPress(primary.leftBumper(), () ->
         // driveTrain.changeSpeed(false), false);
         // teleop.runOncePerPress(primary.rightBumper(), () ->
         // driveTrain.changeSpeed(true), false);
 
-        // climb control
-        if (secondary.dPadRight())
+        //Checks if the right dpad is pushed on the second controller
+        if (secondary.dPadRight()){
             climber.secondary = true;
-        else
+        }
+        else{
             climber.secondary = false;
+        }
+        
+        //Then check if the secondary button is pushed and B on the primary controller is pushed, at this point it starts the climb
         if (climber.secondary && primary.B()) {
             climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbHab);
             armOut = true;
@@ -217,41 +245,43 @@ public class Robot extends TimedRobot {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
             }
-        } 
+        }
+
+        //If Y is pressed then it stops the climber
         teleop.runOncePerPress(primary.Y(), () -> climber.setClimb(ArmadilloClimber.ClimbEnum.Off), false);
 
         // if(armOut)
         //teleop.runOncePerPress(primary.X(),  () -> climber.setClimb(ArmadilloClimber.ClimbEnum.ContractArm), false);
-        // Arm control
-        //teleop.press(TeleopStructure.ManualControls.VACUUM, secondary.A(), () -> vacuum.moveArmDown());
-        //teleop.press(TeleopStructure.ManualControls.VACUUM, secondary.B(), () -> vacuum.moveArmUp());
-        // teleop.press(TeleopStructure.ManualControls.VACUUM, secondary.Y(), () -> vacuum.moveArmBack());
        
+        //Allows setting of different positions for the hatch arm
         teleop.runOncePerPress(secondary.A(), () -> vacuum.enableMovingDown(), false);
         teleop.runOncePerPress(secondary.B(), () -> vacuum.enableCentering(), false);
         teleop.runOncePerPress(secondary.Y(), () -> vacuum.enableMovingBack(), false);
         
+        //Manual Hatch Arm Control
         //if(Math.abs(secondary.leftStickY()) > .2){
         //    vacuum.manual(secondary.leftStickY());
         //}
         //else if(Math.abs(secondary.leftStickY()) < .2)
         //    vacuum.manual(0);
 
-        //if(Math.abs(secondary.leftStickY()) > .2) vacuum.manual(secondary.leftStickY());
-        //else vacuum.manual(0);
-
         //teleop.off(() -> vacuum.manual(0), TeleopStructure.ManualControls.VACUUM/*, secondary.A(), secondary.B(), secondary.Y()*/);
+
         // Vacumm control
         teleop.runOncePerPress(secondary.rightBumper(), () -> vacuum.toggleSuction(), false);
         teleop.off(() -> vacuum.deactivateSuction(), secondary.rightBumper());
 
+        //Will only run if the corresponding buttons have been pushed
         climber.climb();
         vacuum.suck();
-        //    teleop.press(secondary.leftBumper(), () -> vacuum.activateBallSuction());
 
+        //teleop.press(secondary.leftBumper(), () -> vacuum.activateBallSuction());
+
+        //Will only run if the toggle has been enabled
         vacuum.moveArmBack();
         vacuum.moveArmDown();
         vacuum.moveArmUp();
+
         //Alignment Controls (primary - A) (secondary - triggers)
         //__teleop.runOncePerPress(primary.A(), () -> TBDFUNCTION, false);
         //__teleop.runOncePerPress(secondary.rightTrigger(), () -> TBDFUNCTION, false);
