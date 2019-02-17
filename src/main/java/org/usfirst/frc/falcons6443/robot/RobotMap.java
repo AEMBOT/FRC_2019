@@ -17,6 +17,9 @@ public class RobotMap {
    public static final int RightCenterMotor = 2;
    public static final int LeftCenterMotor = 7;
 
+   public static final int UltrasonicEchoPin = 3;
+   public static final int UltrasonicTrigPin = 4;
+
     //drive train motors Practice Bot	    
     public static final int FrontLeftMotorPB = 0;	  
     public static final int BackLeftMotorPB = 1;	   

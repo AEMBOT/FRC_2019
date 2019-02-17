@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Ultrasonic;
 
 import javax.sound.sampled.LineEvent;
 
+import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.vision.*;
 
 /**
@@ -34,7 +35,7 @@ public class AssistedPlacement {
     public AssistedPlacement(DriveTrainSystem drive) {
 
         // Gives the previously created ultrasonic object values, and tells it to automatically collect data
-        ultrasonic = new Ultrasonic(trigPin, echoPin);
+        ultrasonic = new Ultrasonic(RobotMap.UltrasonicEchoPin, RobotMap.UltrasonicTrigPin);
         ultrasonic.setAutomaticMode(true);
 
         //Initilizes a reference to the limelight class and a refernce to the global DriveTrain
@@ -114,6 +115,8 @@ public class AssistedPlacement {
         double approxRange = 1.75; // Acceptable range around the target, prevents oscilation
         double power = 0.08; // Power of the motors
 
+        System.out.println(ultrasonic.getRangeInches());
+
         //Checks if the limelight can see the target
         if(lime.getValidTarget() > 0){
             isPlacing = true; // Sets the is placing variable to true thus locking out normal drivercontrol, kill switch still works
@@ -133,7 +136,7 @@ public class AssistedPlacement {
         else{
 
             //Check if bot is within 19 inches
-           if(ultrasonic.getRangeInches() < 22){
+           if(ultrasonic.getRangeInches() < 40){
 
                //If so check if it is within 9 if so stop if not drive
                if(ultrasonic.getRangeInches() <= 12){
