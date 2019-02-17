@@ -21,7 +21,6 @@ import org.usfirst.frc.falcons6443.robot.utilities.Logger;
 import org.usfirst.frc.falcons6443.robot.utilities.enums.DriveStyles;
 import org.usfirst.frc.falcons6443.robot.utilities.enums.XboxRumble;
 
-
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -29,140 +28,70 @@ import org.usfirst.frc.falcons6443.robot.utilities.enums.XboxRumble;
  * creating this project, you must also update the build.properties file in the
  * project.
  */
-// If you rename or move this class, update the build.properties file in the project root
+// If you rename or move this class, update the build.properties file in the
+// project root
 public class Robot extends TimedRobot {
     private Xbox primary;
     private Xbox secondary;
     private int loopCount = 0;
     private boolean hasLanded = false;
-    private double[] joystickArray = {0.03937007859349251,
-        0.11023622006177902,
-        0.11023622006177902,
-        0.21259842813014984,
-        0.27559053897857666,
-        0.27559053897857666,
-        0.5196850299835205,
-        0.5196850299835205,
-        0.6456692814826965,
-        0.6614173054695129,
-        0.6614173054695129,
-        0.6771653294563293,
-        0.8110235929489136,
-        0.8110235929489136,
-        0.8897637724876404,
-        0.913385808467865,
-        0.913385808467865,
-        0.960629940032959,
-        0.960629940032959,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        0.9921259880065918,
-        0.9921259880065918,
-        0.8661417365074158,
-        0.7322834730148315,
-        0.6929134130477905,
-        0.7007874250411987,
-        0.7086614370346069,
-        0.7086614370346069,
-        0.7007874250411987,
-        0.7007874250411987,
-        0.6535432934761047,
-        0.4645669162273407,
-        0.4645669162273407,
-        0.4724409580230713,
-        0.4724409580230713,
-        0.4724409580230713,
-        0.4566929042339325,
-        0.4488188922405243,
-        0.4330708682537079,
-        0.3937007784843445,
-        0.3937007784843445,
-        0.3937007784843445,
-        0.3858267664909363,
-        0.3858267664909363,
-        0.31496062874794006,
-        0.31496062874794006,
-        0.21259842813014984,
-        0.21259842813014984,
-        0.15748031437397003,
-        0.12598425149917603,
-        0.10236220806837082,
-        0.07874015718698502,
-        0.07874015718698502,
-        0.07086614519357681,
-        0.07086614519357681,
-        0.06299212574958801,
-        0.06299212574958801,
-        0.06299212574958801,
-        0.04724409431219101,
-        0.03937007859349251,
-        0.023622047156095505,
-        0.015748031437397003,
-        0.007874015718698502,
-        0.007874015718698502,
-        0.007874015718698502,
-        0.007874015718698502,
-        0.007874015718698502};
-        private TeleopStructure teleop;
+    private double[] joystickArray = { 0.03937007859349251, 0.11023622006177902, 0.11023622006177902,
+            0.21259842813014984, 0.27559053897857666, 0.27559053897857666, 0.5196850299835205, 0.5196850299835205,
+            0.6456692814826965, 0.6614173054695129, 0.6614173054695129, 0.6771653294563293, 0.8110235929489136,
+            0.8110235929489136, 0.8897637724876404, 0.913385808467865, 0.913385808467865, 0.960629940032959,
+            0.960629940032959, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+            1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9921259880065918, 0.9921259880065918, 0.8661417365074158,
+            0.7322834730148315, 0.6929134130477905, 0.7007874250411987, 0.7086614370346069, 0.7086614370346069,
+            0.7007874250411987, 0.7007874250411987, 0.6535432934761047, 0.4645669162273407, 0.4645669162273407,
+            0.4724409580230713, 0.4724409580230713, 0.4724409580230713, 0.4566929042339325, 0.4488188922405243,
+            0.4330708682537079, 0.3937007784843445, 0.3937007784843445, 0.3937007784843445, 0.3858267664909363,
+            0.3858267664909363, 0.31496062874794006, 0.31496062874794006, 0.21259842813014984, 0.21259842813014984,
+            0.15748031437397003, 0.12598425149917603, 0.10236220806837082, 0.07874015718698502, 0.07874015718698502,
+            0.07086614519357681, 0.07086614519357681, 0.06299212574958801, 0.06299212574958801, 0.06299212574958801,
+            0.04724409431219101, 0.03937007859349251, 0.023622047156095505, 0.015748031437397003, 0.007874015718698502,
+            0.007874015718698502, 0.007874015718698502, 0.007874015718698502, 0.007874015718698502 };
+    private TeleopStructure teleop;
     private DriveTrainSystem driveTrain;
     private AutoDrive autoDrive;
     private AutoMain autoMain;
-    //private ArmadilloClimberTest climber;
+    // private ArmadilloClimberTest climber;
     private VacuumSystem vacuum;
     private DriveStyles controlMethod;
     private ArmadilloClimber climber;
+
+    private Ultrasonic ultrasonic;
 
     public static Preferences prefs;
     private SendableChooser<DriveStyles> driveStyle;
     public static boolean isKillSwitchEnabled = false;
 
-private boolean armOut;
+    private boolean armOut;
     private boolean babyMode = false;
+
     /**
-     * This function is run when the robot is first started up and should be
-     * used for any initialization code.
+     * This function is run when the robot is first started up and should be used
+     * for any initialization code.
      */
     @Override
-    public void robotInit()
-    {
-        primary = new Xbox(new XboxController(0)); //change controller type here
+    public void robotInit() {
+        primary = new Xbox(new XboxController(0)); // change controller type here
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
-        climber = new ArmadilloClimber();
-       vacuum = new VacuumSystem();
-
-
-//        autoDrive = new AutoDrive();
-  //      autoMain = new AutoMain(autoDrive);
-        //CameraServer.getInstance().putVideo();
-        //format 1 is kMJPEG
-        //VideoMode vm = new VideoMode(1, 640, 480, 60);
-        //CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
-        driveTrain = new DriveTrainSystem();
+        vacuum = new VacuumSystem();
+        climber = new ArmadilloClimber(vacuum);
         
+
+        ultrasonic = new Ultrasonic(RobotMap.UltrasonicEchoPin, RobotMap.UltrasonicTrigPin);
+        ultrasonic.setAutomaticMode(true);
+
+        // autoDrive = new AutoDrive();
+        // autoMain = new AutoMain(autoDrive);
+        // CameraServer.getInstance().putVideo();
+        // format 1 is kMJPEG
+        // VideoMode vm = new VideoMode(1, 640, 480, 60);
+        // CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
+        driveTrain = new DriveTrainSystem();
+
         driveStyle = new SendableChooser<DriveStyles>();
         driveStyle.addOption("Tank", DriveStyles.Tank);
         driveStyle.addOption("Arcade", DriveStyles.Arcade);
@@ -172,47 +101,47 @@ private boolean armOut;
 
         SmartDashboard.putData("driveStyle", driveStyle);
 
-
         autoDrive = new AutoDrive();
         autoMain = new AutoMain(autoDrive);
-        //CameraServer.getInstance().putVideo();
-        //format 1 is kMJPEG
+        // CameraServer.getInstance().putVideo();
+        // format 1 is kMJPEG
         VideoMode vm = new VideoMode(1, 640, 480, 60);
-       // CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
+        // CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
 
         SmartDashboard.putBoolean("Baby Mode", babyMode);
-armOut = false;
-controlMethod = (DriveStyles) driveStyle.getSelected();
+        armOut = false;
+        controlMethod = (DriveStyles) driveStyle.getSelected();
+        teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.VACUUM, () -> vacuum.getManual(),
+                (Boolean set) -> vacuum.setManual(set));
     }
 
     /*
      * Called when the robot first enters autonomous mode.
-            */
+     */
     @Override
-    public void autonomousInit()
-    {
+    public void autonomousInit() {
         Logger.autoInit();
-       // teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.VACUUM, () -> vacuum.getManual(), (Boolean bool) -> vacuum.setManual(bool));
-       // autoMain.runAutoPath();
-       loopCount = 0;
-        
-        
+        // teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.VACUUM, () ->
+        // vacuum.getManual(), (Boolean bool) -> vacuum.setManual(bool));
+        // autoMain.runAutoPath();
+        loopCount = 0;
+
     }
 
     /**
      * This function is called periodically during autonomous.
      */
     @Override
-    public void autonomousPeriodic() {  
+    public void autonomousPeriodic() {
         climber.climb();
-     //   vacuum.toggleSuction();
-     //   vacuum.suck();
-//Drive controlled by Left and Right joysticks
-        if(hasLanded == false)
+        // vacuum.toggleSuction();
+        // vacuum.suck();
+        // Drive controlled by Left and Right joysticks
+        if (hasLanded == false)
             land();
-        if(hasLanded == true){
+        if (hasLanded == true) {
             driveTrain.generalDrive(primary, controlMethod);
-            //controls();
+            // controls();
         }
     }
 
@@ -220,82 +149,114 @@ controlMethod = (DriveStyles) driveStyle.getSelected();
      * Called when the robot first enter teleop mode.
      */
     @Override
-    public void teleopInit(){
+    public void teleopInit() {
         Logger.teleopInit();
-       
+
     }
+
     /**
      * This function is called periodically during operator control.
      */
     @Override
-    public void teleopPeriodic()
-    {        
-      
+    public void teleopPeriodic() {
 
-        if(!isKillSwitchEnabled){
-        controls();
-    
-        } else{
+        // System.out.println(ultrasonic.getRangeInches());
+        if (vacuum.getEncoderStatus() == false) {
+            vacuum.resetArmEncoder();
+        }
 
-        //manual climber control
-        climber.manualControl(primary.rightStickY());
+        if (!isKillSwitchEnabled && vacuum.getEncoderStatus() == true) {
+            controls();
 
-        //control reset
-        teleop.runOncePerPress(primary.seven(), () -> isKillSwitchEnabled = false, false);    
+        } else {
+
+            if (vacuum.getEncoderStatus() == true)
+                // manual climber control
+                climber.manualControl(primary.rightStickY());
+
+            // control reset
+            teleop.runOncePerPress(primary.seven(), () -> isKillSwitchEnabled = false, false);
 
         }
-       
+
         teleop.periodicEnd();
     }
 
-    private void land(){
-        
-            driveTrain.arcadeDrive(0,joystickArray[loopCount]);
-            loopCount++;
-            if(loopCount == joystickArray.length-15){
-                hasLanded = true;
-            }
-        }
+    /**
+     * Method Called to drive the robot off the level 2 hab
+     */
+    private void land() {
 
-    private void controls(){
-        
+        driveTrain.arcadeDrive(0, joystickArray[loopCount]);
+        loopCount++;
+        if (loopCount == joystickArray.length - 15) {
+            hasLanded = true;
+        }
+    }
+
+    private void controls() {
+
         driveTrain.generalDrive(primary, controlMethod);
 
- //Drive Shifting
- teleop.runOncePerPress(primary.leftBumper(), () -> driveTrain.changeSpeed(false), false);
- teleop.runOncePerPress(primary.rightBumper(), () -> driveTrain.changeSpeed(true), false);
+        // Drive Shifting
+        // teleop.runOncePerPress(primary.leftBumper(), () ->
+        // driveTrain.changeSpeed(false), false);
+        // teleop.runOncePerPress(primary.rightBumper(), () ->
+        // driveTrain.changeSpeed(true), false);
 
- //climb control
- if(secondary.dPadRight()) climber.secondary = true;
- else climber.secondary = false;
- if(climber.secondary && primary.B()){
-     climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbHab);
-     armOut = true;
- } 
- teleop.runOncePerPress(primary.Y(), () -> climber.setClimb(ArmadilloClimber.ClimbEnum.Off), false);
+        // climb control
+        if (secondary.dPadRight())
+            climber.secondary = true;
+        else
+            climber.secondary = false;
+        if (climber.secondary && primary.B()) {
+            climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbHab);
+            armOut = true;
+            vacuum.enableMovingDown();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+            }
+        } 
+        teleop.runOncePerPress(primary.Y(), () -> climber.setClimb(ArmadilloClimber.ClimbEnum.Off), false);
 
-// if(armOut)
- //teleop.runOncePerPress(primary.X(),  () -> climber.setClimb(ArmadilloClimber.ClimbEnum.ContractArm), false);
- // Arm control
- //teleop.press(TeleopStructure.ManualControls.VACUUM, secondary.A(), () -> vacuum.moveArmDown());
-// teleop.press(TeleopStructure.ManualControls.VACUUM, secondary.B(), () -> vacuum.moveArmUp());
-// teleop.press(TeleopStructure.ManualControls.VACUUM, secondary.Y(), () -> vacuum.moveArmBack());
-// teleop.manual(TeleopStructure.ManualControls.VACUUM, secondary.leftStickY(), (Double val) -> vacuum.manual(val));
+        // if(armOut)
+        //teleop.runOncePerPress(primary.X(),  () -> climber.setClimb(ArmadilloClimber.ClimbEnum.ContractArm), false);
+        // Arm control
+        //teleop.press(TeleopStructure.ManualControls.VACUUM, secondary.A(), () -> vacuum.moveArmDown());
+        //teleop.press(TeleopStructure.ManualControls.VACUUM, secondary.B(), () -> vacuum.moveArmUp());
+        // teleop.press(TeleopStructure.ManualControls.VACUUM, secondary.Y(), () -> vacuum.moveArmBack());
+       
+        teleop.runOncePerPress(secondary.A(), () -> vacuum.enableMovingDown(), false);
+        teleop.runOncePerPress(secondary.B(), () -> vacuum.enableCentering(), false);
+        teleop.runOncePerPress(secondary.Y(), () -> vacuum.enableMovingBack(), false);
+        
+        //if(Math.abs(secondary.leftStickY()) > .2){
+        //    vacuum.manual(secondary.leftStickY());
+        //}
+        //else if(Math.abs(secondary.leftStickY()) < .2)
+        //    vacuum.manual(0);
 
- if(Math.abs(secondary.leftStickY()) > .2) vacuum.manual(secondary.leftStickY());
- else vacuum.manual(0);
- //teleop.off(() -> vacuum.manual(0), TeleopStructure.ManualControls.VACUUM/*, secondary.A(), secondary.B(), secondary.Y()*/);
- // Vacumm control
- teleop.runOncePerPress(secondary.rightBumper(), () -> vacuum.toggleSuction(), false);
- teleop.off(() -> vacuum.deactivateSuction(), secondary.rightBumper());
+        //if(Math.abs(secondary.leftStickY()) > .2) vacuum.manual(secondary.leftStickY());
+        //else vacuum.manual(0);
 
- climber.climb();
- vacuum.suck();
-//    teleop.press(secondary.leftBumper(), () -> vacuum.activateBallSuction());
+        //teleop.off(() -> vacuum.manual(0), TeleopStructure.ManualControls.VACUUM/*, secondary.A(), secondary.B(), secondary.Y()*/);
+        // Vacumm control
+        teleop.runOncePerPress(secondary.rightBumper(), () -> vacuum.toggleSuction(), false);
+        teleop.off(() -> vacuum.deactivateSuction(), secondary.rightBumper());
 
- //Alignment Controls (primary - A) (secondary - triggers)
- //__teleop.runOncePerPress(primary.A(), () -> TBDFUNCTION, false);
- //__teleop.runOncePerPress(secondary.rightTrigger(), () -> TBDFUNCTION, false);
+        climber.climb();
+        vacuum.suck();
+        //    teleop.press(secondary.leftBumper(), () -> vacuum.activateBallSuction());
+
+        vacuum.moveArmBack();
+        vacuum.moveArmDown();
+        vacuum.moveArmUp();
+        //Alignment Controls (primary - A) (secondary - triggers)
+        //__teleop.runOncePerPress(primary.A(), () -> TBDFUNCTION, false);
+        //__teleop.runOncePerPress(secondary.rightTrigger(), () -> TBDFUNCTION, false);
+    
+    
     }
 
     /**

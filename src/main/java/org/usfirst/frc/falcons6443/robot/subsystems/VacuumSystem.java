@@ -29,6 +29,11 @@ public class VacuumSystem {
     private LimitSwitch topSwitch;
     private LimitSwitch bottomSwitch;
     private boolean isManual = true;
+    private boolean isEncoderReset = false;
+
+    private boolean isMovingBack = false;
+    private boolean isCentering = false;
+    private boolean isMovingDown = false;
 
     private boolean toggle;
 
@@ -43,12 +48,16 @@ public class VacuumSystem {
        // ballVacuumMotor = new CANSparkMax(RobotMap.VacuumBallMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
         hatchVacuumMotor = new CANSparkMax(RobotMap.VacuumHatchMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
 
-    //    topSwitch = new LimitSwitch(RobotMap.VacuumArmTopSwitch);
+          topSwitch = new LimitSwitch(RobotMap.VacuumArmTopSwitch);
     //    bottomSwitch = new LimitSwitch(RobotMap.VacuumArmBottomSwitch);
 
        //armEncoder = new Encoders(RobotMap.VacuumArmEncoderA, RobotMap.VacuumArmEncoderB,EncodingType.k4X);
        toggle = false;
        hatchVacuumMotor.setInverted(true);
+    }
+
+    public boolean getEncoderStatus(){
+        return isEncoderReset;
     }
 
     public void setManual(boolean set){
@@ -78,44 +87,101 @@ public class VacuumSystem {
       //  ballVacuumMotor.set(0);
     }
 
+    /**
+     * Resets arm encoder values when limit switch is pressed
+     */
+    public void resetArmEncoder(){
+        if(topSwitch.get()){
+            armMotor.setSelectedSensorPosition(0);
+            armMotor.set(ControlMode.PercentOutput, 0);
+            isEncoderReset = true;
+        }
+        else{
+            armMotor.set(ControlMode.PercentOutput, -1);
+        }
+    }
+
     public void deactivateSuction() { //Used for deactivation of both vacuum motors
         hatchVacuumMotor.set(0);
      //   ballVacuumMotor.set(0);
     }
 
+    public void enableCentering(){
+        isCentering = true;
+    }
+
+    public void enableMovingDown(){
+        isMovingDown = true;
+    }
+
+    public void enableMovingBack(){
+        isMovingBack = true;
+    }
+
+
     public void manual(double val){
-        armMotor.set(ControlMode.PercentOutput, val);
+        //if(!topSwitch.get()){
+            if(Math.abs(val) > 0.2){
+                armMotor.set(ControlMode.PercentOutput, val);
+                System.out.println(armMotor.getSelectedSensorPosition());
+                isManual = true;
+            } else {
+                isManual = false;
+                armMotor.set(ControlMode.PercentOutput, 0);
+            }
+        //}
+        //else{
+            //armMotor.set(ControlMode.PercentOutput, 0);
+        //}
     }
 
     //moves arm for floor pickup 
     public void moveArmDown() {
-        armMotor.set(ControlMode.PercentOutput, 1);
-        System.out.println(armMotor.getSelectedSensorPosition());
-        if (bottomSwitch.get()) {
-            armMotor.set(ControlMode.PercentOutput, 0);
-            armMotor.setSelectedSensorPosition(0);
+        if(isMovingDown){
+                //if(!isManual){
+                if(armMotor.getSelectedSensorPosition() < 1784){
+                    armMotor.set(ControlMode.PercentOutput, 1);
+                }
+                else{
+                    armMotor.set(ControlMode.PercentOutput, 0);
+                    isMovingDown = false;
+                }
+            //}
         }
     }
 
-    //moves arm for hatch placement/retrieval
+    /**
+     * Moves the hatch arm to a point were it can pick up/ place a hatch
+     */
     public void moveArmUp() {
-            if(armMotor.getSelectedSensorPosition() >= armStopPosition - 5) {
-                armMotor.set(ControlMode.PercentOutput, 0.75); //move arm forwards until vertical position
-            } else if (armMotor.getSelectedSensorPosition() <= armStopPosition + 5) {
-                armMotor.set(ControlMode.PercentOutput, -0.75); //move arm backwards until vertical position
-            } else {
-                armMotor.set(ControlMode.PercentOutput, 0); //Stop arm at vertical position
-                armMotor.setSelectedSensorPosition(0);
-            }
+        if(isCentering){
+            //if(!isManual){
+                if(armMotor.getSelectedSensorPosition() < 610){
+                    armMotor.set(ControlMode.PercentOutput, 1);
+                }
+                else if(armMotor.getSelectedSensorPosition() > 640){
+                    armMotor.set(ControlMode.PercentOutput, -1);
+                }
+                else{
+                    armMotor.set(ControlMode.PercentOutput, 0);
+                    isCentering = false;
+                }
+            //}
         }
+    }
 
     //moves arm back to starting postion
     public void moveArmBack() {
-        armMotor.set(ControlMode.PercentOutput, -0.75);
-        System.out.println(armMotor.getSelectedSensorPosition());
-        if (armMotor.getSelectedSensorPosition() <= 5) {
-            armMotor.set(ControlMode.PercentOutput, 0);
-            armMotor.setSelectedSensorPosition(0);
+        if(isMovingBack){
+            //if(!isManual){
+                if(armMotor.getSelectedSensorPosition() > 0){
+                    armMotor.set(ControlMode.PercentOutput, -1);
+                }
+                else{
+                    armMotor.set(ControlMode.PercentOutput, 0);
+                    isMovingBack = false;
+                }
+            //}
         }
     }
 }

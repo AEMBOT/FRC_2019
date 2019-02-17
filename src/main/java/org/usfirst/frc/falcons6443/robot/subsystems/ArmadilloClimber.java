@@ -32,7 +32,7 @@ public class ArmadilloClimber {
     //Change to a point where the encoders will stop
     private final int stopTickCount = 285;
     private double climbSpeed = 1;
-    private int armUpTickCount = 95;
+    private int armUpTickCount = 225;
 
     private ClimbEnum position;
     private boolean first;
@@ -40,10 +40,12 @@ public class ArmadilloClimber {
 
     public boolean secondary;
 
+    private VacuumSystem vacuum;
+
     //Set to the diameter of the wheel in inches
     private static final double wheelDiameter = 6;
 
-    public ArmadilloClimber() {
+    public ArmadilloClimber(VacuumSystem vacuum) {
 
         //Assigns the motors to the proper mappings
         rightMotor = new CANSparkMax(RobotMap.RightClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -57,6 +59,8 @@ public class ArmadilloClimber {
 
         //maps encoders to ports
         leftEncoder = leftMotor.getEncoder();
+
+        this.vacuum = vacuum;
 
         //set encoder ticks per rev
        // leftEncoder.setTicksPerRev(encoderTicks);
@@ -83,6 +87,7 @@ public class ArmadilloClimber {
         }else {
             leftMotor.set(0);
             rightMotor.set(0);
+
         } }
     }
 
@@ -121,6 +126,8 @@ public class ArmadilloClimber {
                 if(first) climbDegree = leftEncoder.getPosition();
                 first = false;
 
+                vacuum.enableMovingDown();
+
                 if(extensionBeam.get()) bbTriggered = true;
                 if(updatePosition(climbDegree) <= stopTickCount && extensionBeam.get() == false && !bbTriggered){
                     if(stopTickCount - updatePosition(climbDegree) >= 15){
@@ -136,6 +143,7 @@ public class ArmadilloClimber {
                 isClimbingArmDown = true;
                 leftMotor.set(0);
                 rightMotor.set(0);
+                setClimb(ClimbEnum.ContractArm);
                 }
                 break;
             case ContractArm:

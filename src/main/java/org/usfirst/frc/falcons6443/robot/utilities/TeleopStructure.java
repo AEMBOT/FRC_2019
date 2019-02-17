@@ -109,6 +109,7 @@ public class TeleopStructure {
     //This action will only run once, unlike press() which runs periodically until unpressed
     public void runOncePerPress(boolean button, Runnable function, boolean unpressedMode){
         if(first) runOnceSavedData.add(IDs[0], false);
+        runOnceSavedData.add(IDs[0], false);
         if(button){
             if(!unpressedMode && !runOnceSavedData.get(IDs[0])){
                 function.run();

@@ -30,6 +30,9 @@ public class RobotMap {
     public static final int ClimbArmExtensionBeam= 0;
     public static final int ClimbArmBellySwitch = 2;
 
+    public static final int UltrasonicEchoPin = 4;
+    public static final int UltrasonicTrigPin = 3;
+ 
     //drive train encoders
     //public static final int LeftEncoderA = -1;
     //public static final int LeftEncoderB = -1;
@@ -37,7 +40,7 @@ public class RobotMap {
     //public static final int RightEncoderB = -1;
 
     //limit switches
-    public static final int VacuumArmTopSwitch = -1;
+    public static final int VacuumArmTopSwitch = 9;
     public static final int VacuumArmBottomSwitch = -1;
 
 

@@ -229,7 +229,7 @@ public class DriveTrainSystem{
 
     // param upOrDown: false = shift down, true = shift up. changes index of array to give max speed value
     public void changeSpeed (boolean upOrDown){
-        if(upOrDown && speedIndex < 3){
+        if(upOrDown && speedIndex < speedLevels.length){
             speedIndex += 1;
             currentLevel = speedLevels[speedIndex];
         }
