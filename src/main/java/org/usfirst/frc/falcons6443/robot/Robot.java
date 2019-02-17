@@ -133,6 +133,8 @@ public class Robot extends TimedRobot {
         // teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.VACUUM, () ->
         // vacuum.getManual(), (Boolean bool) -> vacuum.setManual(bool));
         // autoMain.runAutoPath();
+
+        encoderResetTimer.start();
         loopCount = 0;
 
     }
@@ -149,9 +151,11 @@ public class Robot extends TimedRobot {
         //Checks if the limit switch on the hatch arm has been pressed, if not wait 3 seconds and then 0 the arm to its current position
         if (vacuum.getEncoderStatus() == false) {
             vacuum.resetArmEncoder();
+            encoderResetTimer.stop();
         }
-        else if(encoderResetTimer.get() > 3){
+        else if(encoderResetTimer.get() > 1.5 && vacuum.getEncoderStatus() == false){
             vacuum.resetArmEncoder();
+            encoderResetTimer.stop();
         }
 
         // vacuum.suck();
@@ -172,7 +176,7 @@ public class Robot extends TimedRobot {
         Logger.teleopInit();
 
         assistedPlacement.enableDriverMode();
-        encoderResetTimer.start();
+        
     }
 
     /**
@@ -184,14 +188,13 @@ public class Robot extends TimedRobot {
 
 
         //If the kill switch has not been pressed and the vacuum has been 0ed then enable normal match controls
-        if (!isKillSwitchEnabled && vacuum.getEncoderStatus() == true) {
+        if (!isKillSwitchEnabled) {
             controls();
 
         } else {
 
-            if (vacuum.getEncoderStatus() == true)
-                //manual climber control
-                climber.manualControl(primary.rightStickY());
+            //manual climber control
+            climber.manualControl(primary.rightStickY());
 
             // control reset
             teleop.runOncePerPress(primary.seven(), () -> isKillSwitchEnabled = false, false);
