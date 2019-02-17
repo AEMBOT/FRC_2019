@@ -146,6 +146,9 @@ public class Xbox {
         return controller.getPOV(0) == 180;
     }
 
+    /**
+     * @return if the dpad is pushed to the right
+     */
     public boolean dPadRight(){
         return controller.getPOV(0) == 90;
     }

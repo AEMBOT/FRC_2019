@@ -35,6 +35,8 @@ public class VacuumSystem {
     private boolean isCentering = false;
     private boolean isMovingDown = false;
 
+    private int currentHatchPosition = 0;
+
     private boolean toggle;
 
   //  private Encoders armEncoder;
@@ -45,17 +47,18 @@ public class VacuumSystem {
         armMotor = new TalonSRX(RobotMap.VacuumArmMotor);
         armMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
-       // ballVacuumMotor = new CANSparkMax(RobotMap.VacuumBallMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
+        //ballVacuumMotor = new CANSparkMax(RobotMap.VacuumBallMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
         hatchVacuumMotor = new CANSparkMax(RobotMap.VacuumHatchMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
 
-          topSwitch = new LimitSwitch(RobotMap.VacuumArmTopSwitch);
-    //    bottomSwitch = new LimitSwitch(RobotMap.VacuumArmBottomSwitch);
+        topSwitch = new LimitSwitch(RobotMap.VacuumArmTopSwitch);
+        //bottomSwitch = new LimitSwitch(RobotMap.VacuumArmBottomSwitch);
 
        //armEncoder = new Encoders(RobotMap.VacuumArmEncoderA, RobotMap.VacuumArmEncoderB,EncodingType.k4X);
        toggle = false;
        hatchVacuumMotor.setInverted(true);
     }
 
+    //Checks the status as to weather or not the encoder has been reset
     public boolean getEncoderStatus(){
         return isEncoderReset;
     }
@@ -68,10 +71,13 @@ public class VacuumSystem {
         return isManual;
     }
 
+
+    //Turns on a variable that will tell the vacuum whether or not it should be toggled on
     public void toggleSuction(){
         toggle = !toggle;
     }
 
+    //Turns on the motors for the vacuum to suck
     public void suck(){
         if(toggle) hatchVacuumMotor.set(1);
         else hatchVacuumMotor.set(0);
@@ -80,6 +86,38 @@ public class VacuumSystem {
     public void activateBallSuction() {
         ballVacuumMotor.set(1);
         hatchVacuumMotor.set(0);
+    }
+
+
+    //Called whenever up on the dpad is pressed allowing the arm to move one position up
+    public void raiseHatchArm(){
+        if(currentHatchPosition > 0){
+            switch(currentHatchPosition){
+                case 1:
+                    enableMovingBack();
+                    currentHatchPosition--;
+                    break;
+                case 2:
+                    enableCentering();
+                    currentHatchPosition--;
+                    break;
+            }
+        }
+    }
+
+    //Called when down on the dpad is pressed allowing it to move one position down
+    public void lowerHatchArm(){
+        if(currentHatchPosition < 2){
+            switch(currentHatchPosition){
+                case 0:
+                    enableCentering();
+                    currentHatchPosition++;
+                case 1:
+                    enableMovingDown();
+                    currentHatchPosition++;
+            }
+
+        }
     }
 
     public void activateHatchSuction() {
@@ -106,16 +144,25 @@ public class VacuumSystem {
      //   ballVacuumMotor.set(0);
     }
 
+    //Enables centering sets the rest to false to allow for priority
     public void enableCentering(){
         isCentering = true;
+        isMovingDown = false;
+        isMovingBack = false;
     }
 
+    //Enables moving down sets the rest to false to allow for priority
     public void enableMovingDown(){
         isMovingDown = true;
+        isCentering = false;
+        isMovingBack = false;
     }
 
+    //Enables moving back the rest to false to allow for priority
     public void enableMovingBack(){
         isMovingBack = true;
+        isCentering = false;
+        isMovingDown = false;
     }
 
 

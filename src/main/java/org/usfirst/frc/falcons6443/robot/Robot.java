@@ -68,6 +68,7 @@ public class Robot extends TimedRobot {
 
     private boolean armOut;
     private boolean babyMode = false;
+    private Timer encoderResetTimer;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -82,8 +83,11 @@ public class Robot extends TimedRobot {
         climber = new ArmadilloClimber(vacuum);
         driveTrain = new DriveTrainSystem();
         assistedPlacement = new AssistedPlacement(driveTrain);
+
+        encoderResetTimer = new Timer();
         
 
+        //Creates a new ultrasonic reference and assigns the pins to the correct DIO pins
         ultrasonic = new Ultrasonic(RobotMap.UltrasonicEchoPin, RobotMap.UltrasonicTrigPin);
         ultrasonic.setAutomaticMode(true);
 
@@ -135,30 +139,40 @@ public class Robot extends TimedRobot {
 
     /**
      * This function is called periodically during autonomous.
-     * For 2019 season put all driver code in this block
+     * For 2019 season put all sandstorm code in this block
      */
     @Override
     public void autonomousPeriodic() {
         climber.climb();
         vacuum.toggleSuction();
+
+        //Checks if the limit switch on the hatch arm has been pressed, if not wait 3 seconds and then 0 the arm to its current position
+        if (vacuum.getEncoderStatus() == false) {
+            vacuum.resetArmEncoder();
+        }
+        else if(encoderResetTimer.get() > 3){
+            vacuum.resetArmEncoder();
+        }
+
         // vacuum.suck();
-        // Drive controlled by Left and Right joysticks
-        if (hasLanded == false)
+        // After the vacuum has started, and the climber has raised up to the bottom of the bot, and the arm has 0ed then call land and simulate driving off the platform
+        if (hasLanded == false && vacuum.getEncoderStatus() == true)
             land();
         if (hasLanded == true) {
-            driveTrain.generalDrive(primary, controlMethod);
-            // controls();
+            controls();
         }
     }
 
     /*
      * Called when the robot first enter teleop mode.
+     * This currently just swaps the camera to driver mode as opposed to vision processing
      */
     @Override
     public void teleopInit() {
         Logger.teleopInit();
 
         assistedPlacement.enableDriverMode();
+        encoderResetTimer.start();
     }
 
     /**
@@ -167,18 +181,16 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
 
-        // System.out.println(ultrasonic.getRangeInches());
-        if (vacuum.getEncoderStatus() == false) {
-            vacuum.resetArmEncoder();
-        }
 
+
+        //If the kill switch has not been pressed and the vacuum has been 0ed then enable normal match controls
         if (!isKillSwitchEnabled && vacuum.getEncoderStatus() == true) {
             controls();
 
         } else {
 
             if (vacuum.getEncoderStatus() == true)
-                // manual climber control
+                //manual climber control
                 climber.manualControl(primary.rightStickY());
 
             // control reset
@@ -191,6 +203,7 @@ public class Robot extends TimedRobot {
 
     /**
      * Method Called to drive the robot off the level 2 hab
+     * Simulates driver control and replays it to the bot
      */
     private void land() {
 
@@ -202,7 +215,7 @@ public class Robot extends TimedRobot {
     }
 
     /**
-     * This method is where all the driver controls go to allow for driver controlled mode in auto, because sand storm
+     * This method is where all the driver controls go to allow for driver controlled mode in auto, because sandstorm
      */
     private void controls() {
 
@@ -223,10 +236,8 @@ public class Robot extends TimedRobot {
         }
 
         // Drive Shifting, wasnt working, TODO: Test again
-        // teleop.runOncePerPress(primary.leftBumper(), () ->
-        // driveTrain.changeSpeed(false), false);
-        // teleop.runOncePerPress(primary.rightBumper(), () ->
-        // driveTrain.changeSpeed(true), false);
+        // teleop.runOncePerPress(primary.leftBumper(), () -> driveTrain.changeSpeed(false), false);
+        // teleop.runOncePerPress(primary.rightBumper(), () -> driveTrain.changeSpeed(true), false);
 
         //Checks if the right dpad is pushed on the second controller
         if (secondary.dPadRight()){
@@ -241,6 +252,8 @@ public class Robot extends TimedRobot {
             climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbHab);
             armOut = true;
             vacuum.enableMovingDown();
+            
+            //We could probably use a timer here but this works and I dont want to break the hatch arm
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -253,10 +266,15 @@ public class Robot extends TimedRobot {
         // if(armOut)
         //teleop.runOncePerPress(primary.X(),  () -> climber.setClimb(ArmadilloClimber.ClimbEnum.ContractArm), false);
        
-        //Allows setting of different positions for the hatch arm
-        teleop.runOncePerPress(secondary.A(), () -> vacuum.enableMovingDown(), false);
-        teleop.runOncePerPress(secondary.B(), () -> vacuum.enableCentering(), false);
-        teleop.runOncePerPress(secondary.Y(), () -> vacuum.enableMovingBack(), false);
+
+        //Increments/Decrements the position by one spot each time a specific dpad is pressed
+        teleop.runOncePerPress(secondary.dPadUp(), () -> vacuum.lowerHatchArm(), false);
+        teleop.runOncePerPress(secondary.dPadDown(), () -> vacuum.raiseHatchArm(), false);
+
+        //Allows setting of different positions for the hatch arm, manual auto, different buttons for each position
+        //teleop.runOncePerPress(secondary.A(), () -> vacuum.enableMovingDown(), false);
+        //teleop.runOncePerPress(secondary.B(), () -> vacuum.enableCentering(), false);
+        //teleop.runOncePerPress(secondary.Y(), () -> vacuum.enableMovingBack(), false);
         
         //Manual Hatch Arm Control
         //if(Math.abs(secondary.leftStickY()) > .2){
