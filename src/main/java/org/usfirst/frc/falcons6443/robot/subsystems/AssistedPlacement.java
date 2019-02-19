@@ -2,8 +2,6 @@ package org.usfirst.frc.falcons6443.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Ultrasonic;
 
-import javax.sound.sampled.LineEvent;
-
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.vision.*;
 
@@ -14,9 +12,6 @@ import org.usfirst.frc.falcons6443.robot.hardware.vision.*;
  */
 public class AssistedPlacement {
 
-    //Assigns DIO pins for ultrasonic sensor
-    private final int echoPin = 0;
-    private final int trigPin = 1;
 
     //Creates a new WPILIB Ultrasonic reference
     private Ultrasonic ultrasonic;
@@ -51,15 +46,17 @@ public class AssistedPlacement {
      *  Then it will wait 300ms to allow enough time for the vision camera to begin tracking the new object
      */
     public void enablePlacing() {
-        if (lime.getCamMode() == 1.0) {
-           lime.setCamMode(0);
-           lime.turnOnLED();
+        if(isPlacing == false){
+            if (lime.getCamMode() == 1.0) {
+            lime.setCamMode(0);
+            lime.turnOnLED();
+            }
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+            }
+            isPlacing = true;
         }
-        try {
-            Thread.sleep(300);
-        } catch (InterruptedException e) {
-        }
-        isPlacing = true;
     }
 
     /**
@@ -72,6 +69,15 @@ public class AssistedPlacement {
             lime.turnOffLED();
             Stop();
         }
+    }
+
+    public void toggleTracking(){
+        isPlacing = !isPlacing;
+        if(isPlacing == false)
+            enablePlacing();
+        else
+            disablePlacing();
+
     }
 
     /**
@@ -92,12 +98,12 @@ public class AssistedPlacement {
 
         //Checks if the distance is greater than 32 inches (3 inch buffer, inertia)
         if(ultrasonic.getRangeInches() > 35.6){
-            DriveForward(-0.5);
+            DriveForward(-0.2);
         }
 
         //If the ultrasonic sensor returns a value in between 32 inches and 9 inches slow down for final alignment 
-        else if(ultrasonic.getRangeInches() < 35.6 && ultrasonic.getRangeInches() > 9.6){
-            DriveForward(-0.1);
+        else if(ultrasonic.getRangeInches() < 35.6){
+            DriveForward(-0.07);
         }
         
         //If not in this range stop
@@ -112,7 +118,7 @@ public class AssistedPlacement {
      */
     public void trackTarget() {
         double x = lime.getX(); // Grabs the current degrees to the x value from the limelight class
-        double approxRange = 1.75; // Acceptable range around the target, prevents oscilation
+        double approxRange = 1.9; // Acceptable range around the target, prevents oscilation
         double power = 0.08; // Power of the motors
 
         System.out.println(ultrasonic.getRangeInches());
@@ -139,7 +145,7 @@ public class AssistedPlacement {
            if(ultrasonic.getRangeInches() < 40){
 
                //If so check if it is within 9 if so stop if not drive
-               if(ultrasonic.getRangeInches() <= 12){
+               if(ultrasonic.getRangeInches() <= 14){
                     isPlacing = false;
                     Stop();
                     enableDriverMode();

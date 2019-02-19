@@ -27,12 +27,12 @@ public class RobotMap {
     public static final int LeftClimbMotor = 5;
     public static final int RightClimbMotor = 4;
 
-    public static final int ClimbArmExtensionBeam= 0;
+    public static final int ClimbArmExtensionBeam = 0;
     public static final int ClimbArmBellySwitch = 2;
 
     //Ultrasonic sensor DIO connection pins
-    public static final int UltrasonicEchoPin = 4;
-    public static final int UltrasonicTrigPin = 3;
+    public static final int UltrasonicEchoPin = 3;
+    public static final int UltrasonicTrigPin = 4;
  
     //drive train encoders
     //public static final int LeftEncoderA = -1;
@@ -40,8 +40,11 @@ public class RobotMap {
     //public static final int RightEncoderA = -1;
     //public static final int RightEncoderB = -1;
 
+    public static final int ArmEncoderA = 6;
+    public static final int ArmEncoderB = 7;
+
     //limit switches
-    public static final int VacuumArmTopSwitch = 9;
+    public static final int VacuumArmTopSwitch = 8;
     public static final int VacuumArmBottomSwitch = -1;
 
 

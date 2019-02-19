@@ -32,7 +32,7 @@ public class ArmadilloClimber {
     //Change to a point where the encoders will stop
     private final int stopTickCount = 285;
     private double climbSpeed = 1;
-    private int armUpTickCount = 225;
+    private int armUpTickCount = 130;
 
     private ClimbEnum position;
     private boolean first;
@@ -80,15 +80,15 @@ public class ArmadilloClimber {
     }
 
     public void steady(){
-        if(steady){
-        if(!bellySwitch.get()) {
-            leftMotor.set(-.3);
-            rightMotor.set(-.3);
-        }else {
-            leftMotor.set(0);
-            rightMotor.set(0);
-
-        } }
+         if(steady){
+         if(!bellySwitch.get()) {
+             leftMotor.set(-.3);
+             rightMotor.set(-.3);
+         }else {
+             leftMotor.set(0);
+             rightMotor.set(0);
+            } 
+        }
     }
 
     public void enableClimb(){
@@ -116,6 +116,8 @@ public class ArmadilloClimber {
     //Begin climb
     double climbDegree;
     public void climb(){
+
+       
         switch(position){
             case Steady:
                 steady = true;
@@ -154,10 +156,15 @@ public class ArmadilloClimber {
                         System.out.println(updatePosition(climbDegree));
                         Logger.log(LoggerSystems.Climb,"" + updatePosition(climbDegree));
                     }
-                } else {
+                    else {
+                        rightMotor.set(0);
+                        leftMotor.set(0);
+                    } 
+                }
+                else {
                     rightMotor.set(0);
                     leftMotor.set(0);
-                }
+                } 
                 break;
                 case Off:
                     leftMotor.set(0);
