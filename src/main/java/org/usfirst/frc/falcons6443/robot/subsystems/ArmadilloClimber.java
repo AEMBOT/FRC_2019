@@ -116,8 +116,6 @@ public class ArmadilloClimber {
     //Begin climb
     double climbDegree;
     public void climb(){
-
-       
         switch(position){
             case Steady:
                 steady = true;

@@ -172,7 +172,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         Logger.teleopInit();
 
-        assistedPlacement.enableDriverMode();
+        assistedPlacement.disableDriverMode();
         vacuum.resetArmEncoder();
     }
 

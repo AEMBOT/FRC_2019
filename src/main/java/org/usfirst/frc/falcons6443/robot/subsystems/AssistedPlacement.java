@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Ultrasonic;
 
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.vision.*;
+import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 
 /**
  * This class uses the limelight vision camera to help place hatches
@@ -12,6 +13,7 @@ import org.usfirst.frc.falcons6443.robot.hardware.vision.*;
  */
 public class AssistedPlacement {
 
+    private PID pid;
 
     //Creates a new WPILIB Ultrasonic reference
     private Ultrasonic ultrasonic;
@@ -20,7 +22,7 @@ public class AssistedPlacement {
     DriveTrainSystem drive;
 
     // Creates limelight variables, create a limelight object, specify if is currently placing
-    private boolean isPlacing = false;
+    public boolean isPlacing = false;
     private Limelight lime;
 
     /**
@@ -36,6 +38,12 @@ public class AssistedPlacement {
         //Initilizes a reference to the limelight class and a refernce to the global DriveTrain
         lime = new Limelight();
         this.drive = drive;
+
+        pid = new PID(.03,0,0,0);
+        pid.setMaxOutput(1);
+        pid.setMinDoneCycles(5);
+        pid.setFinishedRange(1);
+        pid.setDesiredValue(0);
 
         //Sets the limelight to driver mode at the start
         //lime.setCamMode(1.0);
@@ -119,53 +127,68 @@ public class AssistedPlacement {
     public void trackTarget() {
         double x = lime.getX(); // Grabs the current degrees to the x value from the limelight class
         double approxRange = 1.9; // Acceptable range around the target, prevents oscilation
-        double power = 0.08; // Power of the motors
+        double power = 0; // Power of the motors
 
-        System.out.println(ultrasonic.getRangeInches());
+        
 
-        //Checks if the limelight can see the target
-        if(lime.getValidTarget() > 0){
-            isPlacing = true; // Sets the is placing variable to true thus locking out normal drivercontrol, kill switch still works
-            
-            //Order of ifs should be like this so it drives first and then corrects 
-            if (x < approxRange && x > -approxRange) {
-                DriveForward(0.15);
-            }   
-            
-            //Makes sure area is greater than one to limit random small objects being tracked
-            else if(x > approxRange) {
-                TurnLeft(power);
-            } else if (x < approxRange) {
-                TurnRight(power);
-            }
+        power = pid.calcPID(x);
+        if(x<-1.3)
+            drive.arcadeDrive(power+0.16, 0);
+        else if(x>1.3)
+            drive.arcadeDrive(power-0.16, 0);
+        else if(lime.getValidTarget() > 0){
+            DriveForward(0.15);
         }
         else{
-
-            //Check if bot is within 19 inches
-           if(ultrasonic.getRangeInches() < 40){
-
-               //If so check if it is within 9 if so stop if not drive
-               if(ultrasonic.getRangeInches() <= 14){
-                    isPlacing = false;
-                    Stop();
-                    enableDriverMode();
-               }
-               else{
-
-                    //If it less than 30 then continue to drive
-                   if(ultrasonic.getRangeInches() < 30){
-                        DriveForward(0.15);
-                   }
-               }
-           }
-
-           //if it is not in view return control to the driver and swap vision mode
-           else{
-               isPlacing = false;
-               Stop();
-               enableDriverMode();
-           }
+            Stop();
+            isPlacing = false;
+            enableDriverMode();
         }
+
+
+        //Checks if the limelight can see the target
+        // if(lime.getValidTarget() > 0){
+        //     isPlacing = true; // Sets the is placing variable to true thus locking out normal drivercontrol, kill switch still works
+            
+        //     //Order of ifs should be like this so it drives first and then corrects 
+        //     if (x < approxRange && x > -approxRange) {
+        //         DriveForward(0.15);
+        //     }   
+            
+        //     //Makes sure area is greater than one to limit random small objects being tracked
+        //     else if(x > approxRange) {
+        //         TurnLeft(power);
+        //     } else if (x < approxRange) {
+        //         TurnRight(power);
+        //     }
+        // }
+        // else{
+
+        //     //Check if bot is within 19 inches
+        //    if(ultrasonic.getRangeInches() < 40){
+
+        //        //If so check if it is within 9 if so stop if not drive
+        //        if(ultrasonic.getRangeInches() <= 14){
+        //             isPlacing = false;
+        //             Stop();
+        //             enableDriverMode();
+        //        }
+        //        else{
+
+        //             //If it less than 30 then continue to drive
+        //            if(ultrasonic.getRangeInches() < 30){
+        //                 DriveForward(0.15);
+        //            }
+        //        }
+        //    }
+
+        //    //if it is not in view return control to the driver and swap vision mode
+        //    else{
+        //        isPlacing = false;
+        //        Stop();
+        //        enableDriverMode();
+        //    }
+        // }
           
     }
 
