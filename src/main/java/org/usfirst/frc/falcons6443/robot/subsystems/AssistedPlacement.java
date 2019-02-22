@@ -16,7 +16,7 @@ public class AssistedPlacement {
     private PID pid;
 
     //Creates a new WPILIB Ultrasonic reference
-    private Ultrasonic ultrasonic;
+   // private Ultrasonic ultrasonic;
 
     //Creates a ref to DriveTrainSystem
     DriveTrainSystem drive;
@@ -32,8 +32,8 @@ public class AssistedPlacement {
     public AssistedPlacement(DriveTrainSystem drive) {
 
         // Gives the previously created ultrasonic object values, and tells it to automatically collect data
-        ultrasonic = new Ultrasonic(RobotMap.UltrasonicEchoPin, RobotMap.UltrasonicTrigPin);
-        ultrasonic.setAutomaticMode(true);
+        //ultrasonic = new Ultrasonic(RobotMap.UltrasonicEchoPin, RobotMap.UltrasonicTrigPin);
+        //ultrasonic.setAutomaticMode(true);
 
         //Initilizes a reference to the limelight class and a refernce to the global DriveTrain
         lime = new Limelight();
