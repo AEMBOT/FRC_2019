@@ -28,7 +28,7 @@ public class RobotMap {
     public static final int RightClimbMotor = 4;
 
     public static final int ClimbArmExtensionBeam = 0;
-    public static final int ClimbArmBellySwitch = 2;
+    public static final int ClimbArmBellySwitch = 4;
 
     //Ultrasonic sensor DIO connection pins
     public static final int UltrasonicEchoPin = 3;
