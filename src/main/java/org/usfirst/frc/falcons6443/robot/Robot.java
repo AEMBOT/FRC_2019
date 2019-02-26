@@ -92,7 +92,6 @@ public class Robot extends TimedRobot {
         // format 1 is kMJPEG
         // VideoMode vm = new VideoMode(1, 640, 480, 60);
         // CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
-        driveTrain = new DriveTrainSystem();
 
         driveStyle = new SendableChooser<DriveStyles>();
         driveStyle.addOption("Tank", DriveStyles.Tank);

@@ -97,31 +97,6 @@ public class AssistedPlacement {
     }
 
     /**
-     * This method mainly serves the purpose of testing however it will drive straight upon a button press until a specific distance is reached
-     */
-    public void runToDistance(){
-
-        //Prints out distance that the ultrasonic sensor recieves in inches
-        System.out.println(ultrasonic.getRangeInches());
-
-        //Checks if the distance is greater than 32 inches (3 inch buffer, inertia)
-        if(ultrasonic.getRangeInches() > 35.6){
-            DriveForward(-0.2);
-        }
-
-        //If the ultrasonic sensor returns a value in between 32 inches and 9 inches slow down for final alignment 
-        else if(ultrasonic.getRangeInches() < 35.6){
-            DriveForward(-0.07);
-        }
-        
-        //If not in this range stop
-        else{
-            Stop();
-            enableDriverMode();
-        }
-    }
-
-    /**
      * Tracks the vision tape centers and drives forward to the center
      */
     public void trackTarget() {
