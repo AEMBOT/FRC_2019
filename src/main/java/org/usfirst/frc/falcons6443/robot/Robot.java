@@ -140,21 +140,19 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousPeriodic() {
-        climber.climb();
         vacuum.suck();
+        climber.climb();
+        
 
         //Checks if the limit switch on the hatch arm has been pressed, if not wait 3 seconds and then 0 the arm to its current position
-        // if (vacuum.getEncoderStatus() == false) {
-        //     vacuum.resetArmEncoder();
-        //     encoderResetTimer.stop();
-        // }
-        // else if(encoderResetTimer.get() > 1.5 && vacuum.getEncoderStatus() == false){
-           
-        //     vacuum.resetArmEncoder();
-        //     encoderResetTimer.stop();
-        // }
+        if (vacuum.getEncoderStatus() == false) {
+            vacuum.resetArm();
+        }
+        else if(encoderResetTimer.get() > 1.5 && vacuum.getEncoderStatus() == false){
+            vacuum.resetArm();
+            encoderResetTimer.stop();
+        }
 
-        // vacuum.suck();
         // After the vacuum has started, and the climber has raised up to the bottom of the bot, and the arm has 0ed then call land and simulate driving off the platform
         if (hasLanded == false /*&& vacuum.getEncoderStatus() == true*/)
             land();
@@ -171,8 +169,10 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         Logger.teleopInit();
 
-        assistedPlacement.disableDriverMode();
-        vacuum.resetArmEncoder();
+        assistedPlacement.enableDriverMode();
+        
+        vacuum.setEncoderStatus(false);
+        vacuum.resetArm();
     }
 
     /**
@@ -183,7 +183,17 @@ public class Robot extends TimedRobot {
 
 
 
+        //Checks if the limit switch on the hatch arm has been pressed, if not wait 3 seconds and then 0 the arm to its current position
+        
+            //vacuum.resetArm();
+        
+        // else if(encoderResetTimer.get() > 1.5 && vacuum.getEncoderStatus() == false){
+        //     vacuum.resetArm();
+        //     encoderResetTimer.stop();
+        // }
+
         //If the kill switch has not been pressed
+
         if (!isKillSwitchEnabled) {
             controls();
 
@@ -297,7 +307,7 @@ public class Robot extends TimedRobot {
         //Will only run if the toggle has been enabled
         //  vacuum.moveArmBack();
         //  vacuum.moveArmDown();
-        //  vacuum.moveArmUp();
+         // vacuum.moveArmUp();
 
         //Alignment Controls (primary - A) (secondary - triggers)
         //__teleop.runOncePerPress(primary.A(), () -> TBDFUNCTION, false);

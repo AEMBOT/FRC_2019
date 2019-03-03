@@ -22,6 +22,8 @@ public class ArmadilloClimber {
     private LimitSwitch bellySwitch;
     private LimitSwitch extensionBeam;
 
+    private LEDSystem led;
+
     private CANEncoder leftEncoder;
 
     private boolean isClimbing = false;
@@ -50,6 +52,8 @@ public class ArmadilloClimber {
         //Assigns the motors to the proper mappings
         rightMotor = new CANSparkMax(RobotMap.RightClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
         leftMotor = new CANSparkMax(RobotMap.LeftClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+        led = new LEDSystem();
 
         isClimbing = false;
         isClimbingArmDown = false;
@@ -122,6 +126,7 @@ public class ArmadilloClimber {
                 steady();
                 break;
             case ClimbHab:
+                led.enableRainbow();
                 steady = false;
                 if(first) climbDegree = leftEncoder.getPosition();
                 first = false;

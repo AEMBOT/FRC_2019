@@ -30,9 +30,7 @@ public class RobotMap {
     public static final int ClimbArmExtensionBeam = 0;
     public static final int ClimbArmBellySwitch = 4;
 
-    //Ultrasonic sensor DIO connection pins
-    public static final int UltrasonicEchoPin = 3;
-    public static final int UltrasonicTrigPin = 4;
+    public static final int LedController = 0;
  
     //drive train encoders
     //public static final int LeftEncoderA = -1;
@@ -44,8 +42,7 @@ public class RobotMap {
     public static final int ArmEncoderB = 7;
 
     //limit switches
-    public static final int VacuumArmTopSwitch = 8;
-    public static final int VacuumArmBottomSwitch = -1;
+    public static final int VacuumArmTopSwitch = 2;
 
 
     //code settings
@@ -55,5 +52,5 @@ public class RobotMap {
     public static final int VacuumArmEncoderA = -1;
     public static final int VacuumArmEncoderB = -1;
     public static final int VacuumHatchMotor = 9;
-    public static final int VacuumArmMotor = 11;
+    public static final int VacuumArmMotor = 10;
 }

@@ -6,7 +6,10 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj.CAN;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 
@@ -23,13 +26,12 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
  */
 public class VacuumSystem {
 
-    private TalonSRX armMotor;
-    private Encoders armEncoder;
+    private CANSparkMax armMotor;
+    private CANEncoder armEncoder;
     private CANSparkMax ballVacuumMotor;
     private CANSparkMax hatchVacuumMotor;
 
     private LimitSwitch topSwitch;
-    private LimitSwitch bottomSwitch;
     private boolean isManual = true;
     private boolean isEncoderReset = false;
 
@@ -39,6 +41,8 @@ public class VacuumSystem {
 
     private int currentHatchPosition = 0;
 
+    private double encoderOffset = 0;
+
     public boolean toggle;
 
   //  private Encoders armEncoder;
@@ -46,9 +50,9 @@ public class VacuumSystem {
     private final int armStopPosition = -1;
 
     public VacuumSystem() {
-        armMotor = new TalonSRX(RobotMap.VacuumArmMotor);
-        armMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        armEncoder = new Encoders(RobotMap.ArmEncoderA, RobotMap.ArmEncoderB);
+        armMotor = new CANSparkMax(RobotMap.VacuumArmMotor, MotorType.kBrushless);
+       
+        armEncoder = armMotor.getEncoder();
 
         //ballVacuumMotor = new CANSparkMax(RobotMap.VacuumBallMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
         hatchVacuumMotor = new CANSparkMax(RobotMap.VacuumHatchMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
@@ -59,12 +63,16 @@ public class VacuumSystem {
        //armEncoder = new Encoders(RobotMap.VacuumArmEncoderA, RobotMap.VacuumArmEncoderB,EncodingType.k4X);
        toggle = false;
        hatchVacuumMotor.setInverted(true);
-       armEncoder.reset();
+       isEncoderReset = false;
     }
 
     //Checks the status as to weather or not the encoder has been reset
     public boolean getEncoderStatus(){
         return isEncoderReset;
+    }
+
+    public void setEncoderStatus(boolean newSat){
+         isEncoderReset = newSat;
     }
 
     public void setManual(boolean set){
@@ -73,6 +81,18 @@ public class VacuumSystem {
 
     public boolean getManual() {
         return isManual;
+    }
+
+    public void resetArm(){
+        //System.out.println(topSwitch.get());
+
+       // if(topSwitch.get() == false){
+         //   armMotor.set(0.2);
+        //}
+        //else{
+          //  isEncoderReset = true;
+            encoderOffset = armEncoder.getPosition();
+        //}
     }
 
 
@@ -129,13 +149,6 @@ public class VacuumSystem {
       //  ballVacuumMotor.set(0);
     }
 
-    /**
-     * Resets arm encoder values when limit switch is pressed
-     */
-    public void resetArmEncoder(){
-        armEncoder.reset();
-    }
-
     public void deactivateSuction() { //Used for deactivation of both vacuum motors
         hatchVacuumMotor.set(0);
      //   ballVacuumMotor.set(0);
@@ -166,12 +179,13 @@ public class VacuumSystem {
     public void manual(double val){
         //if(!topSwitch.get()){
             if(Math.abs(val) > 0.2){
-               armMotor.set(ControlMode.PercentOutput, val);
-               System.out.println(armEncoder.get());
+               armMotor.set(val);
+               System.out.println((armEncoder.getPosition() - encoderOffset));
+                //System.out.println(topSwitch.get());
                isManual = true;
             } else {
                isManual = false;
-               armMotor.set(ControlMode.PercentOutput, 0);
+               armMotor.set(0);
             }
         //}
         //else{
@@ -183,11 +197,11 @@ public class VacuumSystem {
     public void moveArmDown() {
         if(isMovingDown){
                 //if(!isManual){
-                if(armEncoder.get() > -306){
-                    armMotor.set(ControlMode.PercentOutput, -0.5);
+                if((armEncoder.getPosition() - encoderOffset) > -306){
+                    armMotor.set(-0.5);
                 }
                 else{
-                    armMotor.set(ControlMode.PercentOutput, 0);
+                    armMotor.set(0);
                     isMovingDown = false;
                 }
             //}
@@ -200,14 +214,14 @@ public class VacuumSystem {
     public void moveArmUp() {
         if(isCentering){
             //if(!isManual){
-                if(armEncoder.get() > -100){
-                    armMotor.set(ControlMode.PercentOutput, -0.5);
+                if((armEncoder.getPosition() - encoderOffset) < -19){
+                    armMotor.set(0.3);
                 }
-                else if(armEncoder.get() < -110){
-                    armMotor.set(ControlMode.PercentOutput, 0.5);
+                else if((armEncoder.getPosition() - encoderOffset) > -30){
+                    armMotor.set(-0.3);
                 }
                 else{
-                    armMotor.set(ControlMode.PercentOutput, 0.1);
+                    armMotor.set(0);
                     isCentering = false;
                 }
             //}
@@ -218,11 +232,11 @@ public class VacuumSystem {
     public void moveArmBack() {
         if(isMovingBack){
             //if(!isManual){
-                if(armEncoder.get() < 0){
-                    armMotor.set(ControlMode.PercentOutput, 1);
+                if((armEncoder.getPosition() - encoderOffset) < 0){
+                    armMotor.set(1);
                 }
                 else{
-                    armMotor.set(ControlMode.PercentOutput, 0);
+                    armMotor.set(0);
                     isMovingBack = false;
                 }
             //}
