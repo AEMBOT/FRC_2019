@@ -155,7 +155,7 @@ public class Robot extends TimedRobot {
             encoderResetTimer.stop();
         }
 
-        //Launches the robot off of hab level 2
+        //Launches the robot off of hab level 2 when pressed
         teleop.runOncePerPress(primary.eight(), () -> isLaunching = true, false);
 
         //Checks if the robot has already launched
@@ -177,6 +177,8 @@ public class Robot extends TimedRobot {
         assistedPlacement.enableDriverMode();
         
         vacuum.setEncoderStatus(false);
+
+        //For testing purposes reset the arm at start of teleop
         vacuum.resetArm();
     }
 
@@ -186,16 +188,8 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
 
-        //Checks if the limit switch on the hatch arm has been pressed, if not wait 3 seconds and then 0 the arm to its current position
-        
-            //vacuum.resetArm();
-        
-        // else if(encoderResetTimer.get() > 1.5 && vacuum.getEncoderStatus() == false){
-        //     vacuum.resetArm();
-        //     encoderResetTimer.stop();
-        // }
-
-        //If the kill switch has not been pressed
+       
+        //If the kill switch has not been pressed and has not already climbed
 
         if (!isKillSwitchEnabled || climber.getHasClimbed() == false) {
             controls();
@@ -221,7 +215,7 @@ public class Robot extends TimedRobot {
 
         driveTrain.arcadeDrive(0, -joystickArray[loopCount]);
         loopCount++;
-        if (loopCount == joystickArray.length - 15) {
+        if (loopCount == joystickArray.length - 19) {
             hasLanded = true;
             isLaunching = false;
             driveTrain.arcadeDrive(0, 0);
