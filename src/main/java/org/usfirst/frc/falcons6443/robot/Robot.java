@@ -60,6 +60,8 @@ public class Robot extends TimedRobot {
     private DriveStyles controlMethod;
     private ArmadilloClimber climber;
 
+    private boolean isLaunching = false;
+
     private Ultrasonic ultrasonic;
 
     public static Preferences prefs;
@@ -153,12 +155,15 @@ public class Robot extends TimedRobot {
             encoderResetTimer.stop();
         }
 
-        // After the vacuum has started, and the climber has raised up to the bottom of the bot, and the arm has 0ed then call land and simulate driving off the platform
-        if (hasLanded == false /*&& vacuum.getEncoderStatus() == true*/)
+        //Launches the robot off of hab level 2
+        teleop.runOncePerPress(primary.eight(), () -> isLaunching = true, false);
+
+        //Checks if the robot has already launched
+        if(isLaunching && hasLanded != true)
             land();
-        if (hasLanded == true) {
+        else
             controls();
-        }
+        
     }
 
     /*
@@ -181,8 +186,6 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
 
-
-
         //Checks if the limit switch on the hatch arm has been pressed, if not wait 3 seconds and then 0 the arm to its current position
         
             //vacuum.resetArm();
@@ -194,7 +197,7 @@ public class Robot extends TimedRobot {
 
         //If the kill switch has not been pressed
 
-        if (!isKillSwitchEnabled) {
+        if (!isKillSwitchEnabled || climber.getHasClimbed() == false) {
             controls();
 
         } else {
@@ -220,6 +223,7 @@ public class Robot extends TimedRobot {
         loopCount++;
         if (loopCount == joystickArray.length - 15) {
             hasLanded = true;
+            isLaunching = false;
             driveTrain.arcadeDrive(0, 0);
         }
     }
@@ -245,8 +249,8 @@ public class Robot extends TimedRobot {
         }
 
         // Drive Shifting, wasnt working, TODO: Test again
-        teleop.runOncePerPress(primary.leftBumper(), () -> driveTrain.changeSpeed(false), false);
-        teleop.runOncePerPress(primary.rightBumper(), () -> driveTrain.changeSpeed(true), false);
+        //teleop.runOncePerPress(primary.leftBumper(), () -> driveTrain.changeSpeed(false), false);
+        //teleop.runOncePerPress(primary.rightBumper(), () -> driveTrain.changeSpeed(true), false);
 
         //Checks if the right dpad is pushed on the second controller
         if (secondary.dPadRight() || primary.dPadRight()){
@@ -270,20 +274,12 @@ public class Robot extends TimedRobot {
         }
 
         //If Y is pressed then it stops the climber
-        teleop.runOncePerPress(primary.Y(), () -> climber.setClimb(ArmadilloClimber.ClimbEnum.Off), false);
-
-        // if(armOut)
-        //teleop.runOncePerPress(primary.X(),  () -> climber.setClimb(ArmadilloClimber.ClimbEnum.ContractArm), false);
-       
+        teleop.runOncePerPress(primary.Y(), () -> climber.setClimb(ArmadilloClimber.ClimbEnum.Off), false);       
 
         //Increments/Decrements the position by one spot each time a specific dpad is pressed
-        //teleop.runOncePerPress(secondary.dPadUp(), () -> vacuum.lowerHatchArm(), false);
-        //teleop.runOncePerPress(secondary.dPadDown(), () -> vacuum.raiseHatchArm(), false);
+        teleop.runOncePerPress(secondary.dPadUp(), () -> vacuum.enableMovingDown(), false);
+        teleop.runOncePerPress(secondary.dPadDown(), () -> vacuum.enableMovingBack(), false);
 
-        //Allows setting of different positions for the hatch arm, manual auto, different buttons for each position
-        // teleop.runOncePerPress(secondary.A(), () -> vacuum.enableMovingDown(), false);
-        // teleop.runOncePerPress(secondary.B(), () -> vacuum.enableCentering(), false);
-        // teleop.runOncePerPress(secondary.Y(), () -> vacuum.enableMovingBack(), false);
         
         //Manual Hatch Arm Control
          if(Math.abs(secondary.leftStickY()) > .2){
@@ -302,12 +298,9 @@ public class Robot extends TimedRobot {
         climber.climb();
         vacuum.suck();
 
-        //teleop.press(secondary.leftBumper(), () -> vacuum.activateBallSuction());
-
         //Will only run if the toggle has been enabled
-        //  vacuum.moveArmBack();
-        //  vacuum.moveArmDown();
-         // vacuum.moveArmUp();
+        vacuum.moveArmBack();
+        vacuum.moveArmDown();
 
         //Alignment Controls (primary - A) (secondary - triggers)
         //__teleop.runOncePerPress(primary.A(), () -> TBDFUNCTION, false);

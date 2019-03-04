@@ -20,7 +20,7 @@ public class LEDSystem{
      * Enables the default LED colors
      */
     public void enableDefault(){
-        ledController.set(0.07);
+        ledController.set(0.05);
     }
 
     /**

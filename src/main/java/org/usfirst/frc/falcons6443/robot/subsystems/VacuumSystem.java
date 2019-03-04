@@ -113,45 +113,12 @@ public class VacuumSystem {
     }
 
 
-    //Called whenever up on the dpad is pressed allowing the arm to move one position up
-    public void raiseHatchArm(){
-        if(currentHatchPosition > 0){
-            switch(currentHatchPosition){
-                case 1:
-                    enableMovingBack();
-                    currentHatchPosition--;
-                    break;
-                case 2:
-                    enableCentering();
-                    currentHatchPosition--;
-                    break;
-            }
-        }
-    }
-
-    //Called when down on the dpad is pressed allowing it to move one position down
-    public void lowerHatchArm(){
-        if(currentHatchPosition < 2){
-            switch(currentHatchPosition){
-                case 0:
-                    enableCentering();
-                    currentHatchPosition++;
-                case 1:
-                    enableMovingDown();
-                    currentHatchPosition++;
-            }
-
-        }
-    }
-
     public void activateHatchSuction() {
         hatchVacuumMotor.set(1);
-      //  ballVacuumMotor.set(0);
     }
 
     public void deactivateSuction() { //Used for deactivation of both vacuum motors
         hatchVacuumMotor.set(0);
-     //   ballVacuumMotor.set(0);
     }
 
     //Enables centering sets the rest to false to allow for priority
@@ -175,71 +142,49 @@ public class VacuumSystem {
         isMovingDown = false;
     }
 
-
+    /**
+     * Allows manual control of the hatch arm as long as the top limit switch is not pressed
+     * @param val pass in a joystick value
+     */
     public void manual(double val){
-        //if(!topSwitch.get()){
+        if(!topSwitch.get() || !isMovingDown || isMovingBack){
             if(Math.abs(val) > 0.2){
-               armMotor.set(val);
+               armMotor.set(val*0.9);
                System.out.println((armEncoder.getPosition() - encoderOffset));
-                //System.out.println(topSwitch.get());
                isManual = true;
             } else {
                isManual = false;
                armMotor.set(0);
             }
-        //}
-        //else{
-            //armMotor.set(ControlMode.PercentOutput, 0);
-        //}
+        }
+        else{
+            armMotor.set(0);
+        }
     }
 
-    //moves arm for floor pickup 
+    //Move arm to floor for floor pickup or to climg
     public void moveArmDown() {
         if(isMovingDown){
-                //if(!isManual){
-                if((armEncoder.getPosition() - encoderOffset) > -306){
-                    armMotor.set(-0.5);
-                }
-                else{
-                    armMotor.set(0);
-                    isMovingDown = false;
-                }
-            //}
+            if((armEncoder.getPosition() - encoderOffset) < -306){
+                armMotor.set(-0.5);
+            }
+            else{
+                armMotor.set(0);
+                isMovingDown = false;
+            }
         }
     }
 
-    /**
-     * Moves the hatch arm to a point were it can pick up/ place a hatch
-     */
-    public void moveArmUp() {
-        if(isCentering){
-            //if(!isManual){
-                if((armEncoder.getPosition() - encoderOffset) < -19){
-                    armMotor.set(0.3);
-                }
-                else if((armEncoder.getPosition() - encoderOffset) > -30){
-                    armMotor.set(-0.3);
-                }
-                else{
-                    armMotor.set(0);
-                    isCentering = false;
-                }
-            //}
-        }
-    }
-
-    //moves arm back to starting postion
+    //Moves arm back to starting postion
     public void moveArmBack() {
         if(isMovingBack){
-            //if(!isManual){
-                if((armEncoder.getPosition() - encoderOffset) < 0){
-                    armMotor.set(1);
-                }
-                else{
-                    armMotor.set(0);
-                    isMovingBack = false;
-                }
-            //}
+            if((armEncoder.getPosition() - encoderOffset) < 0){
+                armMotor.set(1);
+            }
+            else{
+                armMotor.set(0);
+                isMovingBack = false;
+            }
         }
     }
 }

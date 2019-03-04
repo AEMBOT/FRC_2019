@@ -31,9 +31,6 @@ public class AssistedPlacement {
      */
     public AssistedPlacement(DriveTrainSystem drive) {
 
-        // Gives the previously created ultrasonic object values, and tells it to automatically collect data
-        //ultrasonic = new Ultrasonic(RobotMap.UltrasonicEchoPin, RobotMap.UltrasonicTrigPin);
-        //ultrasonic.setAutomaticMode(true);
 
         //Initilizes a reference to the limelight class and a refernce to the global DriveTrain
         lime = new Limelight();
@@ -44,9 +41,6 @@ public class AssistedPlacement {
         pid.setMinDoneCycles(5);
         pid.setFinishedRange(1);
         pid.setDesiredValue(0);
-
-        //Sets the limelight to driver mode at the start
-        //lime.setCamMode(1.0);
     }
 
     /**
@@ -107,9 +101,9 @@ public class AssistedPlacement {
         
 
         power = pid.calcPID(x);
-        if(x<-1.3)
+        if(x<-1)
             drive.arcadeDrive(power+0.16, 0);
-        else if(x>1.3)
+        else if(x>1)
             drive.arcadeDrive(power-0.16, 0);
         else if(lime.getValidTarget() > 0){
             DriveForward(0.15);
