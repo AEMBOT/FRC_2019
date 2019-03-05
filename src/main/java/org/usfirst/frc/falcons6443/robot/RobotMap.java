@@ -42,7 +42,7 @@ public class RobotMap {
     public static final int ArmEncoderB = 7;
 
     //limit switches
-    public static final int VacuumArmTopSwitch = 2;
+    public static final int VacuumArmTopSwitch = 9;
 
 
     //code settings

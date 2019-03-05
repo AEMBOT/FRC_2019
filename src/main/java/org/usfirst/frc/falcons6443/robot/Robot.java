@@ -146,15 +146,6 @@ public class Robot extends TimedRobot {
         climber.climb();
         
 
-        //Checks if the limit switch on the hatch arm has been pressed, if not wait 3 seconds and then 0 the arm to its current position
-        if (vacuum.getEncoderStatus() == false) {
-            vacuum.resetArm();
-        }
-        else if(encoderResetTimer.get() > 1.5 && vacuum.getEncoderStatus() == false){
-            vacuum.resetArm();
-            encoderResetTimer.stop();
-        }
-
         //Launches the robot off of hab level 2 when pressed
         teleop.runOncePerPress(primary.eight(), () -> isLaunching = true, false);
 
@@ -188,9 +179,8 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
 
-       
-        //If the kill switch has not been pressed and has not already climbed
 
+        //If the kill switch has not been pressed and has not already climbed
         if (!isKillSwitchEnabled || climber.getHasClimbed() == false) {
             controls();
 
@@ -271,21 +261,22 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(primary.Y(), () -> climber.setClimb(ArmadilloClimber.ClimbEnum.Off), false);       
 
         //Increments/Decrements the position by one spot each time a specific dpad is pressed
-        teleop.runOncePerPress(secondary.dPadUp(), () -> vacuum.enableMovingDown(), false);
-        teleop.runOncePerPress(secondary.dPadDown(), () -> vacuum.enableMovingBack(), false);
+        teleop.runOncePerPress(secondary.A(), () -> vacuum.enableMovingDown(), false);
+        teleop.runOncePerPress(secondary.B(), () -> vacuum.enableMovingBack(), false);
+        teleop.runOncePerPress(secondary.Y(), () -> vacuum.enableCentering(), false);
 
-        
         //Manual Hatch Arm Control
-         if(Math.abs(secondary.leftStickY()) > .2){
-             vacuum.manual(-secondary.leftStickY());
-         }
-         else if(Math.abs(secondary.leftStickY()) < .2)
-             vacuum.manual(0);
+        //  if(Math.abs(secondary.leftStickY()) > .2){
+        //      vacuum.manual(-secondary.leftStickY());
+        //  }
+        //  else if(Math.abs(secondary.leftStickY()) < .2)
+        //      vacuum.manual(0);
 
         //teleop.off(() -> vacuum.manual(0), TeleopStructure.ManualControls.VACUUM/*, secondary.A(), secondary.B(), secondary.Y()*/);
 
         // Vacumm control
         teleop.runOncePerPress(secondary.rightBumper(), () -> vacuum.toggle = true, false);
+        
         teleop.runOncePerPress(secondary.leftBumper(), () -> vacuum.toggle = false, false);
 
         //Will only run if the corresponding buttons have been pushed
@@ -295,6 +286,7 @@ public class Robot extends TimedRobot {
         //Will only run if the toggle has been enabled
         vacuum.moveArmBack();
         vacuum.moveArmDown();
+        vacuum.moveArmCenter();
 
         //Alignment Controls (primary - A) (secondary - triggers)
         //__teleop.runOncePerPress(primary.A(), () -> TBDFUNCTION, false);

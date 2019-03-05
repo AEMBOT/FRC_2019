@@ -1,5 +1,6 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
+import javax.management.timer.Timer;
 import javax.sound.sampled.AudioFormat.Encoding;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -31,6 +32,8 @@ public class VacuumSystem {
     private CANSparkMax ballVacuumMotor;
     private CANSparkMax hatchVacuumMotor;
 
+    private Timer armTime;
+
     private LimitSwitch topSwitch;
     private boolean isManual = true;
     private boolean isEncoderReset = false;
@@ -51,7 +54,7 @@ public class VacuumSystem {
 
     public VacuumSystem() {
         armMotor = new CANSparkMax(RobotMap.VacuumArmMotor, MotorType.kBrushless);
-       
+
         armEncoder = armMotor.getEncoder();
 
         //ballVacuumMotor = new CANSparkMax(RobotMap.VacuumBallMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
@@ -83,16 +86,17 @@ public class VacuumSystem {
         return isManual;
     }
 
-    public void resetArm(){
-        //System.out.println(topSwitch.get());
+    public boolean getLimit(){
+        return topSwitch.get();
+    }
 
-       // if(topSwitch.get() == false){
-         //   armMotor.set(0.2);
-        //}
-        //else{
-          //  isEncoderReset = true;
-            encoderOffset = armEncoder.getPosition();
-        //}
+
+    public void resetArm(){
+    
+
+       
+           encoderOffset = armEncoder.getPosition();
+        
     }
 
 
@@ -147,26 +151,24 @@ public class VacuumSystem {
      * @param val pass in a joystick value
      */
     public void manual(double val){
-        if(!topSwitch.get() || !isMovingDown || isMovingBack){
+        if(isMovingDown == false || isMovingBack == false || isEncoderReset == false)
+           
             if(Math.abs(val) > 0.2){
-               armMotor.set(val*0.9);
-               System.out.println((armEncoder.getPosition() - encoderOffset));
-               isManual = true;
+                armMotor.set(val*0.9);
+                System.out.println((armEncoder.getPosition() - encoderOffset));
+                isManual = true;
             } else {
-               isManual = false;
-               armMotor.set(0);
+                isManual = false;
+                armMotor.set(0);
             }
-        }
-        else{
-            armMotor.set(0);
-        }
-    }
+            
+    } 
 
     //Move arm to floor for floor pickup or to climg
     public void moveArmDown() {
         if(isMovingDown){
-            if((armEncoder.getPosition() - encoderOffset) < -306){
-                armMotor.set(-0.5);
+            if((armEncoder.getPosition() - encoderOffset) > -42){
+                armMotor.set(-0.4);
             }
             else{
                 armMotor.set(0);
@@ -175,11 +177,29 @@ public class VacuumSystem {
         }
     }
 
+    //Move arm to floor for floor pickup or to climg
+    public void moveArmCenter() {
+        if(isCentering){
+            if((armEncoder.getPosition() - encoderOffset) > -16){
+                armMotor.set(-0.4);
+            }
+            else if((armEncoder.getPosition() - encoderOffset) < -20)
+            {
+                armMotor.set(0.4);
+            }
+            else{
+                armMotor.set(0);
+                isCentering = false;
+            }
+        }
+    }
+
     //Moves arm back to starting postion
     public void moveArmBack() {
         if(isMovingBack){
-            if((armEncoder.getPosition() - encoderOffset) < 0){
-                armMotor.set(1);
+            if((armEncoder.getPosition() - encoderOffset) < -5)
+            {
+                armMotor.set(0.4);
             }
             else{
                 armMotor.set(0);
