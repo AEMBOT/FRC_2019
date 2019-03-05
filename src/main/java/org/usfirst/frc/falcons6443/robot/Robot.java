@@ -169,8 +169,6 @@ public class Robot extends TimedRobot {
         
         vacuum.setEncoderStatus(false);
 
-        //For testing purposes reset the arm at start of teleop
-        vacuum.resetArm();
     }
 
     /**
@@ -203,12 +201,12 @@ public class Robot extends TimedRobot {
      */
     private void land() {
 
-        driveTrain.arcadeDrive(0, -joystickArray[loopCount]);
+        driveTrain.arcadeDrive(0, joystickArray[loopCount]*0.8);
         loopCount++;
-        if (loopCount == joystickArray.length - 19) {
+        if (loopCount == joystickArray.length - 25) {
             hasLanded = true;
             isLaunching = false;
-            driveTrain.arcadeDrive(0, 0);
+            driveTrain.arcadeDrive(0, -0.05);
         }
     }
 
@@ -251,10 +249,7 @@ public class Robot extends TimedRobot {
             vacuum.enableMovingDown();
             
             //We could probably use a timer here but this works and I dont want to break the hatch arm
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-            }
+            
         }
 
         //If Y is pressed then it stops the climber
@@ -266,11 +261,11 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(secondary.Y(), () -> vacuum.enableCentering(), false);
 
         //Manual Hatch Arm Control
-        //  if(Math.abs(secondary.leftStickY()) > .2){
-        //      vacuum.manual(-secondary.leftStickY());
-        //  }
-        //  else if(Math.abs(secondary.leftStickY()) < .2)
-        //      vacuum.manual(0);
+          if(Math.abs(secondary.leftStickY()) > .2){
+             vacuum.manual(-secondary.leftStickY());
+         }
+         else if(Math.abs(secondary.leftStickY()) < .2)
+             vacuum.manual(0);
 
         //teleop.off(() -> vacuum.manual(0), TeleopStructure.ManualControls.VACUUM/*, secondary.A(), secondary.B(), secondary.Y()*/);
 

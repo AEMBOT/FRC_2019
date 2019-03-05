@@ -36,7 +36,7 @@ public class AssistedPlacement {
         lime = new Limelight();
         this.drive = drive;
 
-        pid = new PID(.03,0,0,0);
+        pid = new PID(.028,0,0,0);
         pid.setMaxOutput(1);
         pid.setMinDoneCycles(5);
         pid.setFinishedRange(1);
@@ -101,64 +101,18 @@ public class AssistedPlacement {
         
 
         power = pid.calcPID(x);
-        if(x<-1)
+        if(x<-0.9)
             drive.arcadeDrive(power+0.16, 0);
-        else if(x>1)
+        else if(x>0.9)
             drive.arcadeDrive(power-0.16, 0);
         else if(lime.getValidTarget() > 0){
             DriveForward(0.15);
         }
         else{
-            Stop();
+            drive.arcadeDrive(0, -0.05);
             isPlacing = false;
             enableDriverMode();
-        }
-
-
-        //Checks if the limelight can see the target
-        // if(lime.getValidTarget() > 0){
-        //     isPlacing = true; // Sets the is placing variable to true thus locking out normal drivercontrol, kill switch still works
-            
-        //     //Order of ifs should be like this so it drives first and then corrects 
-        //     if (x < approxRange && x > -approxRange) {
-        //         DriveForward(0.15);
-        //     }   
-            
-        //     //Makes sure area is greater than one to limit random small objects being tracked
-        //     else if(x > approxRange) {
-        //         TurnLeft(power);
-        //     } else if (x < approxRange) {
-        //         TurnRight(power);
-        //     }
-        // }
-        // else{
-
-        //     //Check if bot is within 19 inches
-        //    if(ultrasonic.getRangeInches() < 40){
-
-        //        //If so check if it is within 9 if so stop if not drive
-        //        if(ultrasonic.getRangeInches() <= 14){
-        //             isPlacing = false;
-        //             Stop();
-        //             enableDriverMode();
-        //        }
-        //        else{
-
-        //             //If it less than 30 then continue to drive
-        //            if(ultrasonic.getRangeInches() < 30){
-        //                 DriveForward(0.15);
-        //            }
-        //        }
-        //    }
-
-        //    //if it is not in view return control to the driver and swap vision mode
-        //    else{
-        //        isPlacing = false;
-        //        Stop();
-        //        enableDriverMode();
-        //    }
-        // }
-          
+        }          
     }
 
     

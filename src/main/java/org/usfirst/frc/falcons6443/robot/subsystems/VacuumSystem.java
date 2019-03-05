@@ -151,7 +151,7 @@ public class VacuumSystem {
      * @param val pass in a joystick value
      */
     public void manual(double val){
-        if(isMovingDown == false || isMovingBack == false || isEncoderReset == false)
+        if(isMovingDown == false || isMovingBack == false || isCentering == false || isEncoderReset == false)
            
             if(Math.abs(val) > 0.2){
                 armMotor.set(val*0.9);
@@ -166,7 +166,7 @@ public class VacuumSystem {
 
     //Move arm to floor for floor pickup or to climg
     public void moveArmDown() {
-        if(isMovingDown){
+        if(isMovingDown && isManual == false){
             if((armEncoder.getPosition() - encoderOffset) > -42){
                 armMotor.set(-0.4);
             }
@@ -179,7 +179,7 @@ public class VacuumSystem {
 
     //Move arm to floor for floor pickup or to climg
     public void moveArmCenter() {
-        if(isCentering){
+        if(isCentering && isManual == false){
             if((armEncoder.getPosition() - encoderOffset) > -16){
                 armMotor.set(-0.4);
             }
@@ -196,7 +196,7 @@ public class VacuumSystem {
 
     //Moves arm back to starting postion
     public void moveArmBack() {
-        if(isMovingBack){
+        if(isMovingBack && isManual == false){
             if((armEncoder.getPosition() - encoderOffset) < -5)
             {
                 armMotor.set(0.4);
