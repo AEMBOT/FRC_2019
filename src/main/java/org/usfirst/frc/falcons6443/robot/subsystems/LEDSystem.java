@@ -20,14 +20,14 @@ public class LEDSystem{
      * Enables the default LED colors
      */
     public void enableDefault(){
-        ledController.set(0.05);
+        ledController.set(-0.95);
     }
 
     /**
      * Enables rainbow colors
      */
     public void enableRainbow(){
-        ledController.set(-0.95);
+        ledController.set(-0.99);
     }
 
 }

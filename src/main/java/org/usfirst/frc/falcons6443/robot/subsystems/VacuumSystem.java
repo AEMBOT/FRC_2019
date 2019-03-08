@@ -180,10 +180,10 @@ public class VacuumSystem {
     //Move arm to floor for floor pickup or to climg
     public void moveArmCenter() {
         if(isCentering && isManual == false){
-            if((armEncoder.getPosition() - encoderOffset) > -16){
+            if((armEncoder.getPosition() - encoderOffset) > -18){
                 armMotor.set(-0.4);
             }
-            else if((armEncoder.getPosition() - encoderOffset) < -20)
+            else if((armEncoder.getPosition() - encoderOffset) < -22)
             {
                 armMotor.set(0.4);
             }

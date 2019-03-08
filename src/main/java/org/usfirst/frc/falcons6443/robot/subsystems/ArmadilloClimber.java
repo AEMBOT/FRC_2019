@@ -22,7 +22,7 @@ public class ArmadilloClimber {
     private LimitSwitch bellySwitch;
     private LimitSwitch extensionBeam;
 
-    private LEDSystem led;
+    private static LEDSystem led;
 
     private CANEncoder leftEncoder;
 
@@ -150,6 +150,11 @@ public class ArmadilloClimber {
      */
     public void setClimb(ClimbEnum num){
         position = num;
+    }
+
+    
+    public static LEDSystem getLED(){
+        return led;
     }
 
     //Begin climb

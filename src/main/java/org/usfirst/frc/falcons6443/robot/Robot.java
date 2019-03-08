@@ -55,14 +55,16 @@ public class Robot extends TimedRobot {
     private AssistedPlacement assistedPlacement;
     private AutoDrive autoDrive;
     private AutoMain autoMain;
+
+    private LEDSystem led;
+
     // private ArmadilloClimberTest climber;
     private VacuumSystem vacuum;
     private DriveStyles controlMethod;
     private ArmadilloClimber climber;
 
     private boolean isLaunching = false;
-
-    private Ultrasonic ultrasonic;
+    private boolean isAdjusting = false;
 
     public static Preferences prefs;
     private SendableChooser<DriveStyles> driveStyle;
@@ -85,6 +87,7 @@ public class Robot extends TimedRobot {
         climber = new ArmadilloClimber(vacuum);
         driveTrain = new DriveTrainSystem();
         assistedPlacement = new AssistedPlacement(driveTrain);
+        led = ArmadilloClimber.getLED();
 
         encoderResetTimer = new Timer();
 
@@ -129,6 +132,7 @@ public class Robot extends TimedRobot {
         // vacuum.getManual(), (Boolean bool) -> vacuum.setManual(bool));
         // autoMain.runAutoPath();
 
+        led.enableDefault();
         vacuum.toggleSuction();
         assistedPlacement.enableDriverMode();
         encoderResetTimer.start();
@@ -165,6 +169,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         Logger.teleopInit();
 
+        led.enableDefault();
         assistedPlacement.enableDriverMode();
         
         vacuum.setEncoderStatus(false);
@@ -176,7 +181,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopPeriodic() {
-
+        climber.climb();
 
         //If the kill switch has not been pressed and has not already climbed
         if (!isKillSwitchEnabled || climber.getHasClimbed() == false) {
@@ -216,7 +221,7 @@ public class Robot extends TimedRobot {
     private void controls() {
 
         //Check if the driver has initated placing, if so block normal driver controls, if not proceede as normal
-        if(assistedPlacement.getPlacing() == false){
+        if(assistedPlacement.getPlacing() == false /*&& isAdjusting == false*/){
           driveTrain.generalDrive(primary, controlMethod);
         }
 
@@ -256,9 +261,9 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(primary.Y(), () -> climber.setClimb(ArmadilloClimber.ClimbEnum.Off), false);       
 
         //Increments/Decrements the position by one spot each time a specific dpad is pressed
-        teleop.runOncePerPress(secondary.A(), () -> vacuum.enableMovingDown(), false);
+        teleop.runOncePerPress(secondary.Y(), () -> vacuum.enableMovingDown(), false);
         teleop.runOncePerPress(secondary.B(), () -> vacuum.enableMovingBack(), false);
-        teleop.runOncePerPress(secondary.Y(), () -> vacuum.enableCentering(), false);
+        teleop.runOncePerPress(secondary.A(), () -> vacuum.enableCentering(), false);
 
         //Manual Hatch Arm Control
           if(Math.abs(secondary.leftStickY()) > .2){
@@ -266,6 +271,28 @@ public class Robot extends TimedRobot {
          }
          else if(Math.abs(secondary.leftStickY()) < .2)
              vacuum.manual(0);
+
+             /*
+         //Minor adjust to the right
+         if(primary.rightTrigger() > .2){
+            isAdjusting = true;
+            driveTrain.arcadeDrive(primary.rightTrigger()*0.5, 0);
+         }
+         else{
+            isAdjusting = false;
+            driveTrain.arcadeDrive(0, 0);
+         }
+
+        //Minor adjust to the left
+        if(primary.leftTrigger() > .2){
+            isAdjusting = true;
+            driveTrain.arcadeDrive(primary.leftTrigger()*-0.5, 0);
+         }
+         else{
+            isAdjusting = false;
+            driveTrain.arcadeDrive(0, 0);
+         }
+         */
 
         //teleop.off(() -> vacuum.manual(0), TeleopStructure.ManualControls.VACUUM/*, secondary.A(), secondary.B(), secondary.Y()*/);
 
