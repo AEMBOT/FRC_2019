@@ -27,7 +27,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
  */
 public class VacuumSystem {
 
-    private CANSparkMax armMotor;
+    private static CANSparkMax armMotor;
     private CANEncoder armEncoder;
     private CANSparkMax ballVacuumMotor;
     private CANSparkMax hatchVacuumMotor;
@@ -72,6 +72,11 @@ public class VacuumSystem {
     //Checks the status as to weather or not the encoder has been reset
     public boolean getEncoderStatus(){
         return isEncoderReset;
+    }
+
+    //Returns a refernce to the armMotor
+    public static CANSparkMax getMotor(){
+        return armMotor;
     }
 
     public void setEncoderStatus(boolean newSat){
