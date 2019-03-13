@@ -1,5 +1,6 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Ultrasonic;
 
 import org.usfirst.frc.falcons6443.robot.RobotMap;
@@ -14,6 +15,7 @@ import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 public class AssistedPlacement {
 
     private PID pid;
+    private Servo servo; 
 
     //Creates a new WPILIB Ultrasonic reference
    // private Ultrasonic ultrasonic;
@@ -97,7 +99,8 @@ public class AssistedPlacement {
         double x = lime.getX(); // Grabs the current degrees to the x value from the limelight class
         double approxRange = 1.9; // Acceptable range around the target, prevents oscilation
         double power = 0; // Power of the motors
-
+        
+        trackServo();
         
 
         power = pid.calcPID(x);
@@ -113,6 +116,17 @@ public class AssistedPlacement {
             isPlacing = false;
             enableDriverMode();
         }          
+    }
+
+    public void trackServo() {
+        servo = new Servo(2);
+        double y = lime.getY();
+        double value = 0;
+        if(y < value) {
+            servo.set(0.15);
+        } else if(y > value) {
+            servo.set(-0.15); 
+        }
     }
 
     
