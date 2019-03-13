@@ -168,6 +168,7 @@ public class Robot extends TimedRobot {
 
         led.enableDefault();
         assistedPlacement.enableDriverMode();
+        System.out.println(assistedPlacement.getServoPosition());
         
         vacuum.setEncoderStatus(false);
 

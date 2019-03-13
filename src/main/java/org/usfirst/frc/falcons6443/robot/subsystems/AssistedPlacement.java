@@ -129,6 +129,10 @@ public class AssistedPlacement {
         }
     }
 
+    public double getServoPosition() {
+       return servo.get();
+    }
+
     
     private double baseAngleRad, angle, baseAngleTan, distance;
     private double camHeight = 6.8; //temporary values
