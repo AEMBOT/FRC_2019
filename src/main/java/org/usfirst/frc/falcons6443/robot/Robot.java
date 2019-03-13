@@ -89,8 +89,6 @@ public class Robot extends TimedRobot {
         assistedPlacement = new AssistedPlacement(driveTrain);
         led = ArmadilloClimber.getLED();
 
-        encoderResetTimer = new Timer();
-
         // autoDrive = new AutoDrive();
         // autoMain = new AutoMain(autoDrive);
         // CameraServer.getInstance().putVideo();
