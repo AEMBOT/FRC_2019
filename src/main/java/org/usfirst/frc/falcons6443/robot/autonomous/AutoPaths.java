@@ -48,8 +48,9 @@ class AutoPaths {
     //time in seconds
     void driveForTime(double time, double power){
         begin();
-        autoDrive.tankDrive(power, power);
+        autoDrive.tankDrive(-power, power);
         sleep(time);
+        autoDrive.tankDrive(0, 0);
         autoDrive.stop();
     }
 

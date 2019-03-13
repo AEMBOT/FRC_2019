@@ -32,8 +32,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  */
 public class DriveTrainSystem{
 
-    private SpeedControllerGroup leftMotors;
-    private SpeedControllerGroup rightMotors;
+    SpeedControllerGroup leftMotors;
+    SpeedControllerGroup rightMotors;
 
     private Encoders leftEncoder; // Encoders clicks per rotation = 49
     //private Encoders rightEncoder;
@@ -58,7 +58,7 @@ public class DriveTrainSystem{
      * Constructor for DriveTrainSystem.
      */
     public DriveTrainSystem() {
-
+        
         //2019 Seasson Comp Bot
         leftMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontLeftMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackLeftMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.LeftCenterMotor,MotorType.kBrushless));
         rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.RightCenterMotor, MotorType.kBrushless));
@@ -86,6 +86,13 @@ public class DriveTrainSystem{
         encoderCheck = new Timer();
     }
 
+    public SpeedControllerGroup getLeftMotors(){
+       return leftMotors;
+    }
+    public SpeedControllerGroup getRightMotors(){
+        return rightMotors;
+     }
+
     /**
      * Singular callable method to quickly change drive styles.
      *
@@ -95,7 +102,8 @@ public class DriveTrainSystem{
      */
     public void generalDrive(Xbox controller, DriveStyles style){
         switch(style){
-
+        
+            
             case Tank:
                 tankDrive(controller.leftStickY() / currentLevel,controller.rightStickY() / currentLevel);
                 break;
@@ -147,7 +155,7 @@ public class DriveTrainSystem{
      *
      * Implements the differentialDrive arcadeDrive into a local method
      */
-    private void arcadeDrive(double speed, double rotation){
+    public void arcadeDrive(double speed, double rotation){
         drive.arcadeDrive(speed,-rotation);
     }
 
@@ -227,9 +235,9 @@ public class DriveTrainSystem{
         //Logger.log(LoggerSystems.Drive, "reset drive encoders");
     }
 
-    // param upOrDown" false = shift down, true = shift up. changes index of array to give max speed value
+    // param upOrDown: false = shift down, true = shift up. changes index of array to give max speed value
     public void changeSpeed (boolean upOrDown){
-        if(upOrDown && speedIndex < 3){
+        if(upOrDown && speedIndex < speedLevels.length){
             speedIndex += 1;
             currentLevel = speedLevels[speedIndex];
         }

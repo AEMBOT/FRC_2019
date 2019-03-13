@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class AutoMain {
 
     private AutoPaths autoPaths;
-    private static SendableChooser sendable;
+    private static SendableChooser<Position> sendable;
 
     public AutoMain(AutoDrive autoDrive) {
         autoPaths = new AutoPaths(autoDrive);
@@ -27,35 +27,11 @@ public class AutoMain {
     //sets up the dashboard for auto path choices
     //Test and see where these should be created!!
     private void printAutoSelection() {
-        sendable = new SendableChooser();
-        sendable.addObject("Left", Position.LEFT);
-        sendable.addObject("Center", Position.CENTER);
-        sendable.addObject("Right", Position.RIGHT);
-        sendable.addDefault("Line", Position.DEFAULT);
-        SmartDashboard.putData("Auto Path", sendable);
+        SmartDashboard.putNumber("speed", 0);
     }
 
     //runs the auto path selected in the dashboard
     public void runAutoPath() {
-        Position position = (Position) sendable.getSelected();
-
-        switch (position) {
-            //handles which code to run depending on result of the specified switch/scale
-            case LEFT:
-                //enter left auto path
-                break;
-
-            case CENTER:
-
-                break;
-
-            case RIGHT:
-                //enter right auto path
-                break;
-
-            case DEFAULT:
-                autoPaths.driveToLine();
-                break;
-        }
+        autoPaths.driveForTime(1, SmartDashboard.getNumber("speed", 0));
     }
 }
