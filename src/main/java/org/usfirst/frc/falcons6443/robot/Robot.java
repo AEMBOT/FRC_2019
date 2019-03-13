@@ -133,7 +133,6 @@ public class Robot extends TimedRobot {
         led.enableDefault();
         vacuum.toggleSuction();
         assistedPlacement.enableDriverMode();
-        encoderResetTimer.start();
         loopCount = 0;
 
     }
@@ -182,7 +181,7 @@ public class Robot extends TimedRobot {
         climber.climb();
 
         //If the kill switch has not been pressed and has not already climbed
-        if (!isKillSwitchEnabled || climber.getHasClimbed() == false) {
+        if (!isKillSwitchEnabled && climber.getHasClimbed() == false && climber.getIsClimbing() == false) {
             controls();
 
         } else {

@@ -113,6 +113,10 @@ public class ArmadilloClimber {
         return hasClimbed;
     }
 
+    public boolean getIsClimbing(){
+        return isClimbing;
+    }
+
     /**
      * Enables the climb
      */
