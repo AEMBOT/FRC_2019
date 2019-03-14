@@ -53,4 +53,6 @@ public class RobotMap {
     public static final int VacuumArmEncoderB = -1;
     public static final int VacuumHatchMotor = 9;
     public static final int VacuumArmMotor = 10;
+
+    public static final int LimelightServo = 9;
 }

@@ -36,6 +36,8 @@ public class AssistedPlacement {
 
         //Initilizes a reference to the limelight class and a refernce to the global DriveTrain
         lime = new Limelight();
+        servo = new Servo(RobotMap.LimelightServo);
+
         this.drive = drive;
 
         pid = new PID(.028,0,0,0);
@@ -118,17 +120,22 @@ public class AssistedPlacement {
         }          
     }
 
+    /**
+     * Keeps the object vertically in view
+     */
     public void trackServo() {
-        servo = new Servo(2);
         double y = lime.getY();
         double value = 0;
         if(y < value) {
-            servo.set(0.15);
+            servo.set(getServoPosition() + 0.15);
         } else if(y > value) {
-            servo.set(-0.15); 
+            servo.set(getServoPosition() - 0.15); 
         }
     }
 
+    /**
+     * Gets the current limelight servo position
+     */
     public double getServoPosition() {
        return servo.get();
     }
