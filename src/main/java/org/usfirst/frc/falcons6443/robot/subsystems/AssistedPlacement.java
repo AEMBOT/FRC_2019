@@ -15,7 +15,7 @@ import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 public class AssistedPlacement {
 
     private PID pid;
-    private Servo servo; 
+    public Servo servo; 
 
     //Creates a new WPILIB Ultrasonic reference
    // private Ultrasonic ultrasonic;
@@ -102,13 +102,11 @@ public class AssistedPlacement {
         double approxRange = 1.9; // Acceptable range around the target, prevents oscilation
         double power = 0; // Power of the motors
         
-        trackServo();
-        
 
         power = pid.calcPID(x);
-        if(x<-0.9)
+        if(x<-1)
             drive.arcadeDrive(power+0.16, 0);
-        else if(x>0.9)
+        else if(x>1)
             drive.arcadeDrive(power-0.16, 0);
         else if(lime.getValidTarget() > 0){
             DriveForward(0.15);
@@ -125,19 +123,28 @@ public class AssistedPlacement {
      */
     public void trackServo() {
         double y = lime.getY();
-        double value = 0;
-        if(y < value) {
-            servo.set(getServoPosition() + 0.15);
-        } else if(y > value) {
-            servo.set(getServoPosition() - 0.15); 
+        double value = 3;
+        if(y < -value) {
+            servo.set(servo.get() - 0.01);
+        } 
+        else if(y > value) {
+            servo.set(servo.get() + 0.01); 
         }
+    }
+
+    public void servoUp() {
+        servo.set(0);
+    }
+
+    public void servoDown() {
+        servo.set(0.38);
     }
 
     /**
      * Gets the current limelight servo position
      */
     public double getServoPosition() {
-       return servo.get();
+       return servo.getAngle();
     }
 
     

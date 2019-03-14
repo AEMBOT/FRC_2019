@@ -134,6 +134,7 @@ public class Robot extends TimedRobot {
         vacuum.toggleSuction();
         assistedPlacement.enableDriverMode();
         loopCount = 0;
+        assistedPlacement.servo.set(0.38);
 
     }
 
@@ -165,6 +166,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         Logger.teleopInit();
+        assistedPlacement.servo.set(0.38);
 
         led.enableDefault();
         assistedPlacement.enableDriverMode();
@@ -180,6 +182,8 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         climber.climb();
+        //System.out.println(assistedPlacement.servo.getAngle());
+        
 
         //If the kill switch has not been pressed and has not already climbed
         if (!isKillSwitchEnabled && climber.getHasClimbed() == false && climber.getIsClimbing() == false) {
@@ -227,7 +231,7 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(primary.A(), () -> assistedPlacement.enablePlacing(), false);
         teleop.runOncePerPress(primary.X(), () -> assistedPlacement.disablePlacing(), false);
         
-
+        
         //Checks if the driver has initated hatch placement, if so actually track it
         if(assistedPlacement.getPlacing() == true){
           assistedPlacement.trackTarget();
@@ -236,7 +240,12 @@ public class Robot extends TimedRobot {
         // Drive Shifting, wasnt working, TODO: Test again
         //teleop.runOncePerPress(primary.leftBumper(), () -> driveTrain.changeSpeed(false), false);
         //teleop.runOncePerPress(primary.rightBumper(), () -> driveTrain.changeSpeed(true), false);
-
+        if(primary.leftBumper()) {
+            assistedPlacement.servoUp();
+        }
+        if(primary.rightBumper()) {
+            assistedPlacement.servoDown();
+        }
         //Checks if the right dpad is pushed on the second controller
         if (secondary.dPadRight() || primary.dPadRight()){
             climber.secondary = true;
