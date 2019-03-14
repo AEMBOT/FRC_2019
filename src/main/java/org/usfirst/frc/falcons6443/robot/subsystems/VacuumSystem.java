@@ -58,7 +58,7 @@ public class VacuumSystem {
         armEncoder = armMotor.getEncoder();
 
         //ballVacuumMotor = new CANSparkMax(RobotMap.VacuumBallMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
-        hatchVacuumMotor = new CANSparkMax(RobotMap.VacuumHatchMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
+        hatchVacuumMotor = new CANSparkMax(RobotMap.VacuumHatchMotor_CargoRight, CANSparkMaxLowLevel.MotorType.kBrushed);
 
         topSwitch = new LimitSwitch(RobotMap.VacuumArmTopSwitch);
         //bottomSwitch = new LimitSwitch(RobotMap.VacuumArmBottomSwitch);
