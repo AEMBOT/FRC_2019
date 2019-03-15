@@ -123,14 +123,16 @@ public class AssistedPlacement {
      */
     public void trackServo() {
         double y = lime.getY();
-        double value = 3;
-        if(y <= -value) {
-            servo.set(servo.get() - 0.01);
+        double value = 0.02;
+
+       // if(y >= -value && y <= value) {
+         //   servo.set(servo.get());
+        //}
+        if(y <= 0) {
+            servo.set(servo.get() + 0.04);
         } 
-        else if(y >= value) {
-            servo.set(servo.get() + 0.01); 
-        } else {
-            servo.set(servo.get());
+        else if(y >= 0) {
+            servo.set(servo.get() - 0.04); 
         }
     }
 

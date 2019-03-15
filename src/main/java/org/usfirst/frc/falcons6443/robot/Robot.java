@@ -134,7 +134,7 @@ public class Robot extends TimedRobot {
         vacuum.toggleSuction();
         assistedPlacement.enableDriverMode();
         loopCount = 0;
-        assistedPlacement.servo.set(0.38);
+        assistedPlacement.servoUp();
 
     }
 
@@ -214,6 +214,7 @@ public class Robot extends TimedRobot {
             hasLanded = true;
             isLaunching = false;
             driveTrain.arcadeDrive(0, -0.05);
+            assistedPlacement.servoDown();
         }
     }
 
@@ -234,7 +235,7 @@ public class Robot extends TimedRobot {
         
         //Checks if the driver has initated hatch placement, if so actually track it
         if(assistedPlacement.getPlacing() == true){
-          assistedPlacement.trackTarget();
+          assistedPlacement.trackServo();
         }
 
         // Drive Shifting, wasnt working, TODO: Test again
