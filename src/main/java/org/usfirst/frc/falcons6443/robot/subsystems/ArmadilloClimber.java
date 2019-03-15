@@ -215,7 +215,7 @@ public class ArmadilloClimber {
                     isClimbingArmDown = true;
                     leftMotor.set(0);
                     rightMotor.set(0);
-                    setClimb(ClimbEnum.ContractArm);
+                    //setClimb(ClimbEnum.ContractArm);
                 }
                 break;
 

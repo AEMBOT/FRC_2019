@@ -125,9 +125,6 @@ public class AssistedPlacement {
         double y = lime.getY();
         double value = 0.02;
 
-       // if(y >= -value && y <= value) {
-         //   servo.set(servo.get());
-        //}
         if(y <= 0) {
             servo.set(servo.get() + 0.04);
         } 

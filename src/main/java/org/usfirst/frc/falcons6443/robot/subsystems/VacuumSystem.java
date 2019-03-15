@@ -184,10 +184,10 @@ public class VacuumSystem {
     //Move arm to floor for floor pickup or to climb
     public void moveArmCenter() {
         if(isCentering && isManual == false){
-            if((armEncoder.getPosition() - encoderOffset) > -18){
+            if((armEncoder.getPosition() - encoderOffset) > -17){
                 armMotor.set(-0.4);
             }
-            else if((armEncoder.getPosition() - encoderOffset) < -22)
+            else if((armEncoder.getPosition() - encoderOffset) < -21)
             {
                 armMotor.set(0.4);
             }

@@ -235,7 +235,7 @@ public class Robot extends TimedRobot {
         
         //Checks if the driver has initated hatch placement, if so actually track it
         if(assistedPlacement.getPlacing() == true){
-          assistedPlacement.trackServo();
+          assistedPlacement.trackTarget();
         }
 
         // Drive Shifting, wasnt working, TODO: Test again
@@ -259,10 +259,8 @@ public class Robot extends TimedRobot {
         if (climber.secondary && primary.B()) {
             climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbHab);
             armOut = true;
+            assistedPlacement.servoUp();
             vacuum.enableMovingDown();
-            
-            //We could probably use a timer here but this works and I dont want to break the hatch arm
-            
         }
 
         //If Y is pressed then it stops the climber
