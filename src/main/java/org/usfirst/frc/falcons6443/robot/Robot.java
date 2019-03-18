@@ -134,7 +134,7 @@ public class Robot extends TimedRobot {
         vacuum.toggleSuction();
         assistedPlacement.enableDriverMode();
         loopCount = 0;
-        assistedPlacement.servoUp();
+        assistedPlacement.servoDown();
 
     }
 
@@ -166,7 +166,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         Logger.teleopInit();
-        assistedPlacement.servo.set(0.38);
+        assistedPlacement.servoDown();
 
         led.enableDefault();
         assistedPlacement.enableDriverMode();
@@ -184,6 +184,9 @@ public class Robot extends TimedRobot {
         climber.climb();
         //System.out.println(assistedPlacement.servo.getAngle());
         
+        if(assistedPlacement.isServoDown == true || assistedPlacement.isServoUp == true){
+            assistedPlacement.servo.set(assistedPlacement.servo.get());
+        }
 
         //If the kill switch has not been pressed and has not already climbed
         if (!isKillSwitchEnabled && climber.getHasClimbed() == false && climber.getIsClimbing() == false) {

@@ -112,7 +112,7 @@ public class VacuumSystem {
 
     //Turns on the motors for the vacuum to suck
     public void suck(){
-        if(toggle) hatchVacuumMotor.set(1);
+        if(toggle) hatchVacuumMotor.set(-1);
         else hatchVacuumMotor.set(0);
     }
 

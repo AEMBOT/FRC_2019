@@ -17,6 +17,9 @@ public class AssistedPlacement {
     private PID pid;
     public Servo servo; 
 
+    public boolean isServoDown = false;
+    public boolean isServoUp = false;
+
     //Creates a new WPILIB Ultrasonic reference
    // private Ultrasonic ultrasonic;
 
@@ -135,10 +138,14 @@ public class AssistedPlacement {
 
     public void servoUp() {
         servo.set(0);
+        isServoDown = false;
+        isServoUp = true;
     }
 
     public void servoDown() {
         servo.set(0.38);
+        isServoDown = true;
+        isServoUp = false;
     }
 
     /**
