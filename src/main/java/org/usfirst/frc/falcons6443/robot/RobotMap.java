@@ -56,5 +56,5 @@ public class RobotMap {
     public static final int VacuumHatchMotor_CargoRight = 9;
     public static final int CargoLeft = 10;
 
-    public static final int LimelightServo = 1;
+    public static final int LimelightServo = 9;
 }

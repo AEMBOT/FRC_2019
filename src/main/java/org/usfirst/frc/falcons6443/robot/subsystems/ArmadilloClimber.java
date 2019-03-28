@@ -189,11 +189,8 @@ public class ArmadilloClimber {
                 //Moves the vaccum arm down to avoid it being crushed
                 vacuum.enableMovingDown();
 
-                //If the secondary mid climb beam break is broken set bbTriggered equal to true
-                if(extensionBeam.get()) bbTriggered = true;
-
                 //Get the current climb position and check if it is less than the stop tick point and make sure the beam break was not broken
-                if(updatePosition(climbDegree) <= stopTickCount && extensionBeam.get() == false && !bbTriggered){
+                if(updatePosition(climbDegree) <= stopTickCount){
 
                     //Takes the stop tick count and subtracts the current encoder position and checks if it is greater than or equal to 15
                     if(stopTickCount - updatePosition(climbDegree) >= 15){
@@ -215,7 +212,7 @@ public class ArmadilloClimber {
                     isClimbingArmDown = true;
                     leftMotor.set(0);
                     rightMotor.set(0);
-                    //setClimb(ClimbEnum.ContractArm);
+                   // setClimb(ClimbEnum.ContractArm);
                 }
                 break;
 

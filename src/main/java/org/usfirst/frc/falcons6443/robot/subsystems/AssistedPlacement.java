@@ -137,15 +137,19 @@ public class AssistedPlacement {
     }
 
     public void servoUp() {
-        servo.set(0);
-        isServoDown = false;
-        isServoUp = true;
+        servo.set(-0.1);
+       // isServoDown = false;
+        //isServoUp = true;
     }
 
     public void servoDown() {
-        servo.set(0.38);
+        servo.set(0.1);
         isServoDown = true;
-        isServoUp = false;
+        //isServoUp = false;
+    }
+
+    public void stopServo(){
+        servo.set(0);
     }
 
     /**

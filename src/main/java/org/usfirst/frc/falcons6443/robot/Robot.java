@@ -70,6 +70,7 @@ public class Robot extends TimedRobot {
     private SendableChooser<DriveStyles> driveStyle;
     public static boolean isKillSwitchEnabled = false;
 
+    private boolean isServoMoving = false;
     private boolean armOut;
     private boolean babyMode = false;
     private Timer encoderResetTimer;
@@ -173,6 +174,8 @@ public class Robot extends TimedRobot {
         System.out.println(assistedPlacement.getServoPosition());
         
         vacuum.setEncoderStatus(false);
+        vacuum.setSolenoid(true);
+        vacuum.setVent(false);
 
     }
 
@@ -183,10 +186,6 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         climber.climb();
         //System.out.println(assistedPlacement.servo.getAngle());
-        
-        if(assistedPlacement.isServoDown == true || assistedPlacement.isServoUp == true){
-            assistedPlacement.servo.set(assistedPlacement.servo.get());
-        }
 
         //If the kill switch has not been pressed and has not already climbed
         if (!isKillSwitchEnabled && climber.getHasClimbed() == false && climber.getIsClimbing() == false) {
@@ -244,12 +243,7 @@ public class Robot extends TimedRobot {
         // Drive Shifting, wasnt working, TODO: Test again
         //teleop.runOncePerPress(primary.leftBumper(), () -> driveTrain.changeSpeed(false), false);
         //teleop.runOncePerPress(primary.rightBumper(), () -> driveTrain.changeSpeed(true), false);
-        if(primary.leftBumper()) {
-            assistedPlacement.servoUp();
-        }
-        if(primary.rightBumper()) {
-            assistedPlacement.servoDown();
-        }
+
         //Checks if the right dpad is pushed on the second controller
         if (secondary.dPadRight() || primary.dPadRight()){
             climber.secondary = true;
@@ -281,35 +275,12 @@ public class Robot extends TimedRobot {
          else if(Math.abs(secondary.leftStickY()) < .2)
              vacuum.manual(0);
 
-             /*
-         //Minor adjust to the right
-         if(primary.rightTrigger() > .2){
-            isAdjusting = true;
-            driveTrain.arcadeDrive(primary.rightTrigger()*0.5, 0);
-         }
-         else{
-            isAdjusting = false;
-            driveTrain.arcadeDrive(0, 0);
-         }
-
-        //Minor adjust to the left
-        if(primary.leftTrigger() > .2){
-            isAdjusting = true;
-            driveTrain.arcadeDrive(primary.leftTrigger()*-0.5, 0);
-         }
-         else{
-            isAdjusting = false;
-            driveTrain.arcadeDrive(0, 0);
-         }
-         */
 
         //teleop.off(() -> vacuum.manual(0), TeleopStructure.ManualControls.VACUUM/*, secondary.A(), secondary.B(), secondary.Y()*/);
-
-        // Vacumm control
-        teleop.runOncePerPress(secondary.rightBumper(), () -> vacuum.toggle = true, false);
         
-        teleop.runOncePerPress(secondary.leftBumper(), () -> vacuum.toggle = false, false);
-
+        teleop.runOncePerPress(secondary.leftBumper(), () -> vacuum.toggleSuction(), false);
+        teleop.runOncePerPress(secondary.rightBumper(), () -> vacuum.releaseVac(), false);
+        
         //Will only run if the corresponding buttons have been pushed
         climber.climb();
         vacuum.suck();
