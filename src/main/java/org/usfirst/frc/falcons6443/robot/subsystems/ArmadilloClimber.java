@@ -94,7 +94,6 @@ public class ArmadilloClimber {
      * 
      */
     public void steady(){
-        System.out.println(bellySwitch.get());
         if(steady){
          if(!bellySwitch.get()) {
              leftMotor.set(-.3);
