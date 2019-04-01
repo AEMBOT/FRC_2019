@@ -40,6 +40,7 @@ public class ArmadilloClimber {
     private ClimbEnum position;
     private boolean first;
     private boolean bbTriggered;
+  
 
     public boolean secondary;
 
@@ -93,7 +94,7 @@ public class ArmadilloClimber {
      * 
      */
     public void steady(){
-
+        System.out.println(bellySwitch.get());
         if(steady){
          if(!bellySwitch.get()) {
              leftMotor.set(-.3);
@@ -212,7 +213,7 @@ public class ArmadilloClimber {
                     isClimbingArmDown = true;
                     leftMotor.set(0);
                     rightMotor.set(0);
-                   // setClimb(ClimbEnum.ContractArm);
+                    setClimb(ClimbEnum.ContractArm);
                 }
                 break;
 
@@ -223,11 +224,11 @@ public class ArmadilloClimber {
                 if(isClimbing == false && isClimbingArmDown == true){
 
                     //If this is the case then check if the encoder value is greater than the armUpTickCount and the bellySwitch has not been triggered
-                    if(updatePosition(climbDegree) >= armUpTickCount && bellySwitch.get() == false){
+                    if(bellySwitch.get() == false){
 
                         //If so reverse the climber at half speed and print out the position of the climber
-                        leftMotor.set(-climbSpeed/2);
-                        rightMotor.set(-climbSpeed/2);
+                        leftMotor.set(-climbSpeed);
+                        rightMotor.set(-climbSpeed);
                         System.out.println(updatePosition(climbDegree));
                         Logger.log(LoggerSystems.Climb,"" + updatePosition(climbDegree));
                     }

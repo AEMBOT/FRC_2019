@@ -9,9 +9,11 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Timer;
 
 import org.usfirst.frc.falcons6443.robot.Robot;
@@ -23,9 +25,10 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 /**
- * @author Goirick Saha
+ * @author Goirick Saha, Will Richards
  */
 public class VacuumSystem {
+
 
     private static CANSparkMax armMotor;
     private CANEncoder armEncoder;
@@ -37,7 +40,6 @@ public class VacuumSystem {
     private LimitSwitch topSwitch;
     private AnalogInput vacuumSensor;
     private Solenoid vacSolenoid;
-    private Solenoid ventSolenoid;
 
     private boolean isManual = true;
     private boolean isEncoderReset = false;
@@ -46,21 +48,27 @@ public class VacuumSystem {
     private boolean isCentering = false;
     private boolean isMovingDown = false;
 
+    private boolean isSucking = false;
+
     private int currentHatchPosition = 0;
 
     private double encoderOffset = 0;
 
     public boolean toggle;
+    private boolean solenoidVal = false;
+    private boolean hasRetracted = false;
 
   //  private Encoders armEncoder;
 
     private final int armStopPosition = -1;
 
     public VacuumSystem() {
+    
         armMotor = new CANSparkMax(RobotMap.VacuumArmMotor, MotorType.kBrushless);
         
         vacSolenoid = new Solenoid(0);
-        ventSolenoid = new Solenoid(1);
+        
+
         vacuumSensor = new AnalogInput(0);
 
 
@@ -109,18 +117,20 @@ public class VacuumSystem {
         encoderOffset = armEncoder.getPosition();
     }
 
-    public void setVent(boolean val){
-        ventSolenoid.set(val);
-    }
-
+    /**
+     * Allows changing of solenoid state
+     * @param value
+     */
     public void setSolenoid(boolean value){
-        vacSolenoid.set(value);
+        this.solenoidVal = value;
+        vacSolenoid.set(solenoidVal);
     }
 
 
     //Turns on a variable that will tell the vacuum whether or not it should be toggled on
     public void toggleSuction(){
-        toggle = !toggle;
+        toggle = true;
+        isSucking = true;
     }
 
     //Turns on the motors for the vacuum to suck with fan vac
@@ -131,32 +141,28 @@ public class VacuumSystem {
 
     public void suck(){
         if(toggle){
-            if(vacuumSensor.getValue() > 2100){
-                ventSolenoid.set(true);
+            if(vacuumSensor.getValue() > 1100 && isSucking == true){
+                setSolenoid(true);
                 hatchVacuumMotor.set(0.4);
             }
             else{
                 hatchVacuumMotor.set(0);
-                ventSolenoid.set(false);
-                toggleSuction();
+                isSucking = false;
             }
         }
         else{
             hatchVacuumMotor.set(0);
+            hasRetracted = false;
         }
     }
 
     public void releaseVac(){
-        //toggleSuction();
-        //for(int i=0;i<2;i++){
-          //  vacSolenoid.set(true);
-           // Timer.delay(0.4);
-            //vacSolenoid.set(false);
-        //}
-        ventSolenoid.set(true);
-        
-        
-
+            toggle = false;
+            isSucking = false;
+            setSolenoid(false);
+            Timer.delay(0.5);
+            enableMovingBack();
+            hasRetracted=false;
     }
 
     public void activateBallSuction() {
@@ -251,6 +257,7 @@ public class VacuumSystem {
             else{
                 armMotor.set(0);
                 isMovingBack = false;
+                hasRetracted = false;
             }
         }
     }

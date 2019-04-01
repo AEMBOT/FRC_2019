@@ -84,10 +84,12 @@ public class Robot extends TimedRobot {
         primary = new Xbox(new XboxController(0)); // change controller type here
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
-        vacuum = new VacuumSystem();
-        climber = new ArmadilloClimber(vacuum);
+        
+       
         driveTrain = new DriveTrainSystem();
         assistedPlacement = new AssistedPlacement(driveTrain);
+        vacuum = new VacuumSystem();
+        climber = new ArmadilloClimber(vacuum);
         led = ArmadilloClimber.getLED();
 
         // autoDrive = new AutoDrive();
@@ -175,7 +177,6 @@ public class Robot extends TimedRobot {
         
         vacuum.setEncoderStatus(false);
         vacuum.setSolenoid(true);
-        vacuum.setVent(false);
 
     }
 
@@ -194,7 +195,7 @@ public class Robot extends TimedRobot {
         } else {
 
             //manual climber control
-            climber.manualControl(primary.rightStickY());
+            //climber.manualControl(primary.rightStickY());
 
             // control reset
             teleop.runOncePerPress(primary.seven(), () -> isKillSwitchEnabled = false, false);
@@ -256,7 +257,7 @@ public class Robot extends TimedRobot {
         if (climber.secondary && primary.B()) {
             climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbHab);
             armOut = true;
-            assistedPlacement.servoUp();
+            //assistedPlacement.servoUp();
             vacuum.enableMovingDown();
         }
 
@@ -267,6 +268,9 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(secondary.Y(), () -> vacuum.enableMovingDown(), false);
         teleop.runOncePerPress(secondary.B(), () -> vacuum.enableMovingBack(), false);
         teleop.runOncePerPress(secondary.A(), () -> vacuum.enableCentering(), false);
+
+        teleop.runOncePerPress(primary.leftBumper(), () -> assistedPlacement.servoUp(), false);
+        teleop.runOncePerPress(primary.rightBumper(), () -> assistedPlacement.servoDown(), false);
 
         //Manual Hatch Arm Control
           if(Math.abs(secondary.leftStickY()) > .2){

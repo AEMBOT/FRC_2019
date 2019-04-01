@@ -137,20 +137,14 @@ public class AssistedPlacement {
     }
 
     public void servoUp() {
-        servo.set(-0.1);
-       // isServoDown = false;
-        //isServoUp = true;
+        servo.set(0.1);
     }
 
     public void servoDown() {
-        servo.set(0.1);
-        isServoDown = true;
-        //isServoUp = false;
+        servo.set(0.3);
+        
     }
 
-    public void stopServo(){
-        servo.set(0);
-    }
 
     /**
      * Gets the current limelight servo position
