@@ -147,7 +147,7 @@ public class ArmadilloClimber {
      * Stores Enums for different climb positions
      */
     public enum ClimbEnum{
-        ClimbHab, ContractArm, Steady, Off
+        ClimbHab, ClimbStage2 ,ContractArm, Steady, Off
     }
 
     /**
@@ -217,6 +217,10 @@ public class ArmadilloClimber {
                 }
                 break;
 
+
+            case ClimbStage2:
+                //TODO: Implement Stage 2 Climb
+            break;  
             //This case is for contracting the arm after we have already climbed
             case ContractArm:
 
