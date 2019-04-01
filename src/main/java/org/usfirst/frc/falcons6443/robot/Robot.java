@@ -70,6 +70,7 @@ public class Robot extends TimedRobot {
     private SendableChooser<DriveStyles> driveStyle;
     public static boolean isKillSwitchEnabled = false;
 
+    private boolean isServoMoving = false;
     private boolean armOut;
     private boolean babyMode = false;
     private Timer encoderResetTimer;
@@ -83,10 +84,12 @@ public class Robot extends TimedRobot {
         primary = new Xbox(new XboxController(0)); // change controller type here
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
-        vacuum = new VacuumSystem();
-        climber = new ArmadilloClimber(vacuum);
+        
+       
         driveTrain = new DriveTrainSystem();
         assistedPlacement = new AssistedPlacement(driveTrain);
+        vacuum = new VacuumSystem();
+        climber = new ArmadilloClimber(vacuum);
         led = ArmadilloClimber.getLED();
 
         // autoDrive = new AutoDrive();
@@ -134,6 +137,7 @@ public class Robot extends TimedRobot {
         vacuum.toggleSuction();
         assistedPlacement.enableDriverMode();
         loopCount = 0;
+        assistedPlacement.servoDown();
 
     }
 
@@ -165,11 +169,14 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         Logger.teleopInit();
+        assistedPlacement.servoDown();
 
         led.enableDefault();
         assistedPlacement.enableDriverMode();
+        System.out.println(assistedPlacement.getServoPosition());
         
         vacuum.setEncoderStatus(false);
+        vacuum.setSolenoid(true);
 
     }
 
@@ -179,6 +186,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         climber.climb();
+        //System.out.println(assistedPlacement.servo.getAngle());
 
         //If the kill switch has not been pressed and has not already climbed
         if (!isKillSwitchEnabled && climber.getHasClimbed() == false && climber.getIsClimbing() == false) {
@@ -187,7 +195,7 @@ public class Robot extends TimedRobot {
         } else {
 
             //manual climber control
-            climber.manualControl(primary.rightStickY());
+            //climber.manualControl(primary.rightStickY());
 
             // control reset
             teleop.runOncePerPress(primary.seven(), () -> isKillSwitchEnabled = false, false);
@@ -209,6 +217,7 @@ public class Robot extends TimedRobot {
             hasLanded = true;
             isLaunching = false;
             driveTrain.arcadeDrive(0, -0.05);
+            assistedPlacement.servoDown();
         }
     }
 
@@ -226,7 +235,7 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(primary.A(), () -> assistedPlacement.enablePlacing(), false);
         teleop.runOncePerPress(primary.X(), () -> assistedPlacement.disablePlacing(), false);
         
-
+        
         //Checks if the driver has initated hatch placement, if so actually track it
         if(assistedPlacement.getPlacing() == true){
           assistedPlacement.trackTarget();
@@ -248,10 +257,8 @@ public class Robot extends TimedRobot {
         if (climber.secondary && primary.B()) {
             climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbHab);
             armOut = true;
+            //assistedPlacement.servoUp();
             vacuum.enableMovingDown();
-            
-            //We could probably use a timer here but this works and I dont want to break the hatch arm
-            
         }
 
         //If Y is pressed then it stops the climber
@@ -262,6 +269,9 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(secondary.B(), () -> vacuum.enableMovingBack(), false);
         teleop.runOncePerPress(secondary.A(), () -> vacuum.enableCentering(), false);
 
+        teleop.runOncePerPress(primary.leftBumper(), () -> assistedPlacement.servoUp(), false);
+        teleop.runOncePerPress(primary.rightBumper(), () -> assistedPlacement.servoDown(), false);
+
         //Manual Hatch Arm Control
           if(Math.abs(secondary.leftStickY()) > .2){
              vacuum.manual(-secondary.leftStickY());
@@ -269,35 +279,12 @@ public class Robot extends TimedRobot {
          else if(Math.abs(secondary.leftStickY()) < .2)
              vacuum.manual(0);
 
-             /*
-         //Minor adjust to the right
-         if(primary.rightTrigger() > .2){
-            isAdjusting = true;
-            driveTrain.arcadeDrive(primary.rightTrigger()*0.5, 0);
-         }
-         else{
-            isAdjusting = false;
-            driveTrain.arcadeDrive(0, 0);
-         }
-
-        //Minor adjust to the left
-        if(primary.leftTrigger() > .2){
-            isAdjusting = true;
-            driveTrain.arcadeDrive(primary.leftTrigger()*-0.5, 0);
-         }
-         else{
-            isAdjusting = false;
-            driveTrain.arcadeDrive(0, 0);
-         }
-         */
 
         //teleop.off(() -> vacuum.manual(0), TeleopStructure.ManualControls.VACUUM/*, secondary.A(), secondary.B(), secondary.Y()*/);
-
-        // Vacumm control
-        teleop.runOncePerPress(secondary.rightBumper(), () -> vacuum.toggle = true, false);
         
-        teleop.runOncePerPress(secondary.leftBumper(), () -> vacuum.toggle = false, false);
-
+        teleop.runOncePerPress(secondary.leftBumper(), () -> vacuum.toggleSuction(), false);
+        teleop.runOncePerPress(secondary.rightBumper(), () -> vacuum.releaseVac(), false);
+        
         //Will only run if the corresponding buttons have been pushed
         climber.climb();
         vacuum.suck();

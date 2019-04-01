@@ -40,6 +40,7 @@ public class ArmadilloClimber {
     private ClimbEnum position;
     private boolean first;
     private boolean bbTriggered;
+  
 
     public boolean secondary;
 
@@ -93,7 +94,6 @@ public class ArmadilloClimber {
      * 
      */
     public void steady(){
-
         if(steady){
          if(!bellySwitch.get()) {
              leftMotor.set(-.3);
@@ -189,11 +189,8 @@ public class ArmadilloClimber {
                 //Moves the vaccum arm down to avoid it being crushed
                 vacuum.enableMovingDown();
 
-                //If the secondary mid climb beam break is broken set bbTriggered equal to true
-                if(extensionBeam.get()) bbTriggered = true;
-
                 //Get the current climb position and check if it is less than the stop tick point and make sure the beam break was not broken
-                if(updatePosition(climbDegree) <= stopTickCount && extensionBeam.get() == false && !bbTriggered){
+                if(updatePosition(climbDegree) <= stopTickCount){
 
                     //Takes the stop tick count and subtracts the current encoder position and checks if it is greater than or equal to 15
                     if(stopTickCount - updatePosition(climbDegree) >= 15){
@@ -226,11 +223,11 @@ public class ArmadilloClimber {
                 if(isClimbing == false && isClimbingArmDown == true){
 
                     //If this is the case then check if the encoder value is greater than the armUpTickCount and the bellySwitch has not been triggered
-                    if(updatePosition(climbDegree) >= armUpTickCount && bellySwitch.get() == false){
+                    if(bellySwitch.get() == false){
 
                         //If so reverse the climber at half speed and print out the position of the climber
-                        leftMotor.set(-climbSpeed/2);
-                        rightMotor.set(-climbSpeed/2);
+                        leftMotor.set(-climbSpeed);
+                        rightMotor.set(-climbSpeed);
                         System.out.println(updatePosition(climbDegree));
                         Logger.log(LoggerSystems.Climb,"" + updatePosition(climbDegree));
                     }

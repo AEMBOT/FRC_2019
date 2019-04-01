@@ -1,18 +1,20 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
-import javax.management.timer.Timer;
-import javax.sound.sampled.AudioFormat.Encoding;
-
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.Timer;
 
 import org.usfirst.frc.falcons6443.robot.Robot;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
@@ -23,9 +25,10 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 /**
- * @author Goirick Saha
+ * @author Goirick Saha, Will Richards
  */
 public class VacuumSystem {
+
 
     private static CANSparkMax armMotor;
     private CANEncoder armEncoder;
@@ -35,6 +38,9 @@ public class VacuumSystem {
     private Timer armTime;
 
     private LimitSwitch topSwitch;
+    private AnalogInput vacuumSensor;
+    private Solenoid vacSolenoid;
+
     private boolean isManual = true;
     private boolean isEncoderReset = false;
 
@@ -42,23 +48,34 @@ public class VacuumSystem {
     private boolean isCentering = false;
     private boolean isMovingDown = false;
 
+    private boolean isSucking = false;
+
     private int currentHatchPosition = 0;
 
     private double encoderOffset = 0;
 
     public boolean toggle;
+    private boolean solenoidVal = false;
+    private boolean hasRetracted = false;
 
   //  private Encoders armEncoder;
 
     private final int armStopPosition = -1;
 
     public VacuumSystem() {
+    
         armMotor = new CANSparkMax(RobotMap.VacuumArmMotor, MotorType.kBrushless);
+        
+        vacSolenoid = new Solenoid(0);
+        
+
+        vacuumSensor = new AnalogInput(0);
+
 
         armEncoder = armMotor.getEncoder();
 
         //ballVacuumMotor = new CANSparkMax(RobotMap.VacuumBallMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
-        hatchVacuumMotor = new CANSparkMax(RobotMap.VacuumHatchMotor, CANSparkMaxLowLevel.MotorType.kBrushed);
+        hatchVacuumMotor = new CANSparkMax(RobotMap.VacuumHatchMotor_CargoRight, CANSparkMaxLowLevel.MotorType.kBrushed);
 
         topSwitch = new LimitSwitch(RobotMap.VacuumArmTopSwitch);
         //bottomSwitch = new LimitSwitch(RobotMap.VacuumArmBottomSwitch);
@@ -97,23 +114,55 @@ public class VacuumSystem {
 
 
     public void resetArm(){
-    
+        encoderOffset = armEncoder.getPosition();
+    }
 
-       
-           encoderOffset = armEncoder.getPosition();
-        
+    /**
+     * Allows changing of solenoid state
+     * @param value
+     */
+    public void setSolenoid(boolean value){
+        this.solenoidVal = value;
+        vacSolenoid.set(solenoidVal);
     }
 
 
     //Turns on a variable that will tell the vacuum whether or not it should be toggled on
     public void toggleSuction(){
-        toggle = !toggle;
+        toggle = true;
+        isSucking = true;
     }
 
-    //Turns on the motors for the vacuum to suck
+    //Turns on the motors for the vacuum to suck with fan vac
+    // public void suck(){
+    //     if(toggle) hatchVacuumMotor.set(-1);
+    //     else hatchVacuumMotor.set(0);
+    // }
+
     public void suck(){
-        if(toggle) hatchVacuumMotor.set(1);
-        else hatchVacuumMotor.set(0);
+        if(toggle){
+            if(vacuumSensor.getValue() > 1100 && isSucking == true){
+                setSolenoid(true);
+                hatchVacuumMotor.set(0.4);
+            }
+            else{
+                hatchVacuumMotor.set(0);
+                isSucking = false;
+            }
+        }
+        else{
+            hatchVacuumMotor.set(0);
+            hasRetracted = false;
+        }
+    }
+
+    public void releaseVac(){
+            toggle = false;
+            isSucking = false;
+            setSolenoid(false);
+            Timer.delay(0.5);
+            enableMovingBack();
+            hasRetracted=false;
     }
 
     public void activateBallSuction() {
@@ -187,7 +236,7 @@ public class VacuumSystem {
             if((armEncoder.getPosition() - encoderOffset) > -18){
                 armMotor.set(-0.4);
             }
-            else if((armEncoder.getPosition() - encoderOffset) < -22)
+            else if((armEncoder.getPosition() - encoderOffset) < -20)
             {
                 armMotor.set(0.4);
             }
@@ -208,6 +257,7 @@ public class VacuumSystem {
             else{
                 armMotor.set(0);
                 isMovingBack = false;
+                hasRetracted = false;
             }
         }
     }

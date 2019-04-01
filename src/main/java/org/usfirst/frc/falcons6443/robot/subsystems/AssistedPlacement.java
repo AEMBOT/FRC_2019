@@ -1,5 +1,6 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Ultrasonic;
 
 import org.usfirst.frc.falcons6443.robot.RobotMap;
@@ -14,6 +15,10 @@ import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
 public class AssistedPlacement {
 
     private PID pid;
+    public Servo servo; 
+
+    public boolean isServoDown = false;
+    public boolean isServoUp = false;
 
     //Creates a new WPILIB Ultrasonic reference
    // private Ultrasonic ultrasonic;
@@ -34,6 +39,8 @@ public class AssistedPlacement {
 
         //Initilizes a reference to the limelight class and a refernce to the global DriveTrain
         lime = new Limelight();
+        servo = new Servo(RobotMap.LimelightServo);
+
         this.drive = drive;
 
         pid = new PID(.028,0,0,0);
@@ -97,13 +104,12 @@ public class AssistedPlacement {
         double x = lime.getX(); // Grabs the current degrees to the x value from the limelight class
         double approxRange = 1.9; // Acceptable range around the target, prevents oscilation
         double power = 0; // Power of the motors
-
         
 
         power = pid.calcPID(x);
-        if(x<-0.9)
+        if(x<-1)
             drive.arcadeDrive(power+0.16, 0);
-        else if(x>0.9)
+        else if(x>1)
             drive.arcadeDrive(power-0.16, 0);
         else if(lime.getValidTarget() > 0){
             DriveForward(0.15);
@@ -113,6 +119,38 @@ public class AssistedPlacement {
             isPlacing = false;
             enableDriverMode();
         }          
+    }
+
+    /**
+     * Keeps the object vertically in view
+     */
+    public void trackServo() {
+        double y = lime.getY();
+        double value = 0.02;
+
+        if(y <= 0) {
+            servo.set(servo.get() + 0.04);
+        } 
+        else if(y >= 0) {
+            servo.set(servo.get() - 0.04); 
+        }
+    }
+
+    public void servoUp() {
+        servo.set(0.1);
+    }
+
+    public void servoDown() {
+        servo.set(0.3);
+        
+    }
+
+
+    /**
+     * Gets the current limelight servo position
+     */
+    public double getServoPosition() {
+       return servo.getAngle();
     }
 
     
