@@ -253,13 +253,16 @@ public class Robot extends TimedRobot {
             climber.secondary = false;
         }
         
+        //Allows for manual control of the secondary climber arm
+        climber.secondaryClimberManual(secondary.rightStickY());
+
         //Then check if the secondary button is pushed and B on the primary controller is pushed, at this point it starts the climb
         if (climber.secondary && primary.B()) {
             if(climber.getHasClimbed())
                 climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbStage2);
             else
                 climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbHab);
-                
+
             armOut = true;
             //assistedPlacement.servoUp();
             vacuum.enableMovingDown();

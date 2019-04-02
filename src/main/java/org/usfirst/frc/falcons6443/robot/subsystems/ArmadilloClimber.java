@@ -34,6 +34,7 @@ public class ArmadilloClimber {
     //Secondary Climber Encoder
     private CANEncoder secondaryEncoder;
 
+    private boolean hasSteadied = false;
     private boolean isClimbing = false;
     private boolean isClimbingArmDown = false;
     private boolean hasClimbed = false;
@@ -52,6 +53,10 @@ public class ArmadilloClimber {
     private ClimbEnum position;
     private boolean first;
     private boolean bbTriggered;
+
+    //Climber Encoder Values
+    double climbDegree;
+    double secondaryClimbDegree;
   
 
     public boolean secondary;
@@ -127,6 +132,13 @@ public class ArmadilloClimber {
                 rightSecondMotor.set(-.2);
             }
             else{
+                //Assigns the encoder value here for testing manual
+
+                if(!hasSteadied)
+                    secondaryClimbDegree = secondaryEncoder.getPosition();
+                //TODO: !!! Remove Variable Just For Testing !!! 
+                hasSteadied = true;
+                
                 leftSecondMotor.set(0);
                 rightSecondMotor.set(0);
             }
@@ -187,6 +199,22 @@ public class ArmadilloClimber {
     }
 
     /**
+     * Allows for manual control of the 
+     */
+    public void secondaryClimberManual(double speed){
+        if(hasSteadied){
+            //Allows the arm to move as to avoid constant hold
+            steady=false;
+
+            //Applies speed variable values to the motors
+            leftSecondMotor.set(speed);
+            rightSecondMotor.set(speed);
+
+            System.out.println(getSecondaryClimberPosition(secondaryClimbDegree));
+        }
+    }
+
+    /**
      * Sets the current climb position through enum
      * @param num pass the current climb type
      */
@@ -199,9 +227,7 @@ public class ArmadilloClimber {
         return led;
     }
 
-    //Begin climb
-    double climbDegree;
-    double secondaryClimbDegree;
+    
 
     public void climb(){
         switch(position){
