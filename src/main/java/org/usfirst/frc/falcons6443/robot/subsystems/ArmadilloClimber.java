@@ -19,12 +19,20 @@ public class ArmadilloClimber {
     private CANSparkMax leftMotor;
     private CANSparkMax rightMotor;
 
+    private CANSparkMax leftSecondMotor;
+    private CANSparkMax rightSecondMotor;  
+
     private LimitSwitch bellySwitch;
+    private LimitSwitch secondaryLimitSwitch;
     private LimitSwitch extensionBeam;
 
     private static LEDSystem led;
 
+    //Primary Climber Encoder
     private CANEncoder leftEncoder;
+
+    //Secondary Climber Encoder
+    private CANEncoder secondaryEncoder;
 
     private boolean isClimbing = false;
     private boolean isClimbingArmDown = false;
@@ -35,7 +43,11 @@ public class ArmadilloClimber {
     //Change to a point where the encoders will stop
     private final int stopTickCount = 285;
     private double climbSpeed = 1;
+
     private int armUpTickCount = 130;
+
+    //Encoder positions for secondary climb
+    private final int secondaryArmTickCount = -1;
 
     private ClimbEnum position;
     private boolean first;
@@ -55,6 +67,10 @@ public class ArmadilloClimber {
         rightMotor = new CANSparkMax(RobotMap.RightClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
         leftMotor = new CANSparkMax(RobotMap.LeftClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
 
+        //Assigns the motors
+        leftSecondMotor = new CANSparkMax(RobotMap.LeftSecondClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
+        rightSecondMotor = new CANSparkMax(RobotMap.RightSecondMotor, CANSparkMaxLowLevel.MotorType.kBrushless);                                                
+
         //Creates a new LED System object for controlling LEDS
         led = new LEDSystem();
 
@@ -65,6 +81,7 @@ public class ArmadilloClimber {
         //Creates new limit switch objects for the over extension beam and the reset belly switch
         extensionBeam = new LimitSwitch(RobotMap.ClimbArmExtensionBeam, false);
         bellySwitch = new LimitSwitch(RobotMap.ClimbArmBellySwitch, false);
+        secondaryLimitSwitch = new LimitSwitch(RobotMap.SecondaryClimbSwitch, false);
 
         //Assigns leftEncoder to the leftMotor's encoder
         leftEncoder = leftMotor.getEncoder();
@@ -94,15 +111,25 @@ public class ArmadilloClimber {
      * 
      */
     public void steady(){
-        System.out.println(bellySwitch.get());
         if(steady){
-         if(!bellySwitch.get()) {
-             leftMotor.set(-.3);
-             rightMotor.set(-.3);
-         }else {
-             leftMotor.set(0);
-             rightMotor.set(0);
-            } 
+            if(!bellySwitch.get()) {
+                leftMotor.set(-.3);
+                rightMotor.set(-.3);
+            }
+            else {
+                leftMotor.set(0);
+                rightMotor.set(0);
+            }
+
+            //Reset Secondary Climb
+            if(!secondaryLimitSwitch.get()){
+                leftSecondMotor.set(-.2);
+                rightSecondMotor.set(-.2);
+            }
+            else{
+                leftSecondMotor.set(0);
+                rightSecondMotor.set(0);
+            }
         }
     }
 
@@ -139,8 +166,17 @@ public class ArmadilloClimber {
      * @param climbDegree passes the variable that holds the 0ed value
      * @return the 'reset' encoder position
      */
-    public double updatePosition(double climbDegree){
+    public double getPrimaryClimberPosition(double climbDegree){
         return leftEncoder.getPosition() - climbDegree;
+    }
+
+    /**
+     * Returns the offset climber position of the secondary climber
+     * @param climbDegree pass the climb degree
+     * @return returns offset climber degree
+     */
+    public double getSecondaryClimberPosition(double climbDegree){
+        return secondaryEncoder.getPosition() - secondaryClimbDegree;
     }
 
     /**
@@ -165,6 +201,8 @@ public class ArmadilloClimber {
 
     //Begin climb
     double climbDegree;
+    double secondaryClimbDegree;
+
     public void climb(){
         switch(position){
 
@@ -184,17 +222,20 @@ public class ArmadilloClimber {
                 steady = false;
 
                 //Checks if it should get the current climb position to 'reset' the encoder
-                if(first) climbDegree = leftEncoder.getPosition();
+                if(first){
+                    climbDegree = leftEncoder.getPosition();
+                    secondaryClimbDegree = secondaryEncoder.getPosition();
+                }
                 first = false;
 
                 //Moves the vaccum arm down to avoid it being crushed
                 vacuum.enableMovingDown();
 
                 //Get the current climb position and check if it is less than the stop tick point and make sure the beam break was not broken
-                if(updatePosition(climbDegree) <= stopTickCount){
+                if(getPrimaryClimberPosition(climbDegree) <= stopTickCount){
 
                     //Takes the stop tick count and subtracts the current encoder position and checks if it is greater than or equal to 15
-                    if(stopTickCount - updatePosition(climbDegree) >= 15){
+                    if(stopTickCount - getPrimaryClimberPosition(climbDegree) >= 15){
                         //If so continue climbing as normal
                         leftMotor.set(climbSpeed);
                         rightMotor.set(climbSpeed);
@@ -208,8 +249,6 @@ public class ArmadilloClimber {
                 } 
                 else {
                     //After it has finished climbing set isClimbing to false, hasClimbed to true and isClimbingArmDown to true, aswell turn off the motors and change the arm to contract mode
-                    hasClimbed = true;
-                    isClimbing = false;
                     isClimbingArmDown = true;
                     leftMotor.set(0);
                     rightMotor.set(0);
@@ -217,10 +256,21 @@ public class ArmadilloClimber {
                 }
                 break;
 
-
+            /**
+             * Initiates Stage 2 Hab Climb
+             */
             case ClimbStage2:
-                //TODO: Implement Stage 2 Climb
+                vacuum.enableMovingBack();
+                if(getSecondaryClimberPosition(secondaryClimbDegree) <= secondaryArmTickCount){
+                    leftSecondMotor.set(0.6);
+                    rightSecondMotor.set(0.6); 
+                }
+                else{
+                    leftSecondMotor.set(0);
+                    rightSecondMotor.set(0); 
+                }
             break;  
+
             //This case is for contracting the arm after we have already climbed
             case ContractArm:
 
@@ -233,14 +283,14 @@ public class ArmadilloClimber {
                         //If so reverse the climber at half speed and print out the position of the climber
                         leftMotor.set(-climbSpeed);
                         rightMotor.set(-climbSpeed);
-                        System.out.println(updatePosition(climbDegree));
-                        Logger.log(LoggerSystems.Climb,"" + updatePosition(climbDegree));
                     }
 
                     //If it is passed that point stop the motors
                     else {
                         rightMotor.set(0);
                         leftMotor.set(0);
+                        hasClimbed = true;
+                        isClimbing = false;
                     } 
                 }
 
