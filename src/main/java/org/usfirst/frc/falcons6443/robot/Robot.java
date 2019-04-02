@@ -292,8 +292,10 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(secondary.leftBumper(), () -> vacuum.toggleSuction(), false);
         teleop.runOncePerPress(secondary.rightBumper(), () -> vacuum.releaseVac(), false);
         
+        climber.secondaryClimberManual(secondary.rightStickY());
+
         //Will only run if the corresponding buttons have been pushed
-        climber.climb();
+        //climber.climb();
         vacuum.suck();
 
         //Will only run if the toggle has been enabled
