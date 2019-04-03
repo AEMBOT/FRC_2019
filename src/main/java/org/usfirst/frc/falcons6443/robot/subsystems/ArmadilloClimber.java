@@ -16,16 +16,18 @@ import org.usfirst.frc.falcons6443.robot.hardware.LimitSwitch;
 
 public class ArmadilloClimber {
 
+    //Primary Climb Motors
     private CANSparkMax leftMotor;
     private CANSparkMax rightMotor;
 
+    //Secondary Climb Motors
     private CANSparkMax leftSecondMotor;
     private CANSparkMax rightSecondMotor;  
 
+    //Beam break for stopping the arm/leveling it
     private LimitSwitch bellySwitch;
-    private LimitSwitch secondaryLimitSwitch;
-    private LimitSwitch extensionBeam;
 
+    //Ref to the led controller class
     private static LEDSystem led;
 
     //Primary Climber Encoder
@@ -34,24 +36,24 @@ public class ArmadilloClimber {
     //Secondary Climber Encoder
     private CANEncoder secondaryEncoder;
 
+    //Assigns basic climb booleans for the robot to know what stage of the hab climb it is in
     private boolean isClimbing = false;
     private boolean isClimbingArmDown = false;
     private boolean hasClimbed = false;
+    private boolean runStage2 = false;
 
+    //Tells the robot at the start of the match it should try to level the arm
     private boolean steady = true;   
 
     //Change to a point where the encoders will stop
     private final int stopTickCount = 285;
     private double climbSpeed = 1;
 
-    private int armUpTickCount = 130;
-
     //Encoder positions for secondary climb
     private final int secondaryArmTickCount = -1;
 
     private ClimbEnum position;
     private boolean first;
-    private boolean bbTriggered;
 
     //Climber Encoder Values
     double climbDegree;
@@ -59,6 +61,7 @@ public class ArmadilloClimber {
   
 
     public boolean secondary;
+    public boolean isContractingArm = false;
 
     private VacuumSystem vacuum;
 
@@ -71,7 +74,7 @@ public class ArmadilloClimber {
         rightMotor = new CANSparkMax(RobotMap.RightClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
         leftMotor = new CANSparkMax(RobotMap.LeftClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-        //Assigns the motors
+        //Assigns secondary climber motors
         leftSecondMotor = new CANSparkMax(RobotMap.LeftSecondClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
         rightSecondMotor = new CANSparkMax(RobotMap.RightSecondMotor, CANSparkMaxLowLevel.MotorType.kBrushless);                                                
 
@@ -82,19 +85,23 @@ public class ArmadilloClimber {
         isClimbing = false;
         isClimbingArmDown = false;
 
-        //Creates new limit switch objects for the over extension beam and the reset belly switch
-        extensionBeam = new LimitSwitch(RobotMap.ClimbArmExtensionBeam, false);
+        //Creates a new limit switch object for the reset belly switch
         bellySwitch = new LimitSwitch(RobotMap.ClimbArmBellySwitch, false);
-        secondaryLimitSwitch = new LimitSwitch(RobotMap.SecondaryClimbSwitch, false);
 
-        //Assigns leftEncoder to the leftMotor's encoder
+        //Assigns the left encoder variable to reference the climb's left motor
         leftEncoder = leftMotor.getEncoder();
+
+        //Assigns the secondaryEncoder variable to the secondary climbs's left motor encoder
+        secondaryEncoder = leftSecondMotor.getEncoder();
 
         //Creates a reference to a pre created vaccum object
         this.vacuum = vacuum;
 
         //Flips the left motor so it is running the right direction
         rightMotor.setInverted(true);
+
+        //Inverts the left motor
+        leftSecondMotor.setInverted(true);
 
         //Sets the current climb stage
         position = ClimbEnum.Steady;
@@ -104,9 +111,6 @@ public class ArmadilloClimber {
 
         //Check if the secondary key for the climb is pressed
         secondary = false;
-
-        //Variable for checking if the mid climb beam break has been broken
-        bbTriggered = false;
     }
 
     /**
@@ -124,17 +128,14 @@ public class ArmadilloClimber {
                 leftMotor.set(0);
                 rightMotor.set(0);
             }
-
-            //Reset Secondary Climb
-            if(!secondaryLimitSwitch.get()){
-                leftSecondMotor.set(-.2);
-                rightSecondMotor.set(-.2);
-            }
-            else{
-                leftSecondMotor.set(0);
-                rightSecondMotor.set(0);
-            }
         }
+    }
+
+    /**
+     * Tells the code that the driver wants to run a two stage climb
+     */
+    public void enableStage2(){
+        runStage2 = true;
     }
 
     /**
@@ -145,6 +146,10 @@ public class ArmadilloClimber {
         return hasClimbed;
     }
 
+    /**
+     * Returns the value of isClimbing
+     * @return isClimbing
+     */
     public boolean getIsClimbing(){
         return isClimbing;
     }
@@ -176,11 +181,10 @@ public class ArmadilloClimber {
 
     /**
      * Returns the offset climber position of the secondary climber
-     * @param climbDegree pass the climb degree
      * @return returns offset climber degree
      */
-    public double getSecondaryClimberPosition(double climbDegree){
-        return secondaryEncoder.getPosition() - secondaryClimbDegree;
+    public double getSecondaryClimberPosition(){
+        return secondaryEncoder.getPosition();
     }
 
     /**
@@ -192,7 +196,6 @@ public class ArmadilloClimber {
 
     /**
      * Allows for manual control of the 
-     * TODO: !!! ARM MUST BE ALL THE WAY BACK AT ROBOT POWER ON AS IF IT WAS RESET TO THE BEAM BREAK FOR VALUES TO BE ACCURATE !!!
     */
     public void secondaryClimberManual(double speed){
 
@@ -273,8 +276,12 @@ public class ArmadilloClimber {
              * Initiates Stage 2 Hab Climb
              */
             case ClimbStage2:
+
+                //Sets the vac arm to the back position
                 vacuum.enableMovingBack();
-                if(getSecondaryClimberPosition(secondaryClimbDegree) <= secondaryArmTickCount){
+
+                //Checks if the 
+                if(getSecondaryClimberPosition() <= secondaryArmTickCount){
                     leftSecondMotor.set(0.6);
                     rightSecondMotor.set(0.6); 
                 }
@@ -286,7 +293,7 @@ public class ArmadilloClimber {
 
             //This case is for contracting the arm after we have already climbed
             case ContractArm:
-
+                isContractingArm = true;
                 //This if checks if we are not climbing and if the arm is still down
                 if(isClimbing == false && isClimbingArmDown == true){
 
@@ -304,6 +311,10 @@ public class ArmadilloClimber {
                         leftMotor.set(0);
                         hasClimbed = true;
                         isClimbing = false;
+
+                        //Check if it is meant to run stage 2, if so run it
+                        if(runStage2)
+                            setClimb(ClimbEnum.ClimbStage2);
                     } 
                 }
 
@@ -311,7 +322,8 @@ public class ArmadilloClimber {
                 else {
                     rightMotor.set(0);
                     leftMotor.set(0);
-                } 
+                }
+                
                 break;
 
                 //This stops the motors

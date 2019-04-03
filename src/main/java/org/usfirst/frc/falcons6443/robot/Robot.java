@@ -70,7 +70,6 @@ public class Robot extends TimedRobot {
     private SendableChooser<DriveStyles> driveStyle;
     public static boolean isKillSwitchEnabled = false;
 
-    private boolean isServoMoving = false;
     private boolean armOut;
     private boolean babyMode = false;
     private Timer encoderResetTimer;
@@ -137,7 +136,6 @@ public class Robot extends TimedRobot {
         vacuum.toggleSuction();
         assistedPlacement.enableDriverMode();
         loopCount = 0;
-        assistedPlacement.servoDown();
 
     }
 
@@ -169,11 +167,9 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         Logger.teleopInit();
-        assistedPlacement.servoDown();
 
         led.enableDefault();
         assistedPlacement.enableDriverMode();
-        System.out.println(assistedPlacement.getServoPosition());
         
         vacuum.setEncoderStatus(false);
         vacuum.setSolenoid(true);
@@ -217,7 +213,6 @@ public class Robot extends TimedRobot {
             hasLanded = true;
             isLaunching = false;
             driveTrain.arcadeDrive(0, -0.05);
-            assistedPlacement.servoDown();
         }
     }
 
@@ -258,13 +253,16 @@ public class Robot extends TimedRobot {
 
         //Then check if the secondary button is pushed and B on the primary controller is pushed, at this point it starts the climb
         if (climber.secondary && primary.B()) {
-            if(climber.getHasClimbed())
-                climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbStage2);
+            
+            //Check if the climber has contracted or is contracting, if so and the combo of buttons is pressed again enable stage 2 after retraction complete
+            if(climber.isContractingArm)
+                climber.enableStage2();
+            
+            //If this is not the case than proceed as normal and begin normal hab climb
             else
                 climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbHab);
 
             armOut = true;
-            //assistedPlacement.servoUp();
             vacuum.enableMovingDown();
         }
 
@@ -275,9 +273,6 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(secondary.Y(), () -> vacuum.enableMovingDown(), false);
         teleop.runOncePerPress(secondary.B(), () -> vacuum.enableMovingBack(), false);
         teleop.runOncePerPress(secondary.A(), () -> vacuum.enableCentering(), false);
-
-        teleop.runOncePerPress(primary.leftBumper(), () -> assistedPlacement.servoUp(), false);
-        teleop.runOncePerPress(primary.rightBumper(), () -> assistedPlacement.servoDown(), false);
 
         //Manual Hatch Arm Control
           if(Math.abs(secondary.leftStickY()) > .2){
@@ -292,10 +287,11 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(secondary.leftBumper(), () -> vacuum.toggleSuction(), false);
         teleop.runOncePerPress(secondary.rightBumper(), () -> vacuum.releaseVac(), false);
         
+        //Allows for manual control of the secondary climber
         climber.secondaryClimberManual(secondary.rightStickY());
 
         //Will only run if the corresponding buttons have been pushed
-        //climber.climb();
+        climber.climb();
         vacuum.suck();
 
         //Will only run if the toggle has been enabled

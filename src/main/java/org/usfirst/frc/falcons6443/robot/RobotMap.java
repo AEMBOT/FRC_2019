@@ -29,7 +29,6 @@ public class RobotMap {
 
     public static final int ClimbArmExtensionBeam = 0;
     public static final int ClimbArmBellySwitch = 4;
-    public static final int SecondaryClimbSwitch = -1;
 
     public static final int LedController = 0;
 
