@@ -16,12 +16,8 @@ public class AssistedPlacement {
 
     private PID pid;
     public Servo servo; 
-
     public boolean isServoDown = false;
     public boolean isServoUp = false;
-
-    //Creates a new WPILIB Ultrasonic reference
-   // private Ultrasonic ultrasonic;
 
     //Creates a ref to DriveTrainSystem
     DriveTrainSystem drive;
@@ -35,14 +31,10 @@ public class AssistedPlacement {
      * @param drive Refernce to drive train in the parent class, to avoid a "Resource already allocated" error
      */
     public AssistedPlacement(DriveTrainSystem drive) {
-
-
         //Initilizes a reference to the limelight class and a refernce to the global DriveTrain
         lime = new Limelight();
         servo = new Servo(RobotMap.LimelightServo);
-
         this.drive = drive;
-
         pid = new PID(.028,0,0,0);
         pid.setMaxOutput(1);
         pid.setMinDoneCycles(5);
@@ -55,24 +47,23 @@ public class AssistedPlacement {
      *  Then it will wait 300ms to allow enough time for the vision camera to begin tracking the new object
      */
     public void enablePlacing() {
-        if(isPlacing == false){
-            if (lime.getCamMode() == 1.0) {
+    if (isPlacing == false) {
+        if (lime.getCamMode() == 1.0) {
             lime.setCamMode(0);
             lime.turnOnLED();
+                } try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
             }
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-            }
-            isPlacing = true;
+                isPlacing = true;
         }
     }
 
     /**
      * Kill switch method, this method is called when the 'B' button (change) is pressed and will imediatly stop the track and return control to the driver
      */
-    public void disablePlacing(){
-        if(isPlacing == true){
+    public void disablePlacing() {
+        if (isPlacing == true) {
             isPlacing = false;
             lime.setCamMode(1);
             lime.turnOffLED();
@@ -80,20 +71,23 @@ public class AssistedPlacement {
         }
     }
 
-    public void toggleTracking(){
+    /**
+     * This method toggles the tracking process
+     */
+    public void toggleTracking() {
         isPlacing = !isPlacing;
-        if(isPlacing == false)
+        if (isPlacing == false) {
             enablePlacing();
-        else
+        } else {
             disablePlacing();
-
+        }
     }
 
     /**
      * Will return true or false based on if the robot is attempting to place a hatch or not
      * @return value of isPlacing
      */
-    public boolean getPlacing(){
+    public boolean getPlacing() {
         return isPlacing;
     }
 
@@ -104,17 +98,14 @@ public class AssistedPlacement {
         double x = lime.getX(); // Grabs the current degrees to the x value from the limelight class
         double approxRange = 1.9; // Acceptable range around the target, prevents oscilation
         double power = 0; // Power of the motors
-        
-
         power = pid.calcPID(x);
-        if(x<-1)
+        if(x<-1) {
             drive.arcadeDrive(power+0.16, 0);
-        else if(x>1)
+        } else if(x>1) {
             drive.arcadeDrive(power-0.16, 0);
-        else if(lime.getValidTarget() > 0){
+        } else if(lime.getValidTarget() > 0) {
             DriveForward(0.15);
-        }
-        else{
+        } else {
             drive.arcadeDrive(0, -0.05);
             isPlacing = false;
             enableDriverMode();
@@ -127,55 +118,26 @@ public class AssistedPlacement {
     public void trackServo() {
         double y = lime.getY();
         double value = 0.02;
-
         if(y <= 0) {
             servo.set(servo.get() + 0.04);
-        } 
-        else if(y >= 0) {
+        } else if(y >= 0) {
             servo.set(servo.get() - 0.04); 
         }
     }
 
-    public void servoUp() {
-        servo.set(0.1);
-    }
-
-    public void servoDown() {
-        servo.set(0.3);
-        
-    }
-
-
     /**
      * Gets the current limelight servo position
+     * @return servo angle in degrees
      */
     public double getServoPosition() {
        return servo.getAngle();
-    }
-
-    
-    private double baseAngleRad, angle, baseAngleTan, distance;
-    private double camHeight = 6.8; //temporary values
-    private double targetHeight = 40; //temporary values
-    private double camAngle = 30; //approximate camAngle
-
-    /**
-     * Not fully functional method that is meant to calculate distance to an objec, doesnt work quite right
-     * @return distance to tracked object
-     */
-    public double calcDistance() {
-        angle = lime.getY(); 
-        baseAngleRad = Math.toRadians(camAngle + angle); // Convert total camera angle to radians
-        baseAngleTan = Math.tan(baseAngleRad); // Take the tangent of total angle
-        distance = (targetHeight - camHeight)/baseAngleTan; 
-        return distance; 
     }
 
     /**
      * Method in place to allow for easy turning to the right 
      * @param power motor power level
      */
-    private void TurnRight(double power){
+    private void TurnRight(double power) {
         drive.rightMotors.set(-power); 
         drive.leftMotors.set(power);
     }
@@ -184,21 +146,26 @@ public class AssistedPlacement {
      * Method in place to allow for easy turning to the left 
      * @param power motor power level
      */
-    private void TurnLeft(double power){
+    private void TurnLeft(double power) {
         drive.leftMotors.set(-power);
         drive.rightMotors.set(power);
     }
 
-    public void enableDriverMode(){
+    /**
+     * This method allows for driver control
+     */
+    public void enableDriverMode() {
         lime.turnOffLED();
         lime.setCamMode(1);
     }
 
-    public void disableDriverMode(){
+     /**
+     * This method disables driver control
+     */
+    public void disableDriverMode() {
         lime.turnOnLED();
         lime.setCamMode(0);
     }
-
 
     /**
      * Method in place to allow for easy driving straight
@@ -211,9 +178,8 @@ public class AssistedPlacement {
 
     /**
      * Method in place to allow for easy stopping of the motors 
-     * @param power motor power level
      */
-    private void Stop(){
+    private void Stop() {
         drive.leftMotors.set(0);
         drive.rightMotors.set(0);
     }
