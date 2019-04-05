@@ -3,17 +3,15 @@ package org.usfirst.frc.falcons6443.robot.subsystems;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.SpeedController;
 import org.usfirst.frc.falcons6443.robot.Robot;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
-import org.usfirst.frc.falcons6443.robot.hardware.Encoders;
-import org.usfirst.frc.falcons6443.robot.hardware.SpeedControllerGroup;
-import org.usfirst.frc.falcons6443.robot.hardware.pneumatics.Piston;
-import org.usfirst.frc.falcons6443.robot.utilities.enums.LoggerSystems;
-import org.usfirst.frc.falcons6443.robot.utilities.Logger;
 import org.usfirst.frc.falcons6443.robot.hardware.LimitSwitch;
 
+/**
+ * This class is used for running the level 3 climb
+ * 
+ * @author Will Richards, Goirick Saha
+ */
 public class ArmadilloClimber {
 
     //Primary Climb Motors
@@ -46,7 +44,7 @@ public class ArmadilloClimber {
     private boolean steady = true;   
 
     //Change to a point where the encoders will stop
-    private final int stopTickCount = 285;
+    private final int stopTickCount = 228;
     private double climbSpeed = 1;
 
     //Encoder positions for secondary climb
@@ -60,9 +58,14 @@ public class ArmadilloClimber {
     double secondaryClimbDegree;
   
 
+    //Creates a new boolean named 'secondary' that stores the value of if the dpad on controller two is pressed
     public boolean secondary;
+
+    //Creates a new bool for determining if the arm is contracting
     public boolean isContractingArm = false;
 
+
+    //Creates a new vacuum object
     private VacuumSystem vacuum;
 
     public ArmadilloClimber(VacuumSystem vacuum) {
@@ -113,7 +116,6 @@ public class ArmadilloClimber {
     /**
      * This method is called at enable and it effectivly moves the climber up until a beam break is broken 
      * At which point it has been considered reset
-     * 
      */
     public void steady(){
         if(steady){
@@ -192,18 +194,6 @@ public class ArmadilloClimber {
     }
 
     /**
-     * Allows for manual control of the 
-    */
-   // public void secondaryClimberManual(double speed){
-
-    //         //Applies speed variable values to the motors
-    //         leftSecondMotor.set(speed);
-    //         rightSecondMotor.set(speed);
-
-    //         System.out.println(secondaryEncoder.getPosition());
-    // }
-
-    /**
      * Sets the current climb position through enum
      * @param num pass the current climb type
      */
@@ -211,11 +201,17 @@ public class ArmadilloClimber {
         position = num;
     }
 
-    
+    /**
+     * Gets a reference to the LED system for use in this class
+     * @return LED object
+     */
     public static LEDSystem getLED(){
         return led;
     }
 
+    /**
+     * This method utilizes an enumerated type to determine the current stage of the climb and run that accordingly
+     */
     public void climb(){
         switch(position){
 
@@ -239,16 +235,16 @@ public class ArmadilloClimber {
                     climbDegree = leftEncoder.getPosition();
                     secondaryClimbDegree = secondaryEncoder.getPosition();
                 }
+
+                //Tells the robot it has already run through the loop omce
                 first = false;
 
-                //Moves the vaccum arm down to avoid it being crushed
-                //vacuum.enableMovingBack();
-
                 //Get the current climb position and check if it is less than the stop tick point and make sure the beam break was not broken
-                if(getPrimaryClimberPosition(climbDegree) <= stopTickCount*0.8){
+                if(getPrimaryClimberPosition(climbDegree) <= stopTickCount){
 
                     //Takes the stop tick count and subtracts the current encoder position and checks if it is greater than or equal to 15
-                    if(stopTickCount*0.8 - getPrimaryClimberPosition(climbDegree) >= 15){
+                    if(stopTickCount* - getPrimaryClimberPosition(climbDegree) >= 15){
+                       
                         //If so continue climbing as normal
                         leftMotor.set(climbSpeed);
                         rightMotor.set(climbSpeed);
@@ -274,11 +270,13 @@ public class ArmadilloClimber {
              */
             case ClimbStage2:
 
-                //Checks if the 
+                //Checks if the secondary climber arm position is greater than the negative value of the encoder if so run the motor
                 if(getSecondaryClimberPosition() >= secondaryArmTickCount){
                     leftSecondMotor.set(0.65);
                     rightSecondMotor.set(0.65); 
                 }
+
+                //If the previous statement was false then halt the motors
                 else{
                     leftSecondMotor.set(0);
                     rightSecondMotor.set(0); 
@@ -287,14 +285,17 @@ public class ArmadilloClimber {
 
             //This case is for contracting the arm after we have already climbed
             case ContractArm:
+
+                //Tells the program that the arm is contracting
                 isContractingArm = true;
+
                 //This if checks if we are not climbing and if the arm is still down
                 if(isClimbing == false && isClimbingArmDown == true){
 
-                    //If this is the case then check if the encoder value is greater than the armUpTickCount and the bellySwitch has not been triggered
+                    //These statement checks to make sure the belly switch was not triggered
                     if(bellySwitch.get() == false){
 
-                        //If so reverse the climber at half speed and print out the position of the climber
+                        //If so run the motors in reverse 
                         leftMotor.set(-climbSpeed);
                         rightMotor.set(-climbSpeed);
                     }
@@ -312,7 +313,7 @@ public class ArmadilloClimber {
                     } 
                 }
 
-                //If the original if is not true stop the motors
+                //If the first if statement failed then stop the motors
                 else {
                     rightMotor.set(0);
                     leftMotor.set(0);
@@ -320,12 +321,13 @@ public class ArmadilloClimber {
                 
                 break;
 
-                //This stops the motors
+                //This is a general method to stop the motors
                 case Off:
                     leftMotor.set(0);
                     rightMotor.set(0);
                     break;
-                    
+                
+                //This defaults the case to the off state
                 default:
                     position = ClimbEnum.Off;
                     break;    
