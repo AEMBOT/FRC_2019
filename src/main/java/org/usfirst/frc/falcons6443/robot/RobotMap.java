@@ -33,8 +33,8 @@ public class RobotMap {
     public static final int LedController = 0;
 
     //Second Climber Motors
-    public static final int LeftSecondClimbMotor = -1;
-    public static final int RightSecondMotor = -1;    
+    public static final int LeftSecondClimbMotor = 10;
+    public static final int RightSecondMotor = 12;    
  
     //drive train encoders
     //public static final int LeftEncoderA = -1;
@@ -58,7 +58,6 @@ public class RobotMap {
     public static final int VacuumArmMotor = 11;
 
     public static final int VacuumHatchMotor_CargoRight = 9;
-    public static final int CargoLeft = 10;
 
     public static final int LimelightServo = 9;
 }

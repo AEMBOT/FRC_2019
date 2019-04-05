@@ -47,6 +47,7 @@ public class VacuumSystem {
     private boolean isMovingBack = false;
     private boolean isCentering = false;
     private boolean isMovingDown = false;
+    private boolean isMovingUpSlightly = false;
 
     private boolean isSucking = false;
 
@@ -184,6 +185,7 @@ public class VacuumSystem {
         isCentering = true;
         isMovingDown = false;
         isMovingBack = false;
+        isMovingUpSlightly = false;
     }
 
     //Enables moving down sets the rest to false to allow for priority
@@ -191,6 +193,7 @@ public class VacuumSystem {
         isMovingDown = true;
         isCentering = false;
         isMovingBack = false;
+        isMovingUpSlightly = false;
     }
 
     //Enables moving back the rest to false to allow for priority
@@ -198,6 +201,14 @@ public class VacuumSystem {
         isMovingBack = true;
         isCentering = false;
         isMovingDown = false;
+        isMovingUpSlightly = false;
+    }
+     //Enables moving back the rest to false to allow for priority
+     public void enableMovingUpSlightly(){
+        isMovingBack = false;
+        isCentering = false;
+        isMovingDown = false;
+        isMovingUpSlightly = true;
     }
 
     /**
@@ -205,7 +216,7 @@ public class VacuumSystem {
      * @param val pass in a joystick value
      */
     public void manual(double val){
-        if(isMovingDown == false && isMovingBack == false && isCentering == false)
+        if(isMovingDown == false && isMovingBack == false && isCentering == false){
            
             if(Math.abs(val) > 0.2){
                 armMotor.set(val*0.9);
@@ -214,13 +225,17 @@ public class VacuumSystem {
                 isManual = false;
                 armMotor.set(0);
             }
+        }
+        else{
+            isManual=false;
+        }
             
     } 
 
     //Move arm to floor for floor pickup or to climg
     public void moveArmDown() {
         if(isMovingDown && isManual == false){
-            if((armEncoder.getPosition() - encoderOffset) > -42){
+            if((armEncoder.getPosition() - encoderOffset) > -50){
                 armMotor.set(-0.4);
             }
             else{
@@ -233,10 +248,10 @@ public class VacuumSystem {
     //Move arm to floor for floor pickup or to climb
     public void moveArmCenter() {
         if(isCentering && isManual == false){
-            if((armEncoder.getPosition() - encoderOffset) > -18){
+            if((armEncoder.getPosition() - encoderOffset) > -22){
                 armMotor.set(-0.4);
             }
-            else if((armEncoder.getPosition() - encoderOffset) < -20)
+            else if((armEncoder.getPosition() - encoderOffset) < -24)
             {
                 armMotor.set(0.4);
             }
@@ -247,10 +262,23 @@ public class VacuumSystem {
         }
     }
 
+    //Slightly move arm
+    public void moveArmUp(){
+        if(isMovingUpSlightly && isManual == false){
+            if((armEncoder.getPosition() - encoderOffset) > -3){
+                armMotor.set(-0.2);
+            }
+            else{
+                armMotor.set(0);
+                isMovingUpSlightly = false;
+            }
+        }
+    }
+
     //Moves arm back to starting postion
     public void moveArmBack() {
         if(isMovingBack && isManual == false){
-            if((armEncoder.getPosition() - encoderOffset) < -5)
+            if((armEncoder.getPosition() - encoderOffset) < -2)
             {
                 armMotor.set(0.4);
             }

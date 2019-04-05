@@ -40,7 +40,7 @@ public class ArmadilloClimber {
     private boolean isClimbing = false;
     private boolean isClimbingArmDown = false;
     private boolean hasClimbed = false;
-    private boolean runStage2 = false;
+    public boolean runStage2 = false;
 
     //Tells the robot at the start of the match it should try to level the arm
     private boolean steady = true;   
@@ -50,7 +50,7 @@ public class ArmadilloClimber {
     private double climbSpeed = 1;
 
     //Encoder positions for secondary climb
-    private final int secondaryArmTickCount = -1;
+    private final int secondaryArmTickCount = -29;
 
     private ClimbEnum position;
     private boolean first;
@@ -64,9 +64,6 @@ public class ArmadilloClimber {
     public boolean isContractingArm = false;
 
     private VacuumSystem vacuum;
-
-    //Set to the diameter of the wheel in inches
-    private static final double wheelDiameter = 6;
 
     public ArmadilloClimber(VacuumSystem vacuum) {
 
@@ -197,14 +194,14 @@ public class ArmadilloClimber {
     /**
      * Allows for manual control of the 
     */
-    public void secondaryClimberManual(double speed){
+   // public void secondaryClimberManual(double speed){
 
-            //Applies speed variable values to the motors
-            leftSecondMotor.set(speed);
-            rightSecondMotor.set(speed);
+    //         //Applies speed variable values to the motors
+    //         leftSecondMotor.set(speed);
+    //         rightSecondMotor.set(speed);
 
-            System.out.println(secondaryEncoder.getPosition());
-    }
+    //         System.out.println(secondaryEncoder.getPosition());
+    // }
 
     /**
      * Sets the current climb position through enum
@@ -245,13 +242,13 @@ public class ArmadilloClimber {
                 first = false;
 
                 //Moves the vaccum arm down to avoid it being crushed
-                vacuum.enableMovingDown();
+                //vacuum.enableMovingBack();
 
                 //Get the current climb position and check if it is less than the stop tick point and make sure the beam break was not broken
-                if(getPrimaryClimberPosition(climbDegree) <= stopTickCount){
+                if(getPrimaryClimberPosition(climbDegree) <= stopTickCount*0.8){
 
                     //Takes the stop tick count and subtracts the current encoder position and checks if it is greater than or equal to 15
-                    if(stopTickCount - getPrimaryClimberPosition(climbDegree) >= 15){
+                    if(stopTickCount*0.8 - getPrimaryClimberPosition(climbDegree) >= 15){
                         //If so continue climbing as normal
                         leftMotor.set(climbSpeed);
                         rightMotor.set(climbSpeed);
@@ -277,13 +274,10 @@ public class ArmadilloClimber {
              */
             case ClimbStage2:
 
-                //Sets the vac arm to the back position
-                vacuum.enableMovingBack();
-
                 //Checks if the 
-                if(getSecondaryClimberPosition() <= secondaryArmTickCount){
-                    leftSecondMotor.set(0.6);
-                    rightSecondMotor.set(0.6); 
+                if(getSecondaryClimberPosition() >= secondaryArmTickCount){
+                    leftSecondMotor.set(0.65);
+                    rightSecondMotor.set(0.65); 
                 }
                 else{
                     leftSecondMotor.set(0);

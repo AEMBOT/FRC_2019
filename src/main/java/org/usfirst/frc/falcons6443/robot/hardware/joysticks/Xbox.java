@@ -152,6 +152,12 @@ public class Xbox {
     public boolean dPadRight(){
         return controller.getPOV(0) == 90;
     }
+    /**
+     * @return if the dpad is pushed to the right
+     */
+    public boolean dPadLeft(){
+        return controller.getPOV(0) == 270;
+    }
 
     public void setRumble(XboxRumble rumble, double value){
         switch (rumble){

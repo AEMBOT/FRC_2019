@@ -17,6 +17,7 @@ import org.usfirst.frc.falcons6443.robot.autonomous.AutoDrive;
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoMain;
 import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
 import org.usfirst.frc.falcons6443.robot.subsystems.*;
+import org.usfirst.frc.falcons6443.robot.subsystems.ArmadilloClimber.ClimbEnum;
 import org.usfirst.frc.falcons6443.robot.utilities.TeleopStructure;
 import org.usfirst.frc.falcons6443.robot.utilities.Logger;
 import org.usfirst.frc.falcons6443.robot.utilities.enums.DriveStyles;
@@ -135,6 +136,8 @@ public class Robot extends TimedRobot {
         led.enableDefault();
         vacuum.toggleSuction();
         assistedPlacement.enableDriverMode();
+        vacuum.enableMovingUpSlightly();
+        vacuum.toggleSuction();
         loopCount = 0;
 
     }
@@ -173,6 +176,8 @@ public class Robot extends TimedRobot {
         
         vacuum.setEncoderStatus(false);
         vacuum.setSolenoid(true);
+        
+    
 
     }
 
@@ -249,22 +254,20 @@ public class Robot extends TimedRobot {
         }
         
         //Allows for manual control of the secondary climber arm
-        climber.secondaryClimberManual(secondary.rightStickY());
+        //climber.secondaryClimberManual(secondary.rightStickY());
+        //Check if the climber has contracted or is contracting, if so and the combo of buttons is pressed again enable stage 2 after retraction complete
+        if(climber.isContractingArm){
+                teleop.runOncePerPress(secondary.dPadLeft(), () -> climber.enableStage2(), false);
+        }
 
         //Then check if the secondary button is pushed and B on the primary controller is pushed, at this point it starts the climb
         if (climber.secondary && primary.B()) {
-            
-            //Check if the climber has contracted or is contracting, if so and the combo of buttons is pressed again enable stage 2 after retraction complete
-            if(climber.isContractingArm)
-                climber.enableStage2();
-            
-            //If this is not the case than proceed as normal and begin normal hab climb
-            else
-                climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbHab);
-
+            climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbHab);
+           // climber.setClimb(ClimbEnum.ClimbStage2);
             armOut = true;
-            vacuum.enableMovingDown();
         }
+
+        System.out.println(climber.runStage2);
 
         //If Y is pressed then it stops the climber
         teleop.runOncePerPress(primary.Y(), () -> climber.setClimb(ArmadilloClimber.ClimbEnum.Off), false);       
@@ -288,7 +291,7 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(secondary.rightBumper(), () -> vacuum.releaseVac(), false);
         
         //Allows for manual control of the secondary climber
-        climber.secondaryClimberManual(secondary.rightStickY());
+        //climber.secondaryClimberManual(secondary.rightStickY());
 
         //Will only run if the corresponding buttons have been pushed
         climber.climb();
@@ -298,6 +301,7 @@ public class Robot extends TimedRobot {
         vacuum.moveArmBack();
         vacuum.moveArmDown();
         vacuum.moveArmCenter();
+        vacuum.moveArmUp();
 
         //Alignment Controls (primary - A) (secondary - triggers)
         //__teleop.runOncePerPress(primary.A(), () -> TBDFUNCTION, false);
