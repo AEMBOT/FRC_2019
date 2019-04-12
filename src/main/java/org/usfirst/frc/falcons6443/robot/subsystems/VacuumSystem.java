@@ -48,6 +48,7 @@ public class VacuumSystem {
     private boolean isCentering = false;
     private boolean isMovingDown = false;
     private boolean isMovingUpSlightly = false;
+    private boolean isMovingBackHatch = false;
 
     private boolean isSucking = false;
 
@@ -186,6 +187,7 @@ public class VacuumSystem {
         isMovingDown = false;
         isMovingBack = false;
         isMovingUpSlightly = false;
+        isMovingBackHatch = false; 
     }
 
     //Enables moving down sets the rest to false to allow for priority
@@ -194,6 +196,7 @@ public class VacuumSystem {
         isCentering = false;
         isMovingBack = false;
         isMovingUpSlightly = false;
+        isMovingBackHatch = false; 
     }
 
     //Enables moving back the rest to false to allow for priority
@@ -202,13 +205,25 @@ public class VacuumSystem {
         isCentering = false;
         isMovingDown = false;
         isMovingUpSlightly = false;
+        isMovingBackHatch = false; 
     }
+
+    //Enables moving back the rest to false to allow for priority
+    public void enableMovingBackHatch(){
+        isMovingBack = false;
+        isCentering = false;
+        isMovingDown = false;
+        isMovingUpSlightly = false;
+        isMovingBackHatch = true; 
+    }
+
      //Enables moving back the rest to false to allow for priority
      public void enableMovingUpSlightly(){
         isMovingBack = false;
         isCentering = false;
         isMovingDown = false;
         isMovingUpSlightly = true;
+        isMovingBackHatch = false; 
     }
 
     /**
@@ -265,7 +280,7 @@ public class VacuumSystem {
     //Slightly move arm
     public void moveArmUp(){
         if(isMovingUpSlightly && isManual == false){
-            if((armEncoder.getPosition() - encoderOffset) > -3){
+            if((armEncoder.getPosition() - encoderOffset) > -4){
                 armMotor.set(-0.2);
             }
             else{
@@ -286,6 +301,21 @@ public class VacuumSystem {
                 armMotor.set(0);
                 isMovingBack = false;
                 hasRetracted = false;
+            }
+        }
+    }
+
+    /**
+     * Moves the hatch arm back to a safe hatch carry position
+     */
+    public void moveArmBackHatch(){
+        if(isMovingBackHatch && isManual == false){
+            if((armEncoder.getPosition() - encoderOffset) < -4){
+                armMotor.set(0.4);
+            }
+            else{
+                armMotor.set(0);
+                isMovingBackHatch = false;
             }
         }
     }

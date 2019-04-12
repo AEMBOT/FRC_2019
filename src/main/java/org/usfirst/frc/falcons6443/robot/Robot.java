@@ -84,7 +84,6 @@ public class Robot extends TimedRobot {
         primary = new Xbox(new XboxController(0)); // change controller type here
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
-        
        
         driveTrain = new DriveTrainSystem();
         assistedPlacement = new AssistedPlacement(driveTrain);
@@ -260,21 +259,23 @@ public class Robot extends TimedRobot {
                 teleop.runOncePerPress(secondary.dPadLeft(), () -> climber.enableStage2(), false);
         }
 
+        if(climber.runStage2){
+            teleop.runOncePerPress(secondary.dPadUp(), () -> climber.enableStage3(), false);
+        }
+
         //Then check if the secondary button is pushed and B on the primary controller is pushed, at this point it starts the climb
         if (climber.secondary && primary.B()) {
             climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbHab);
-           // climber.setClimb(ClimbEnum.ClimbStage2);
+            //climber.setClimb(ClimbEnum.ClimbStage2);
             armOut = true;
         }
-
-        System.out.println(climber.runStage2);
 
         //If Y is pressed then it stops the climber
         teleop.runOncePerPress(primary.Y(), () -> climber.setClimb(ArmadilloClimber.ClimbEnum.Off), false);       
 
         //Increments/Decrements the position by one spot each time a specific dpad is pressed
         teleop.runOncePerPress(secondary.Y(), () -> vacuum.enableMovingDown(), false);
-        teleop.runOncePerPress(secondary.B(), () -> vacuum.enableMovingBack(), false);
+        teleop.runOncePerPress(secondary.B(), () -> vacuum.enableMovingBackHatch(), false);
         teleop.runOncePerPress(secondary.A(), () -> vacuum.enableCentering(), false);
 
         //Manual Hatch Arm Control
@@ -290,9 +291,6 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(secondary.leftBumper(), () -> vacuum.toggleSuction(), false);
         teleop.runOncePerPress(secondary.rightBumper(), () -> vacuum.releaseVac(), false);
         
-        //Allows for manual control of the secondary climber
-        //climber.secondaryClimberManual(secondary.rightStickY());
-
         //Will only run if the corresponding buttons have been pushed
         climber.climb();
         vacuum.suck();
@@ -302,6 +300,7 @@ public class Robot extends TimedRobot {
         vacuum.moveArmDown();
         vacuum.moveArmCenter();
         vacuum.moveArmUp();
+        vacuum.moveArmBackHatch();
 
         //Alignment Controls (primary - A) (secondary - triggers)
         //__teleop.runOncePerPress(primary.A(), () -> TBDFUNCTION, false);

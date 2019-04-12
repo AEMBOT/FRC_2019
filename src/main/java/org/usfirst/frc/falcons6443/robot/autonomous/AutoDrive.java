@@ -62,7 +62,7 @@ public class AutoDrive extends DriveTrainSystem {
 
     //distance is in inches, reset will reset the encoders
     void setDistance(double distance, boolean reset){
-        if(reset) reset();
+      //  if(reset) reset();
         distancePID.setDesiredValue(distance);
     }
 

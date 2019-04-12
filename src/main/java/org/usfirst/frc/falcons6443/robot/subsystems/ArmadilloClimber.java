@@ -6,6 +6,10 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import org.usfirst.frc.falcons6443.robot.Robot;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.LimitSwitch;
+import org.usfirst.frc.falcons6443.robot.hardware.SpeedControllerGroup;
+
+import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * This class is used for running the level 3 climb
@@ -17,6 +21,9 @@ public class ArmadilloClimber {
     //Primary Climb Motors
     private CANSparkMax leftMotor;
     private CANSparkMax rightMotor;
+
+    private SpeedControllerGroup primaryClimber;
+    private SpeedControllerGroup secondaryClimber;
 
     //Secondary Climb Motors
     private CANSparkMax leftSecondMotor;
@@ -39,6 +46,8 @@ public class ArmadilloClimber {
     private boolean isClimbingArmDown = false;
     private boolean hasClimbed = false;
     public boolean runStage2 = false;
+    private boolean runStage3 = true;
+    private boolean secondaryRetractionDelay = true;
 
     //Tells the robot at the start of the match it should try to level the arm
     private boolean steady = true;   
@@ -48,7 +57,8 @@ public class ArmadilloClimber {
     private double climbSpeed = 1;
 
     //Encoder positions for secondary climb
-    private final int secondaryArmTickCount = -29;
+    private final int secondaryArmTickCount = -40;
+    private final int stage3TickCount = 80;
 
     private ClimbEnum position;
     private boolean first;
@@ -111,6 +121,11 @@ public class ArmadilloClimber {
 
         //Check if the secondary key for the climb is pressed
         secondary = false;
+
+        //Group for controlling the entire set of motors
+        primaryClimber = new SpeedControllerGroup(leftMotor, rightMotor);
+        secondaryClimber = new SpeedControllerGroup(leftSecondMotor, rightSecondMotor);
+        
     }
 
     /**
@@ -120,12 +135,10 @@ public class ArmadilloClimber {
     public void steady(){
         if(steady){
             if(!bellySwitch.get()) {
-                leftMotor.set(-.3);
-                rightMotor.set(-.3);
+                primaryClimber.set(-.3);
             }
             else {
-                leftMotor.set(0);
-                rightMotor.set(0);
+                primaryClimber.set(0);
             }
         }
     }
@@ -135,6 +148,10 @@ public class ArmadilloClimber {
      */
     public void enableStage2(){
         runStage2 = true;
+    }
+
+    public void enableStage3(){
+        runStage3 = true;
     }
 
     /**
@@ -190,7 +207,7 @@ public class ArmadilloClimber {
      * Stores Enums for different climb positions
      */
     public enum ClimbEnum{
-        ClimbHab, ClimbStage2 ,ContractArm, Steady, Off
+        ClimbHab, ClimbStage2 ,ContractArm, ContractSecondary, ClimbStage3 ,Steady, Off
     }
 
     /**
@@ -224,6 +241,7 @@ public class ArmadilloClimber {
             //At this stage the climb is actually started
             case ClimbHab:
 
+                System.out.println("Running Primary Climber...");
                 //Switches LEDS to rainbow
                 led.enableRainbow();
 
@@ -234,6 +252,7 @@ public class ArmadilloClimber {
                 if(first){
                     climbDegree = leftEncoder.getPosition();
                     secondaryClimbDegree = secondaryEncoder.getPosition();
+                    vacuum.enableMovingBack();
                 }
 
                 //Tells the robot it has already run through the loop omce
@@ -243,24 +262,18 @@ public class ArmadilloClimber {
                 if(getPrimaryClimberPosition(climbDegree) <= stopTickCount){
 
                     //Takes the stop tick count and subtracts the current encoder position and checks if it is greater than or equal to 15
-                    if(stopTickCount* - getPrimaryClimberPosition(climbDegree) >= 15){
+                    if(stopTickCount - getPrimaryClimberPosition(climbDegree) >= 15){
                        
-                        //If so continue climbing as normal
-                        leftMotor.set(climbSpeed);
-                        rightMotor.set(climbSpeed);
+                      primaryClimber.set(climbSpeed);
                     }  
                     else{
-
-                        //If not slow down the climb
-                        leftMotor.set(climbSpeed/3);
-                        rightMotor.set(climbSpeed/3);
+                        primaryClimber.set(climbSpeed/3);
                     }
                 } 
                 else {
                     //After it has finished climbing set isClimbing to false, hasClimbed to true and isClimbingArmDown to true, aswell turn off the motors and change the arm to contract mode
                     isClimbingArmDown = true;
-                    leftMotor.set(0);
-                    rightMotor.set(0);
+                    primaryClimber.set(0);
                     setClimb(ClimbEnum.ContractArm);
                 }
                 break;
@@ -269,23 +282,37 @@ public class ArmadilloClimber {
              * Initiates Stage 2 Hab Climb
              */
             case ClimbStage2:
-
+                System.out.println("Running Stage 2 Climber...");
                 //Checks if the secondary climber arm position is greater than the negative value of the encoder if so run the motor
                 if(getSecondaryClimberPosition() >= secondaryArmTickCount){
-                    leftSecondMotor.set(0.65);
-                    rightSecondMotor.set(0.65); 
+                   secondaryClimber.set(0.8);
                 }
 
                 //If the previous statement was false then halt the motors
                 else{
-                    leftSecondMotor.set(0);
-                    rightSecondMotor.set(0); 
+                    secondaryClimber.set(0);
+                    if(runStage3)
+                        setClimb(ClimbEnum.ContractSecondary);
                 }
             break;  
 
+            /**
+             * Begins stage 3 climb
+             */
+            case ClimbStage3:
+                System.out.println("Running Stage 3 Climber...");
+                //Checks if the primary climb position is less than the stage 3 stop tick count
+                if(getPrimaryClimberPosition(climbDegree) <= stage3TickCount){
+                    primaryClimber.set(climbSpeed);
+                }
+                else{
+                    primaryClimber.set(0);
+                }
+            break;
+
             //This case is for contracting the arm after we have already climbed
             case ContractArm:
-
+                System.out.println("Contracting the primary arm...");
                 //Tells the program that the arm is contracting
                 isContractingArm = true;
 
@@ -295,36 +322,51 @@ public class ArmadilloClimber {
                     //These statement checks to make sure the belly switch was not triggered
                     if(bellySwitch.get() == false){
 
-                        //If so run the motors in reverse 
-                        leftMotor.set(-climbSpeed);
-                        rightMotor.set(-climbSpeed);
+                        primaryClimber.set(-climbSpeed);
                     }
 
                     //If it is passed that point stop the motors
                     else {
-                        rightMotor.set(0);
-                        leftMotor.set(0);
+                        primaryClimber.set(0);
                         hasClimbed = true;
                         isClimbing = false;
 
                         //Check if it is meant to run stage 2, if so run it
-                        if(runStage2)
+                       if(runStage2)
                             setClimb(ClimbEnum.ClimbStage2);
                     } 
                 }
 
                 //If the first if statement failed then stop the motors
                 else {
-                    rightMotor.set(0);
-                    leftMotor.set(0);
+                    primaryClimber.set(0);
                 }
                 
                 break;
 
+                /**
+                 * This is used for contracting the secondary arm
+                 */
+                case ContractSecondary:
+                    if(secondaryRetractionDelay){
+                        Timer.delay(1);
+                        secondaryRetractionDelay = false;
+                    }
+                    System.out.println("Contracting the secondary arm...");
+                    if(getSecondaryClimberPosition() <= -1){
+                       secondaryClimber.set(-0.65);
+                    }
+                    else{
+                        
+                        secondaryClimber.set(0);
+                        Timer.delay(2);
+                        setClimb(ClimbEnum.ClimbStage3);
+                    }
+                break;
+
                 //This is a general method to stop the motors
                 case Off:
-                    leftMotor.set(0);
-                    rightMotor.set(0);
+                    primaryClimber.set(0);
                     break;
                 
                 //This defaults the case to the off state
@@ -339,8 +381,7 @@ public class ArmadilloClimber {
      * @param power pass a joystick value
      */
     public void manualControl(double power){
-        leftMotor.set(power);
-        rightMotor.set(power);
+        primaryClimber.set(power);
     }
 
 }

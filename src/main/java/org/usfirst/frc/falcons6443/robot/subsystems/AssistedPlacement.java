@@ -31,10 +31,16 @@ public class AssistedPlacement {
      * @param drive Refernce to drive train in the parent class, to avoid a "Resource already allocated" error
      */
     public AssistedPlacement(DriveTrainSystem drive) {
+      
         //Initilizes a reference to the limelight class and a refernce to the global DriveTrain
         lime = new Limelight();
         servo = new Servo(RobotMap.LimelightServo);
+
+
+        //Creates a local reference to the drive train to allow for control from this class
         this.drive = drive;
+
+        //Create and initilze a new PID object
         pid = new PID(.028,0,0,0);
         pid.setMaxOutput(1);
         pid.setMinDoneCycles(5);
@@ -63,6 +69,7 @@ public class AssistedPlacement {
      * Kill switch method, this method is called when the 'B' button (change) is pressed and will imediatly stop the track and return control to the driver
      */
     public void disablePlacing() {
+
         if (isPlacing == true) {
             isPlacing = false;
             lime.setCamMode(1);
@@ -72,9 +79,10 @@ public class AssistedPlacement {
     }
 
     /**
-     * This method toggles the tracking process
+     * This method toggles wether or not the limelight is in tracking mode or driver mode
      */
     public void toggleTracking() {
+
         isPlacing = !isPlacing;
         if (isPlacing == false) {
             enablePlacing();
