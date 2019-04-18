@@ -57,7 +57,7 @@ public class ArmadilloClimber {
     private double climbSpeed = 1;
 
     //Encoder positions for secondary climb
-    private final int secondaryArmTickCount = -40;
+    private final int secondaryArmTickCount = -50;
     private final int stage3TickCount = 80;
 
     private ClimbEnum position;
@@ -349,7 +349,7 @@ public class ArmadilloClimber {
                  */
                 case ContractSecondary:
                     if(secondaryRetractionDelay){
-                        Timer.delay(1);
+                        Timer.delay(1.4);
                         secondaryRetractionDelay = false;
                     }
                     System.out.println("Contracting the secondary arm...");
@@ -359,7 +359,7 @@ public class ArmadilloClimber {
                     else{
                         
                         secondaryClimber.set(0);
-                        Timer.delay(2);
+                        Timer.delay(1);
                         setClimb(ClimbEnum.ClimbStage3);
                     }
                 break;

@@ -210,10 +210,10 @@ public class VacuumSystem {
 
     //Enables moving back the rest to false to allow for priority
     public void enableMovingBackHatch(){
-        isMovingBack = false;
         isCentering = false;
         isMovingDown = false;
         isMovingUpSlightly = false;
+        isMovingBack = false;
         isMovingBackHatch = true; 
     }
 
@@ -231,7 +231,7 @@ public class VacuumSystem {
      * @param val pass in a joystick value
      */
     public void manual(double val){
-        if(isMovingDown == false && isMovingBack == false && isCentering == false){
+        if(isMovingDown == false && isMovingBack == false && isCentering == false && isMovingBackHatch == false){
            
             if(Math.abs(val) > 0.2){
                 armMotor.set(val*0.9);
