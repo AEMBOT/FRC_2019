@@ -71,8 +71,11 @@ public class Robot extends TimedRobot {
     private SendableChooser<DriveStyles> driveStyle;
     public static boolean isKillSwitchEnabled = false;
 
+    //Used to change speed for demo mode
+    private double speedMultiplier = 1;
+
     private boolean armOut;
-    private boolean babyMode = false;
+    private boolean demoMode = false;
     private Timer encoderResetTimer;
 
     /**
@@ -114,7 +117,8 @@ public class Robot extends TimedRobot {
         VideoMode vm = new VideoMode(1, 640, 480, 60);
         // CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
 
-        SmartDashboard.putBoolean("Baby Mode", babyMode);
+        //Determines if the bot is at an event being driven by other people
+        SmartDashboard.putBoolean("Demo Mode", demoMode);
         armOut = false;
         controlMethod = (DriveStyles) driveStyle.getSelected();
         teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.VACUUM, () -> vacuum.getManual(),
@@ -225,9 +229,17 @@ public class Robot extends TimedRobot {
      */
     private void controls() {
 
+        /**
+         * Will determine weather or not the robot should run slower if demo mode is enabled 
+         */
+        if(demoMode)
+            speedMultiplier = 0.5;
+        else
+            speedMultiplier = 1;
+
         //Check if the driver has initated placing, if so block normal driver controls, if not proceede as normal
         if(assistedPlacement.getPlacing() == false /*&& isAdjusting == false*/){
-          driveTrain.generalDrive(primary, controlMethod);
+          driveTrain.generalDrive(primary, controlMethod, speedMultiplier);
         }
 
         //Toggles tracking when the A button is pressed
@@ -244,12 +256,14 @@ public class Robot extends TimedRobot {
         //teleop.runOncePerPress(primary.leftBumper(), () -> driveTrain.changeSpeed(false), false);
         //teleop.runOncePerPress(primary.rightBumper(), () -> driveTrain.changeSpeed(true), false);
 
-        //Checks if the right dpad is pushed on the second controller
-        if (secondary.dPadRight() || primary.dPadRight()){
-            climber.secondary = true;
-        }
-        else{
-            climber.secondary = false;
+        if(demoMode == false){
+            //Checks if the right dpad is pushed on the second controller
+            if (secondary.dPadRight() || primary.dPadRight()){
+                climber.secondary = true;
+            }
+            else{
+                climber.secondary = false;
+            }
         }
         
         //Allows for manual control of the secondary climber arm
@@ -278,12 +292,15 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(secondary.B(), () -> vacuum.enableMovingBackHatch(), false);
         teleop.runOncePerPress(secondary.A(), () -> vacuum.enableCentering(), false);
 
-        //Manual Hatch Arm Control
-          if(Math.abs(secondary.leftStickY()) > .2){
-             vacuum.manual(-secondary.leftStickY());
-         }
-         else if(Math.abs(secondary.leftStickY()) < .2)
-             vacuum.manual(0);
+        //Make sure the bot is not in demo mode
+        if(demoMode == false){
+            //Manual Hatch Arm Control
+            if(Math.abs(secondary.leftStickY()) > .2){
+                vacuum.manual(-secondary.leftStickY());
+            }
+            else if(Math.abs(secondary.leftStickY()) < .2)
+                vacuum.manual(0);
+        }
 
 
         //teleop.off(() -> vacuum.manual(0), TeleopStructure.ManualControls.VACUUM/*, secondary.A(), secondary.B(), secondary.Y()*/);

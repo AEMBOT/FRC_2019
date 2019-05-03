@@ -47,6 +47,7 @@ public class AutoDrive extends DriveTrainSystem {
         distancePID.setMaxOutput(.65);
         distancePID.setMinDoneCycles(5);
         distancePID.setFinishedRange(distanceBuffer);
+        
        // navX = NavX.get();
         anglePID = new PIDTimer(angleP, angleI, angleD, angleEps, angleTime);
         anglePID.setMaxOutput(.7);
