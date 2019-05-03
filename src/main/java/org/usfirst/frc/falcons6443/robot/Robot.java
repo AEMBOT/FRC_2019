@@ -288,7 +288,9 @@ public class Robot extends TimedRobot {
         teleop.runOncePerPress(primary.Y(), () -> climber.setClimb(ArmadilloClimber.ClimbEnum.Off), false);       
 
         //Increments/Decrements the position by one spot each time a specific dpad is pressed
-        teleop.runOncePerPress(secondary.Y(), () -> vacuum.enableMovingDown(), false);
+        if(demoMode == false){
+            teleop.runOncePerPress(secondary.Y(), () -> vacuum.enableMovingDown(), false);
+        }
         teleop.runOncePerPress(secondary.B(), () -> vacuum.enableMovingBackHatch(), false);
         teleop.runOncePerPress(secondary.A(), () -> vacuum.enableCentering(), false);
 
