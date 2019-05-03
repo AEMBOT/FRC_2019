@@ -127,7 +127,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         // Starts inits logger and starts the auto path
-        Logger.autoInit();
+        //Logger.autoInit();
         // teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.VACUUM, () ->
         // vacuum.getManual(), (Boolean bool) -> vacuum.setManual(bool));
         // autoMain.runAutoPath();
@@ -168,7 +168,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopInit() {
-        Logger.teleopInit();
+       // Logger.teleopInit();
 
         led.enableDefault();
         assistedPlacement.enableDriverMode();
@@ -285,6 +285,14 @@ public class Robot extends TimedRobot {
          else if(Math.abs(secondary.leftStickY()) < .2)
              vacuum.manual(0);
 
+        // if(Math.abs(secondary.rightStickY()) > .2){
+        //     climber.secondaryManual(-secondary.rightStickY());
+        // }
+        // else if(Math.abs(secondary.rightStickY()) < .2)
+        //     climber.secondaryManual(0);
+
+        
+
 
         //teleop.off(() -> vacuum.manual(0), TeleopStructure.ManualControls.VACUUM/*, secondary.A(), secondary.B(), secondary.Y()*/);
         
@@ -320,12 +328,12 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void disabledInit(){
-        try{
-            Logger.printSpace();
-        } catch (Exception e){
-            System.out.println("Failed to print storage");
-        }
-        Logger.disabled();
+        // try{
+        //     Logger.printSpace();
+        // } catch (Exception e){
+        //     System.out.println("Failed to print storage");
+        // }
+        // Logger.disabled();
     }
     /*
      * Called periodically when the robot is in disabled mode.

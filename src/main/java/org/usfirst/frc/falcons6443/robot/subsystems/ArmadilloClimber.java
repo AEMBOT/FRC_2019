@@ -384,4 +384,8 @@ public class ArmadilloClimber {
         primaryClimber.set(power);
     }
 
+    public void secondaryManual(double power){
+        secondaryClimber.set(-power);
+    }
+
 }
