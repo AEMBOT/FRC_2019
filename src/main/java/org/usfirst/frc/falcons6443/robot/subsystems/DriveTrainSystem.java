@@ -97,20 +97,20 @@ public class DriveTrainSystem{
      * Singular callable method to quickly change drive styles.
      *
      * @param controller controller reference used for power/rotation values
-     * @param style DriveStyles enum, used to easily switch styles
-     *
+     * @param style DriveStyles enum, used to easily switch style
+     * @param speedMultiplier will adjust the drive speed depending on weather or not demo mode is on
      */
-    public void generalDrive(Xbox controller, DriveStyles style){
+    public void generalDrive(Xbox controller, DriveStyles style, double speedMultiplier){
         switch(style){
         
             //General tank drive, 2 Joysticks one for each side
             case Tank:
-                tankDrive(controller.leftStickY() / currentLevel,controller.rightStickY() / currentLevel);
+                tankDrive(controller.leftStickY() * speedMultiplier,controller.rightStickY() * speedMultiplier);
                 break;
 
             //Arcade drive, 2 Joysticks, one for forward and reverse another for turning
             case Arcade:
-                arcadeDrive(-controller.rightStickX() / currentLevel, controller.leftStickY() / currentLevel);
+                arcadeDrive(-controller.rightStickX() * speedMultiplier, controller.leftStickY() * speedMultiplier);
                 break;
 
             case Curve:
