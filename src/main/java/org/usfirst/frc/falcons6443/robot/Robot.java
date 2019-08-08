@@ -13,8 +13,11 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.io.FileNotFoundException;
+
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoDrive;
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoMain;
+import org.usfirst.frc.falcons6443.robot.autonomous.Pathing;
 import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
 import org.usfirst.frc.falcons6443.robot.subsystems.*;
 import org.usfirst.frc.falcons6443.robot.subsystems.ArmadilloClimber.ClimbEnum;
@@ -56,6 +59,7 @@ public class Robot extends TimedRobot {
     private AssistedPlacement assistedPlacement;
     private AutoDrive autoDrive;
     private AutoMain autoMain;
+    private Pathing path;
 
     private LEDSystem led;
 
@@ -71,7 +75,7 @@ public class Robot extends TimedRobot {
     private SendableChooser<DriveStyles> driveStyle;
     public static boolean isKillSwitchEnabled = false;
 
-    //Used to change speed for demo mode
+    // Used to change speed for demo mode
     private double speedMultiplier = 1;
 
     private boolean armOut;
@@ -87,7 +91,7 @@ public class Robot extends TimedRobot {
         primary = new Xbox(new XboxController(0)); // change controller type here
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
-       
+
         driveTrain = new DriveTrainSystem();
         assistedPlacement = new AssistedPlacement(driveTrain);
         vacuum = new VacuumSystem();
@@ -117,12 +121,17 @@ public class Robot extends TimedRobot {
         VideoMode vm = new VideoMode(1, 640, 480, 60);
         // CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
 
-        //Determines if the bot is at an event being driven by other people
+        // Determines if the bot is at an event being driven by other people
         SmartDashboard.putBoolean("Demo Mode", demoMode);
         armOut = false;
         controlMethod = (DriveStyles) driveStyle.getSelected();
         teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.VACUUM, () -> vacuum.getManual(),
                 (Boolean set) -> vacuum.setManual(set));
+
+        try {
+            path.loadData();
+        } catch (FileNotFoundException e) {
+        }
     }
 
     /*
@@ -151,18 +160,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousPeriodic() {
-        vacuum.suck();
-        climber.climb();
-        
-
-        //Launches the robot off of hab level 2 when pressed
-        teleop.runOncePerPress(primary.eight(), () -> isLaunching = true, false);
-
-        //Checks if the robot has already launched
-        if(isLaunching && hasLanded != true)
-            land();
-        else
-            controls();
+        path.drivePath(driveTrain);
         
     }
 
