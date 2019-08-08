@@ -160,7 +160,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousPeriodic() {
-        path.drivePath(driveTrain);
+        path.followPath(driveTrain);
         
     }
 
