@@ -1,5 +1,7 @@
 package org.usfirst.frc.falcons6443.robot.hardware;
 
+import com.revrobotics.CANSparkMax;
+
 import edu.wpi.first.wpilibj.SpeedController;
 
 /**
@@ -76,4 +78,5 @@ public class SpeedControllerGroup implements SpeedController {
             controller.setInverted(!controller.getInverted());
         }
     }
+
 }

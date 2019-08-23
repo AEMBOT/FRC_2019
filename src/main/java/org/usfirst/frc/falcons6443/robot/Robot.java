@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoDrive;
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoMain;
 import org.usfirst.frc.falcons6443.robot.autonomous.Pathing;
+import org.usfirst.frc.falcons6443.robot.hardware.NavX;
 import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
 import org.usfirst.frc.falcons6443.robot.subsystems.*;
 import org.usfirst.frc.falcons6443.robot.subsystems.ArmadilloClimber.ClimbEnum;
@@ -61,6 +62,7 @@ public class Robot extends TimedRobot {
     private AutoMain autoMain;
     private Pathing path;
 
+
     private LEDSystem led;
 
     // private ArmadilloClimberTest climber;
@@ -81,6 +83,7 @@ public class Robot extends TimedRobot {
     private boolean armOut;
     private boolean demoMode = false;
     private Timer encoderResetTimer;
+    private double encoderOffset = 0;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -97,6 +100,7 @@ public class Robot extends TimedRobot {
         vacuum = new VacuumSystem();
         climber = new ArmadilloClimber(vacuum);
         led = ArmadilloClimber.getLED();
+        path = new Pathing("/home/lvuser/waypoints/Test.csv");
 
         // autoDrive = new AutoDrive();
         // autoMain = new AutoMain(autoDrive);
@@ -128,10 +132,6 @@ public class Robot extends TimedRobot {
         teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.VACUUM, () -> vacuum.getManual(),
                 (Boolean set) -> vacuum.setManual(set));
 
-        try {
-            path.loadData();
-        } catch (FileNotFoundException e) {
-        }
     }
 
     /*
@@ -151,6 +151,13 @@ public class Robot extends TimedRobot {
         vacuum.enableMovingUpSlightly();
         vacuum.toggleSuction();
         loopCount = 0;
+        NavX.get().reset();
+        try {
+            path.loadData();
+        } catch (FileNotFoundException e) {
+        }
+    
+        path.resetEncoder(driveTrain);
 
     }
 
@@ -160,8 +167,10 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousPeriodic() {
-        path.drivePath(driveTrain);
-        
+        path.followPath(driveTrain);
+        //path.testDrive(driveTrain, 50, encoderOffset);
+        //System.out.println(driveTrain.getAverageEncoderPosition()-encoderOffset);
+        //System.out.println(driveTrain.getAverageEncoderPosition());
     }
 
     /*
@@ -356,5 +365,5 @@ public class Robot extends TimedRobot {
      * Called periodically when the robot is in disabled mode.
      */
     @Override
-    public void disabledPeriodic(){    }
+    public void disabledPeriodic(){  }
 }

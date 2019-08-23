@@ -1,5 +1,6 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -35,6 +36,16 @@ public class DriveTrainSystem{
     SpeedControllerGroup leftMotors;
     SpeedControllerGroup rightMotors;
 
+    //Allows more control over indidual motors (Left side)
+    CANSparkMax FrontLeftMotor = new CANSparkMax(RobotMap.FrontLeftMotor, MotorType.kBrushless);
+    CANSparkMax LeftCenterMotor = new CANSparkMax(RobotMap.LeftCenterMotor, MotorType.kBrushless);
+    CANSparkMax BackLeftMotor = new CANSparkMax(RobotMap.BackLeftMotor, MotorType.kBrushless);
+
+    //Right Si
+    CANSparkMax FrontRightMotor = new CANSparkMax(RobotMap.FrontRightMotor, MotorType.kBrushless);
+    CANSparkMax RightCenterMotor = new CANSparkMax(RobotMap.RightCenterMotor, MotorType.kBrushless);
+    CANSparkMax BackRightMotor = new CANSparkMax(RobotMap.BackRightMotor, MotorType.kBrushless);
+
     private Encoders leftEncoder; // Encoders clicks per rotation = 49
     //private Encoders rightEncoder;
     private List<List<Integer>> encoderList = new ArrayList<List<Integer>>();
@@ -60,8 +71,8 @@ public class DriveTrainSystem{
     public DriveTrainSystem() {
         
         //2019 Seasson Comp Bot motors
-        leftMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontLeftMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackLeftMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.LeftCenterMotor,MotorType.kBrushless));
-        rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.RightCenterMotor, MotorType.kBrushless));
+        leftMotors = new SpeedControllerGroup(FrontLeftMotor, BackLeftMotor, LeftCenterMotor);
+        rightMotors = new SpeedControllerGroup(FrontRightMotor, BackRightMotor, RightCenterMotor);
 
         //Creates a new differential drive using the previously defined motors
         drive = new DifferentialDrive(leftMotors, rightMotors);
@@ -128,6 +139,11 @@ public class DriveTrainSystem{
                 arcadeDrive(-controller.rightStickX() / currentLevel, controller.leftStickY() / currentLevel);
         }
 
+    }
+
+    public double getAverageEncoderPosition(){
+        return RightCenterMotor.getEncoder().getPosition();
+        
     }
 
     /**
