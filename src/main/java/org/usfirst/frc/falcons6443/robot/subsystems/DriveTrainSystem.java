@@ -141,8 +141,9 @@ public class DriveTrainSystem{
 
     }
 
+    //Gets the RightCenter motor's encoder value 
     public double getAverageEncoderPosition(){
-        return RightCenterMotor.getEncoder().getPosition();
+        return LeftCenterMotor.getEncoder().getPosition();
         
     }
 
@@ -166,7 +167,7 @@ public class DriveTrainSystem{
      *
      * Implements the differentialDrive arcadeDrive into a local method
      */
-    public void arcadeDrive(double speed, double rotation){
+    public void arcadeDrive(double rotation, double speed){
         drive.arcadeDrive(speed,-rotation);
     }
 

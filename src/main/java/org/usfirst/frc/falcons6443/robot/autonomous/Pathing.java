@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import org.usfirst.frc.falcons6443.robot.RobotConstants;
 import org.usfirst.frc.falcons6443.robot.hardware.NavX;
 import org.usfirst.frc.falcons6443.robot.subsystems.DriveTrainSystem;
 
@@ -40,26 +39,46 @@ public class Pathing {
     int waypointNumber;
     private double encoderOffset = 0;
 
+    /**
+     * Constructs all variables used in conjunction with pathing
+     * @param waypointFilePath the path at which the waypoints file is stored
+     */
     public Pathing(String waypointFilePath){
+
+        /**
+         * Creates 5 different ArrayLists
+         * All values are converted to inches when waypoints are savede
+         * X - Values of the X coordinates 
+         * Y - Values of the Y coordinates
+         * Distances - The distances between the waypoints
+         * Angles - The angle to face the next waypoint
+         * hasTurned - Holds a bool for each waypoint in the list reguarding if it has turned to face the new angle
+         */
         X = new ArrayList<>();
         Y = new ArrayList<>();
         Distances = new ArrayList<>();
         Angles = new ArrayList<>();
         hasTurned = new ArrayList<>();
 
+        //Creates a new File variable that points to the waypoints list file
         csv = new File(waypointFilePath);
+
+        //Trys to read the file via Scanner
         try {
             file = new Scanner(csv);
         } catch (FileNotFoundException e) {
         }
 
-        //Grab a static reference to the navX
+        //Grab a static reference to the navX (avoids resource already allocated)
         navx = NavX.get();
 
     }
     
     
-
+    /**
+     * This method is called to load and parse the waypoint file
+     * @throws FileNotFoundException If the file it was attempting to load was not found it throws an exception
+     */
     public void loadData() throws FileNotFoundException {
         
         //Create an int to keep track of the current line #
@@ -108,9 +127,6 @@ public class Pathing {
                 //Init the hasTurned list with all falses
                 hasTurned.add(false);
 
-                //Debugs for angle and distance
-                //System.out.println("Angle: " + angle);
-                //System.out.println("Distance: " + distance);
             }
 
 
@@ -120,14 +136,23 @@ public class Pathing {
         }
     }
 
+    /**
+     * This method is used to 'reset' the encoder, it just assigns a variable to the current encoder value and when encoder values are gotten it subtracts this offset from the actual 
+     * @param drive reference to the drive train
+     */
     public void resetEncoder(DriveTrainSystem drive){
         encoderOffset = drive.getAverageEncoderPosition();
     }
 
+    /**
+     * This a higher level interface to this class as simply calling this will execute the entire path
+     */
     public void followPath(DriveTrainSystem drive){
+
+        //Checks if the robot hasnt already turned at the current waypoint, if not... turn
         if(!hasTurned.get(waypointNumber))
             turnToAngle(drive);
-        else if(hasTurned.get(waypointNumber))
+        else if(hasTurned.get(waypointNumber)) //However if it has then drive forward the required amount
             driveInches(drive);
     }
 
@@ -136,15 +161,24 @@ public class Pathing {
      * @param drive Gets passed a reference to the drive train to avoid errors
      */
     private void turnToAngle(DriveTrainSystem drive){
+
+        //Check if the current angle is within the acceptable range (temp. PID) that it considers correct
         if(navx.getYaw() < Angles.get(waypointNumber)+1 && navx.getYaw() > Angles.get(waypointNumber)-1){
+
+            //At which point stop turning and set the current waypoint's hasTurned value to true
             drive.arcadeDrive(0, 0);
             hasTurned.set(waypointNumber, true);
+
+            //And since the wheels were driven the encoder values will have increased so.. reset them
             resetEncoder(drive);
         }
 
+        //However if the angle is less than the required angle turn towards that angle
         else if(navx.getYaw() < Angles.get(waypointNumber)){
             drive.arcadeDrive(-0.5, 0);
         }
+
+        //And if its greater, turn in the opposite direction
         else if(navx.getYaw() > Angles.get(waypointNumber)){
             drive.arcadeDrive(0.5, 0);
         }
@@ -157,21 +191,26 @@ public class Pathing {
      */
     private void driveInches(DriveTrainSystem drive){
 
+        //1 rotation of the middle motor's encoder shaft is equivelent to 3.1 inches
         double requiredTicks = (1/3.1)*Distances.get(waypointNumber);
-        //System.out.println("Wanted Distance: " + requiredTicks);
-        //System.out.println("Current Distance: " + (drive.getAverageEncoderPosition()-encoderOffset));
-        
 
-        //TODO: Flip Motor Values when backwards
+        /**
+         * TODO: Robot drives wrong direction, but follows path...in a really weird way
+         * Example: https://youtu.be/B8t88I4NyUE
+         */
         if((drive.getAverageEncoderPosition()-encoderOffset)> requiredTicks-0.1 && (drive.getAverageEncoderPosition()-encoderOffset) < requiredTicks+0.1){
             drive.arcadeDrive(0.07, 0.07);
             if((waypointNumber+1)<X.size()){
                 waypointNumber++;
             }
         }
+        
+        //Gets the encoders rotational values and subtracts the offset then drives until its greater than what it needs to be
         else if (drive.getAverageEncoderPosition()-encoderOffset > requiredTicks){
             drive.arcadeDrive(0, 0.2);
         }
+
+        //Drives the other direction
         else if (drive.getAverageEncoderPosition()-encoderOffset < requiredTicks){
             drive.arcadeDrive(0, -0.2);
         }
@@ -182,8 +221,6 @@ public class Pathing {
      * Used to get the Gyro heading from other classes
      * @return a double that represents the gyro angle
      */
-    public double getHeading(){
-        return navx.getYaw();
-    }
+    public double getHeading(){return navx.getYaw();}
 
 }
