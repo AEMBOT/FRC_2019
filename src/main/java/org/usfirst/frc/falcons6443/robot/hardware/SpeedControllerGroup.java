@@ -23,6 +23,9 @@ public class SpeedControllerGroup implements SpeedController {
          this.controllers = controllers;
     }
 
+    /**
+     * Writes a power to the motors using PID
+     */
     @Override
     public void pidWrite(double arg0) {
         for (SpeedController controller : controllers) {
@@ -30,6 +33,9 @@ public class SpeedControllerGroup implements SpeedController {
         }
     }
 
+    /**
+     * Disables all motors in group
+     */
     @Override
     public void disable() {
         for (SpeedController controller : controllers) {
@@ -37,23 +43,37 @@ public class SpeedControllerGroup implements SpeedController {
         }
     }
 
-    //returns the current setSpeed speed of the controller
+    /**
+     * Returns the current power level of the motors
+     */
     @Override
     public double get() {
         return controllers[0].get();
     }
 
+    /**
+     * Gets the direction status
+     */
     @Override
     public boolean getInverted() {
         return controllers[0].getInverted();
     }
 
+    /**
+     * Sets motor speeds
+     * @param arg0 The speed -1 to +1
+     */
     @Override
     public void set(double arg0) {
         for (SpeedController controller : controllers) {
             controller.set(arg0);
         }
     }
+
+    /**
+     * Sets motor's directions
+     * @param arg0 if the motors direction is inverted or not
+     */
 
     @Override
     public void setInverted(boolean arg0) {
@@ -62,6 +82,9 @@ public class SpeedControllerGroup implements SpeedController {
         }
     }
 
+    /**
+     * Stops all motors
+     */
     @Override
     public void stopMotor() {
         for (SpeedController controller : controllers) {

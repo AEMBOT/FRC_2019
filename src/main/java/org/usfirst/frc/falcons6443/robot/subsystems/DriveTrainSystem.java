@@ -41,19 +41,16 @@ public class DriveTrainSystem{
     CANSparkMax LeftCenterMotor = new CANSparkMax(RobotMap.LeftCenterMotor, MotorType.kBrushless);
     CANSparkMax BackLeftMotor = new CANSparkMax(RobotMap.BackLeftMotor, MotorType.kBrushless);
 
-    //Right Si
+    //Right Side motors
     CANSparkMax FrontRightMotor = new CANSparkMax(RobotMap.FrontRightMotor, MotorType.kBrushless);
     CANSparkMax RightCenterMotor = new CANSparkMax(RobotMap.RightCenterMotor, MotorType.kBrushless);
     CANSparkMax BackRightMotor = new CANSparkMax(RobotMap.BackRightMotor, MotorType.kBrushless);
 
-    private Encoders leftEncoder; // Encoders clicks per rotation = 49
-    //private Encoders rightEncoder;
     private List<List<Integer>> encoderList = new ArrayList<List<Integer>>();
     public Timer encoderCheck;
 
     private boolean usingLeftEncoder = true; //keep true. Left is our default encoder, right is our backup encoder
     private double minEncoderMovement = 5; //ticks //change value
-    private static final double WheelDiameter = 6;
 
     //Controls robot movement speed
     private double[] speedLevels = {4, 2, 1.3333 , 1};
