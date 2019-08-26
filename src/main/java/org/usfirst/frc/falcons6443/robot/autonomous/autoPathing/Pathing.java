@@ -33,6 +33,11 @@ public class Pathing {
      * Called in the auton init function to start the calculations
      */
     public void runPath() throws IOException {
+
+        //Stop Inverting the left side to allow for the correct calculations
+        drive.getLeftMotors().setInverted(false);
+
+
         //Create two trajectories one for each side of the drive train
         Trajectory leftTrajectory;
         Trajectory rightTrajectory;
@@ -76,8 +81,6 @@ public class Pathing {
             double desiredHeading = Pathfinder.r2d(leftFollower.getHeading());
             double headingDifference = Pathfinder.boundHalfDegrees(desiredHeading-heading);
             double turn = 0.8 * (-1.0/80.0) * headingDifference;
-
-            //TODO: If causes issues flip values, or invert one
             drive.tankDrive(leftSpeed + turn, rightSpeed - turn);
         }
     }
@@ -88,5 +91,8 @@ public class Pathing {
     public void stopPathing(){
         followerNotifier.stop();
         drive.tankDrive(0, 0);
+
+        //Re-Invert the motors so normal driving still works
+        drive.getLeftMotors().setInverted(true);
     }
 }

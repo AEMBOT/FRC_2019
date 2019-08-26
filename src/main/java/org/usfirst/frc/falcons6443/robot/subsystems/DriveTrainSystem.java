@@ -156,9 +156,7 @@ public class DriveTrainSystem{
      * @return average ticks
      */
     public int getRightSideEncoderPosition(){
-        int sum = (int) ((FrontRightMotor.getEncoder().getPosition() + CenterRightMotor.getEncoder().getPosition() + BackRightMotor.getEncoder().getPosition())*42);
-        return (sum/3);
-        
+        return (int) CenterRightMotor.getEncoder().getPosition() * 42;
     }
 
     /**
@@ -166,8 +164,7 @@ public class DriveTrainSystem{
      * @return average ticks
      */
     public int getLeftSideEncoderPosition(){
-        int sum = (int) ((FrontLeftMotor.getEncoder().getPosition() + CenterLeftMotor.getEncoder().getPosition() + BackLeftMotor.getEncoder().getPosition())*42);
-        return (sum/3);
+        return (int) CenterLeftMotor.getEncoder().getPosition() * 42;
         
     }
 
