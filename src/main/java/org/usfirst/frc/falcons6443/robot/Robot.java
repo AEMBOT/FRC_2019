@@ -14,9 +14,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoDrive;
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoMain;
+import org.usfirst.frc.falcons6443.robot.autonomous.autoPathing.Pathing;
 import org.usfirst.frc.falcons6443.robot.hardware.NavX;
 import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
 import org.usfirst.frc.falcons6443.robot.subsystems.*;
@@ -57,8 +59,11 @@ public class Robot extends TimedRobot {
     private TeleopStructure teleop;
     private DriveTrainSystem driveTrain;
     private AssistedPlacement assistedPlacement;
+    
     private AutoDrive autoDrive;
     private AutoMain autoMain;
+
+    private Pathing path;
 
 
     private LEDSystem led;
@@ -98,6 +103,7 @@ public class Robot extends TimedRobot {
         vacuum = new VacuumSystem();
         climber = new ArmadilloClimber(vacuum);
         led = ArmadilloClimber.getLED();
+        path = new Pathing(driveTrain);
       
         // autoDrive = new AutoDrive();
         // autoMain = new AutoMain(autoDrive);
@@ -142,6 +148,11 @@ public class Robot extends TimedRobot {
         // vacuum.getManual(), (Boolean bool) -> vacuum.setManual(bool));
         // autoMain.runAutoPath();
 
+        //In case a file isnt found
+        try {
+            path.runPath();
+        } catch (IOException e) {}
+
         led.enableDefault();
         vacuum.toggleSuction();
         assistedPlacement.enableDriverMode();
@@ -174,6 +185,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
        // Logger.teleopInit();
 
+        path.stopPathing();
         led.enableDefault();
         assistedPlacement.enableDriverMode();
         
