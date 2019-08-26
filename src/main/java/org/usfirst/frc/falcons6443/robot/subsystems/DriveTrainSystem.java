@@ -38,19 +38,24 @@ public class DriveTrainSystem{
 
     //Allows more control over indidual motors (Left side)
     CANSparkMax FrontLeftMotor = new CANSparkMax(RobotMap.FrontLeftMotor, MotorType.kBrushless);
-    CANSparkMax LeftCenterMotor = new CANSparkMax(RobotMap.LeftCenterMotor, MotorType.kBrushless);
+    CANSparkMax CenterLeftMotor = new CANSparkMax(RobotMap.LeftCenterMotor, MotorType.kBrushless);
     CANSparkMax BackLeftMotor = new CANSparkMax(RobotMap.BackLeftMotor, MotorType.kBrushless);
 
     //Right Side motors
     CANSparkMax FrontRightMotor = new CANSparkMax(RobotMap.FrontRightMotor, MotorType.kBrushless);
-    CANSparkMax RightCenterMotor = new CANSparkMax(RobotMap.RightCenterMotor, MotorType.kBrushless);
+    CANSparkMax CenterRightMotor = new CANSparkMax(RobotMap.RightCenterMotor, MotorType.kBrushless);
     CANSparkMax BackRightMotor = new CANSparkMax(RobotMap.BackRightMotor, MotorType.kBrushless);
 
     private List<List<Integer>> encoderList = new ArrayList<List<Integer>>();
+    private List<CANSparkMax> motorList = new ArrayList<>();
     public Timer encoderCheck;
 
     private boolean usingLeftEncoder = true; //keep true. Left is our default encoder, right is our backup encoder
     private double minEncoderMovement = 5; //ticks //change value
+
+    //Offset used when subtracting from the encoders to get the true value if reset
+    private int rightEncoderOffset = 0;
+    private int leftEncoderOffset = 0;
 
     //Controls robot movement speed
     private double[] speedLevels = {4, 2, 1.3333 , 1};
@@ -68,8 +73,8 @@ public class DriveTrainSystem{
     public DriveTrainSystem() {
         
         //2019 Seasson Comp Bot motors
-        leftMotors = new SpeedControllerGroup(FrontLeftMotor, BackLeftMotor, LeftCenterMotor);
-        rightMotors = new SpeedControllerGroup(FrontRightMotor, BackRightMotor, RightCenterMotor);
+        leftMotors = new SpeedControllerGroup(FrontLeftMotor, BackLeftMotor, CenterLeftMotor);
+        rightMotors = new SpeedControllerGroup(FrontRightMotor, BackRightMotor, CenterRightMotor);
 
         //Creates a new differential drive using the previously defined motors
         drive = new DifferentialDrive(leftMotors, rightMotors);
@@ -83,6 +88,14 @@ public class DriveTrainSystem{
         drive.setMaxOutput(1);
         for(int i = 0; i <= 1; i++) encoderList.add(i, new ArrayList<>());
         encoderCheck = new Timer();
+
+        //Assign all motors into a list
+        motorList.add(FrontLeftMotor);
+        motorList.add(FrontRightMotor);
+        motorList.add(CenterLeftMotor);
+        motorList.add(CenterRightMotor);
+        motorList.add(BackLeftMotor);
+        motorList.add(BackRightMotor);
     }
 
     /**
@@ -138,9 +151,23 @@ public class DriveTrainSystem{
 
     }
 
-    //Gets the RightCenter motor's encoder value 
-    public double getAverageEncoderPosition(){
-        return LeftCenterMotor.getEncoder().getPosition();
+    /**
+     * Gets the right side of the drivetrains average encoder posiition
+     * @return average ticks
+     */
+    public int getRightSideEncoderPosition(){
+        int sum = (int) ((FrontRightMotor.getEncoder().getPosition() + CenterRightMotor.getEncoder().getPosition() + BackRightMotor.getEncoder().getPosition())*42);
+        return (sum/3);
+        
+    }
+
+    /**
+     * Gets the average encoder value in TICKS of the left side of the drive train
+     * @return average ticks
+     */
+    public int getLeftSideEncoderPosition(){
+        int sum = (int) ((FrontLeftMotor.getEncoder().getPosition() + CenterLeftMotor.getEncoder().getPosition() + BackLeftMotor.getEncoder().getPosition())*42);
+        return (sum/3);
         
     }
 
@@ -265,4 +292,5 @@ public class DriveTrainSystem{
             currentLevel = currentLevel;
         }
     }
+
 }

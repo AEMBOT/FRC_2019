@@ -17,7 +17,6 @@ import java.io.FileNotFoundException;
 
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoDrive;
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoMain;
-import org.usfirst.frc.falcons6443.robot.autonomous.Pathing;
 import org.usfirst.frc.falcons6443.robot.hardware.NavX;
 import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
 import org.usfirst.frc.falcons6443.robot.subsystems.*;
@@ -60,7 +59,6 @@ public class Robot extends TimedRobot {
     private AssistedPlacement assistedPlacement;
     private AutoDrive autoDrive;
     private AutoMain autoMain;
-    private Pathing path;
 
 
     private LEDSystem led;
@@ -100,8 +98,7 @@ public class Robot extends TimedRobot {
         vacuum = new VacuumSystem();
         climber = new ArmadilloClimber(vacuum);
         led = ArmadilloClimber.getLED();
-        path = new Pathing("/home/lvuser/waypoints/Test.csv");
-
+      
         // autoDrive = new AutoDrive();
         // autoMain = new AutoMain(autoDrive);
         // CameraServer.getInstance().putVideo();
@@ -152,12 +149,8 @@ public class Robot extends TimedRobot {
         vacuum.toggleSuction();
         loopCount = 0;
         NavX.get().reset();
-        try {
-            path.loadData();
-        } catch (FileNotFoundException e) {
-        }
+        
     
-        path.resetEncoder(driveTrain);
 
     }
 
@@ -167,7 +160,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousPeriodic() {
-        path.followPath(driveTrain);
+       
         //path.testDrive(driveTrain, 50, encoderOffset);
         //System.out.println(driveTrain.getAverageEncoderPosition()-encoderOffset);
         //System.out.println(driveTrain.getAverageEncoderPosition());
