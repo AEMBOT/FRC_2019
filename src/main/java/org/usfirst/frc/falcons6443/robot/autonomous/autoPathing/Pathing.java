@@ -6,6 +6,7 @@ import org.usfirst.frc.falcons6443.robot.hardware.NavX;
 import org.usfirst.frc.falcons6443.robot.subsystems.DriveTrainSystem;
 
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.PIDController;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.PathfinderFRC;
 import jaci.pathfinder.Trajectory;
@@ -17,12 +18,17 @@ public class Pathing {
     
     private NavX navX;
 
+    //Pathfinder's encoder controller references
     private EncoderFollower leftFollower;
     private EncoderFollower rightFollower;
 
     private Notifier followerNotifier;
 
 
+    /**
+     * Constructor is passed a reference to the drive train and reference to the NavX
+     * @param drive global drive train reference
+     */
     public Pathing(DriveTrainSystem drive){
         this.drive = drive;
         
@@ -32,21 +38,22 @@ public class Pathing {
     /**
      * Called in the auton init function to start the calculations
      */
-    public void runPath() throws IOException {
+    public void runPath(String pathName) throws IOException {
 
         //Stop Inverting the left side to allow for the correct calculations
         drive.getLeftMotors().setInverted(false);
+       
+        /**
+         * Assign trajectories to corresponding files
+         * NOTE: Trajectories are flipped due to issues with PathWeaver
+         */
+        Trajectory leftTrajectory = PathfinderFRC.getTrajectory(pathName + ".right");
+        Trajectory rightTrajectory = PathfinderFRC.getTrajectory(pathName + ".left");
 
-
-        //Create two trajectories one for each side of the drive train
-        Trajectory leftTrajectory;
-        Trajectory rightTrajectory;
-
-        //Assign trajectories to corresponding files
-        leftTrajectory = PathfinderFRC.getTrajectory(RobotPathConstants.PATH_NAME + ".left");
-        rightTrajectory = PathfinderFRC.getTrajectory(RobotPathConstants.PATH_NAME + ".right");
-        
-
+        //Assign encoder followers to the corresponding directories
+        leftFollower = new EncoderFollower(leftTrajectory);
+        rightFollower = new EncoderFollower(rightTrajectory);
+       
         //Configure the left followers encoder
         leftFollower.configureEncoder(drive.getLeftSideEncoderPosition(), RobotPathConstants.TICKS_PER_REV, RobotPathConstants.WHEEL_DIAMETER);
 
@@ -78,7 +85,10 @@ public class Pathing {
             double rightSpeed = rightFollower.calculate(drive.getRightSideEncoderPosition());
 
             double heading = navX.getYaw();
-            double desiredHeading = Pathfinder.r2d(leftFollower.getHeading());
+
+            //Invert Orientation Of Gyro
+            double desiredHeading = -Pathfinder.r2d(leftFollower.getHeading());
+
             double headingDifference = Pathfinder.boundHalfDegrees(desiredHeading-heading);
             double turn = 0.8 * (-1.0/80.0) * headingDifference;
             drive.tankDrive(leftSpeed + turn, rightSpeed - turn);

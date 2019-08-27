@@ -14,9 +14,6 @@ public class RobotPathConstants {
 
     //TODO: Calculate max robot velocity
     //Measuremeant in m/s
-    public static final double MAX_VELOCITY = 0;
-
-    //PathWeaver path name
-    public static final String PATH_NAME = "";
+    public static final double MAX_VELOCITY = 15.8/3.281;
     
 }

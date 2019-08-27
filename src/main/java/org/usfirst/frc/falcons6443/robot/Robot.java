@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoDrive;
 import org.usfirst.frc.falcons6443.robot.autonomous.AutoMain;
@@ -39,55 +41,29 @@ import org.usfirst.frc.falcons6443.robot.utilities.enums.XboxRumble;
 public class Robot extends TimedRobot {
     private Xbox primary;
     private Xbox secondary;
-    private int loopCount = 0;
-    private boolean hasLanded = false;
-    private double[] joystickArray = { 0.03937007859349251, 0.11023622006177902, 0.11023622006177902,
-            0.21259842813014984, 0.27559053897857666, 0.27559053897857666, 0.5196850299835205, 0.5196850299835205,
-            0.6456692814826965, 0.6614173054695129, 0.6614173054695129, 0.6771653294563293, 0.8110235929489136,
-            0.8110235929489136, 0.8897637724876404, 0.913385808467865, 0.913385808467865, 0.960629940032959,
-            0.960629940032959, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9921259880065918, 0.9921259880065918, 0.8661417365074158,
-            0.7322834730148315, 0.6929134130477905, 0.7007874250411987, 0.7086614370346069, 0.7086614370346069,
-            0.7007874250411987, 0.7007874250411987, 0.6535432934761047, 0.4645669162273407, 0.4645669162273407,
-            0.4724409580230713, 0.4724409580230713, 0.4724409580230713, 0.4566929042339325, 0.4488188922405243,
-            0.4330708682537079, 0.3937007784843445, 0.3937007784843445, 0.3937007784843445, 0.3858267664909363,
-            0.3858267664909363, 0.31496062874794006, 0.31496062874794006, 0.21259842813014984, 0.21259842813014984,
-            0.15748031437397003, 0.12598425149917603, 0.10236220806837082, 0.07874015718698502, 0.07874015718698502,
-            0.07086614519357681, 0.07086614519357681, 0.06299212574958801, 0.06299212574958801, 0.06299212574958801,
-            0.04724409431219101, 0.03937007859349251, 0.023622047156095505, 0.015748031437397003, 0.007874015718698502,
-            0.007874015718698502, 0.007874015718698502, 0.007874015718698502, 0.007874015718698502 };
+
     private TeleopStructure teleop;
+
     private DriveTrainSystem driveTrain;
     private AssistedPlacement assistedPlacement;
-    
-    private AutoDrive autoDrive;
-    private AutoMain autoMain;
-
-    private Pathing path;
-
-
-    private LEDSystem led;
-
-    // private ArmadilloClimberTest climber;
     private VacuumSystem vacuum;
-    private DriveStyles controlMethod;
+    private DriveStyles controlMethod = DriveStyles.Arcade;
     private ArmadilloClimber climber;
 
-    private boolean isLaunching = false;
-    private boolean isAdjusting = false;
-
-    public static Preferences prefs;
-    private SendableChooser<DriveStyles> driveStyle;
+    private Pathing path;
+    
     public static boolean isKillSwitchEnabled = false;
+    private boolean demoMode = false;
+
+    private List<String> pathList;
+    
 
     // Used to change speed for demo mode
     private double speedMultiplier = 1;
 
-    private boolean armOut;
-    private boolean demoMode = false;
-    private Timer encoderResetTimer;
-    private double encoderOffset = 0;
-
+    public static Preferences prefs;
+    private SendableChooser<DriveStyles> driveStyle;
+   
     /**
      * This function is run when the robot is first started up and should be used
      * for any initialization code.
@@ -98,40 +74,18 @@ public class Robot extends TimedRobot {
         secondary = new Xbox(new XboxController(1));
         teleop = new TeleopStructure();
 
+        //Create new references to all the subsystems
         driveTrain = new DriveTrainSystem();
         assistedPlacement = new AssistedPlacement(driveTrain);
         vacuum = new VacuumSystem();
         climber = new ArmadilloClimber(vacuum);
-        led = ArmadilloClimber.getLED();
         path = new Pathing(driveTrain);
-      
-        // autoDrive = new AutoDrive();
-        // autoMain = new AutoMain(autoDrive);
-        // CameraServer.getInstance().putVideo();
-        // format 1 is kMJPEG
-        // VideoMode vm = new VideoMode(1, 640, 480, 60);
-        // CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
 
-        driveStyle = new SendableChooser<DriveStyles>();
-        driveStyle.addOption("Tank", DriveStyles.Tank);
-        driveStyle.addOption("Arcade", DriveStyles.Arcade);
-        driveStyle.addOption("RC", DriveStyles.RC);
-        driveStyle.addOption("Curve", DriveStyles.Curve);
-        driveStyle.setDefaultOption("Arcade", DriveStyles.Arcade);
-
-        SmartDashboard.putData("driveStyle", driveStyle);
-
-        autoDrive = new AutoDrive();
-        autoMain = new AutoMain(autoDrive);
-        // CameraServer.getInstance().putVideo();
-        // format 1 is kMJPEG
-        VideoMode vm = new VideoMode(1, 640, 480, 60);
-        // CameraServer.getInstance().startAutomaticCapture().setVideoMode(vm);
+        pathList = new ArrayList<>();
+        initPaths();
 
         // Determines if the bot is at an event being driven by other people
         SmartDashboard.putBoolean("Demo Mode", demoMode);
-        armOut = false;
-        controlMethod = (DriveStyles) driveStyle.getSelected();
         teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.VACUUM, () -> vacuum.getManual(),
                 (Boolean set) -> vacuum.setManual(set));
 
@@ -142,27 +96,14 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        // Starts inits logger and starts the auto path
-        //Logger.autoInit();
-        // teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.VACUUM, () ->
-        // vacuum.getManual(), (Boolean bool) -> vacuum.setManual(bool));
-        // autoMain.runAutoPath();
 
-        //In case a file isnt found
-        try {
-            path.runPath();
-        } catch (IOException e) {}
-
-        led.enableDefault();
-        vacuum.toggleSuction();
-        assistedPlacement.enableDriverMode();
-        vacuum.enableMovingUpSlightly();
-        vacuum.toggleSuction();
-        loopCount = 0;
+        //Resets the Nav angle
         NavX.get().reset();
-        
-    
 
+        //Follows the path given as an input, in this case the path titled 'Stage1'
+        try {
+            path.runPath(pathList.get(0));
+        } catch (IOException e) {}
     }
 
     /**
@@ -171,10 +112,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousPeriodic() {
-       
-        //path.testDrive(driveTrain, 50, encoderOffset);
-        //System.out.println(driveTrain.getAverageEncoderPosition()-encoderOffset);
-        //System.out.println(driveTrain.getAverageEncoderPosition());
+
     }
 
     /*
@@ -186,14 +124,10 @@ public class Robot extends TimedRobot {
        // Logger.teleopInit();
 
         path.stopPathing();
-        led.enableDefault();
         assistedPlacement.enableDriverMode();
         
         vacuum.setEncoderStatus(false);
         vacuum.setSolenoid(true);
-        
-    
-
     }
 
     /**
@@ -222,22 +156,7 @@ public class Robot extends TimedRobot {
     }
 
     /**
-     * Method Called to drive the robot off the level 2 hab
-     * Simulates driver control and replays it to the bot
-     */
-    private void land() {
-
-        driveTrain.arcadeDrive(0, joystickArray[loopCount]*0.8);
-        loopCount++;
-        if (loopCount == joystickArray.length - 25) {
-            hasLanded = true;
-            isLaunching = false;
-            driveTrain.arcadeDrive(0, -0.05);
-        }
-    }
-
-    /**
-     * This method is where all the driver controls go to allow for driver controlled mode in auto, because sandstorm
+     * This method is where all the driver controls go to allow for driver controlled mode in auto, thus allowing us to not have to copy code between them
      */
     private void controls() {
 
@@ -293,7 +212,6 @@ public class Robot extends TimedRobot {
         if (climber.secondary && primary.B()) {
             climber.setClimb(ArmadilloClimber.ClimbEnum.ClimbHab);
             //climber.setClimb(ClimbEnum.ClimbStage2);
-            armOut = true;
         }
 
         //If Y is pressed then it stops the climber
@@ -358,17 +276,19 @@ public class Robot extends TimedRobot {
      * Called when the robot first enters disabled mode.
      */
     @Override
-    public void disabledInit(){
-        // try{
-        //     Logger.printSpace();
-        // } catch (Exception e){
-        //     System.out.println("Failed to print storage");
-        // }
-        // Logger.disabled();
-    }
+    public void disabledInit(){}
     /*
      * Called periodically when the robot is in disabled mode.
      */
     @Override
     public void disabledPeriodic(){  }
+
+    /**
+     * Adds wanted paths to the paths list, currently unused implementing for future use
+     */
+    private void initPaths(){
+        pathList.add("Stage1");
+        pathList.add("Stage2");
+        pathList.add("Stage3");
+    }
 }
