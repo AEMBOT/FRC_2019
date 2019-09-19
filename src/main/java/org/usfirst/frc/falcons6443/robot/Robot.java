@@ -13,7 +13,9 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +58,9 @@ public class Robot extends TimedRobot {
     private boolean demoMode = false;
 
     private List<String> pathList;
+
+    FileWriter writer;
+    int loop = 0;
     
 
     // Used to change speed for demo mode
@@ -84,6 +89,7 @@ public class Robot extends TimedRobot {
         pathList = new ArrayList<>();
         initPaths();
 
+       
         // Determines if the bot is at an event being driven by other people
         SmartDashboard.putBoolean("Demo Mode", demoMode);
         teleop.addIsManualGetterSetter(TeleopStructure.ManualControls.VACUUM, () -> vacuum.getManual(),
@@ -96,13 +102,15 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-
+        //Stop Inverting the left side to allow for the correct calculations
+        driveTrain.getLeftMotors().setInverted(false);
+        climber.setClimb(ClimbEnum.Steady);
         //Resets the Nav angle
         NavX.get().reset();
-
+        
         //Follows the path given as an input, in this case the path titled 'Stage1'
         try {
-            path.runPath(pathList.get(0));
+            path.runPath("Stage1");
         } catch (IOException e) {}
     }
 
@@ -112,7 +120,8 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousPeriodic() {
-
+        climber.climb();
+        
     }
 
     /*
@@ -123,8 +132,15 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
        // Logger.teleopInit();
 
+       try{
         path.stopPathing();
+       }
+       catch (NullPointerException e){
+
+       }
         assistedPlacement.enableDriverMode();
+        climber.setClimb(ClimbEnum.Steady);
+        NavX.get().reset();
         
         vacuum.setEncoderStatus(false);
         vacuum.setSolenoid(true);
@@ -135,6 +151,8 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopPeriodic() {
+        System.out.println("Gyro: " + NavX.get().getYaw());
+
         climber.climb();
         //System.out.println(assistedPlacement.servo.getAngle());
 
@@ -276,12 +294,22 @@ public class Robot extends TimedRobot {
      * Called when the robot first enters disabled mode.
      */
     @Override
-    public void disabledInit(){}
+    public void disabledInit(){
+        /**
+         * On Disabled init lock the motors stops from rolling after
+         */
+        driveTrain.arcadeDrive(0, 0);
+        climber.setClimb(ClimbEnum.Off);
+        try{
+        path.stopPathing();
+        }
+        catch (NullPointerException e){}
+    }
     /*
      * Called periodically when the robot is in disabled mode.
      */
     @Override
-    public void disabledPeriodic(){  }
+    public void disabledPeriodic(){ }
 
     /**
      * Adds wanted paths to the paths list, currently unused implementing for future use

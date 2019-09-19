@@ -96,6 +96,11 @@ public class DriveTrainSystem{
         motorList.add(CenterRightMotor);
         motorList.add(BackLeftMotor);
         motorList.add(BackRightMotor);
+
+        for(CANSparkMax motor : motorList){
+            motor.setRampRate(0.05);
+            motor.setSmartCurrentLimit(50);
+        }
     }
 
     /**
@@ -122,6 +127,7 @@ public class DriveTrainSystem{
      * @param speedMultiplier will adjust the drive speed depending on weather or not demo mode is on
      */
     public void generalDrive(Xbox controller, DriveStyles style, double speedMultiplier){
+        
         switch(style){
         
             //General tank drive, 2 Joysticks one for each side
@@ -156,7 +162,7 @@ public class DriveTrainSystem{
      * @return average ticks
      */
     public int getRightSideEncoderPosition(){
-        return (int) CenterRightMotor.getEncoder().getPosition() * 42;
+        return (int) ((CenterRightMotor.getEncoder().getPosition() * 42) - rightEncoderOffset);
     }
 
     /**
@@ -164,7 +170,7 @@ public class DriveTrainSystem{
      * @return average ticks
      */
     public int getLeftSideEncoderPosition(){
-        return (int) CenterLeftMotor.getEncoder().getPosition() * 42;
+        return (int) ((CenterLeftMotor.getEncoder().getPosition() * 42) - leftEncoderOffset);
         
     }
 
@@ -180,6 +186,11 @@ public class DriveTrainSystem{
             drive.tankDrive(left, right);
     }
 
+    public void resetEncoder(){
+        rightEncoderOffset = getRightSideEncoderPosition();
+        leftEncoderOffset = getLeftSideEncoderPosition();
+    }
+
     /**
      * Allows separate control of forward movement and heading
      *
@@ -188,7 +199,7 @@ public class DriveTrainSystem{
      *
      * Implements the differentialDrive arcadeDrive into a local method
      */
-    public void arcadeDrive(double rotation, double speed){
+    public void arcadeDrive(double speed, double rotation){
         drive.arcadeDrive(speed,-rotation);
     }
 

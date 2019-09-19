@@ -22,6 +22,9 @@ public class Pathing {
     private EncoderFollower leftFollower;
     private EncoderFollower rightFollower;
 
+    private Trajectory leftTrajectory;
+    private Trajectory rightTrajectory;
+
     private Notifier followerNotifier;
 
 
@@ -39,16 +42,15 @@ public class Pathing {
      * Called in the auton init function to start the calculations
      */
     public void runPath(String pathName) throws IOException {
+        drive.resetEncoder();
 
-        //Stop Inverting the left side to allow for the correct calculations
-        drive.getLeftMotors().setInverted(false);
        
         /**
          * Assign trajectories to corresponding files
          * NOTE: Trajectories are flipped due to issues with PathWeaver
          */
-        Trajectory leftTrajectory = PathfinderFRC.getTrajectory(pathName + ".right");
-        Trajectory rightTrajectory = PathfinderFRC.getTrajectory(pathName + ".left");
+        leftTrajectory = PathfinderFRC.getTrajectory("/output/" + pathName + ".right");
+        rightTrajectory = PathfinderFRC.getTrajectory("/output/" + pathName + ".left");
 
         //Assign encoder followers to the corresponding directories
         leftFollower = new EncoderFollower(leftTrajectory);
@@ -58,13 +60,13 @@ public class Pathing {
         leftFollower.configureEncoder(drive.getLeftSideEncoderPosition(), RobotPathConstants.TICKS_PER_REV, RobotPathConstants.WHEEL_DIAMETER);
 
         //Configure the advanced PID which includes velocity
-        leftFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / RobotPathConstants.MAX_VELOCITY, 0.0);
+        leftFollower.configurePIDVA(0.1, 0.0, 0.0, 1 / RobotPathConstants.MAX_VELOCITY, 0.0);
 
         //Configure the right follower's encoder
         rightFollower.configureEncoder(drive.getRightSideEncoderPosition(), RobotPathConstants.TICKS_PER_REV, RobotPathConstants.WHEEL_DIAMETER);
 
         //Configure the right followers PID
-        rightFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / RobotPathConstants.MAX_VELOCITY, 0.0);
+        rightFollower.configurePIDVA(0.1, 0.0, 0.0, 1 / RobotPathConstants.MAX_VELOCITY, 0.0);
 
         followerNotifier = new Notifier(this::followPath);
         followerNotifier.startPeriodic(leftTrajectory.get(0).dt);
@@ -78,20 +80,25 @@ public class Pathing {
 
         //If the path is complete stop trying to follow the path
         if(leftFollower.isFinished() || rightFollower.isFinished()){
-            followerNotifier.stop();
+            stopPathing();
         }
         else{
             double leftSpeed = leftFollower.calculate(drive.getLeftSideEncoderPosition());
             double rightSpeed = rightFollower.calculate(drive.getRightSideEncoderPosition());
 
             double heading = navX.getYaw();
-
+            System.out.println("Current Head. " + heading);
+        
             //Invert Orientation Of Gyro
             double desiredHeading = -Pathfinder.r2d(leftFollower.getHeading());
 
+            System.out.println("Desired Head. " + desiredHeading);
+
             double headingDifference = Pathfinder.boundHalfDegrees(desiredHeading-heading);
             double turn = 0.8 * (-1.0/80.0) * headingDifference;
-            drive.tankDrive(leftSpeed + turn, rightSpeed - turn);
+
+        
+            drive.tankDrive(leftSpeed - turn, rightSpeed + turn);
         }
     }
 
@@ -100,7 +107,7 @@ public class Pathing {
      */
     public void stopPathing(){
         followerNotifier.stop();
-        drive.tankDrive(0, 0);
+        drive.tankDrive(-0.1, -0.1);
 
         //Re-Invert the motors so normal driving still works
         drive.getLeftMotors().setInverted(true);
