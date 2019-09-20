@@ -44,9 +44,8 @@ public class ArmadilloClimber {
     private boolean isClimbing = false;
     private boolean isClimbingArmDown = false;
     private boolean hasClimbed = false;
-    public boolean runStage2 = false;
+    public boolean runStage2 = true;
     private boolean runStage3 = true;
-    private boolean secondaryRetractionDelay = true;
 
     //Tells the robot at the start of the match it should try to level the arm
     private boolean steady = true;   
@@ -347,10 +346,6 @@ public class ArmadilloClimber {
                  * This is used for contracting the secondary arm
                  */
                 case ContractSecondary:
-                    if(secondaryRetractionDelay){
-                        Timer.delay(1.4);
-                        secondaryRetractionDelay = false;
-                    }
                     System.out.println("Contracting the secondary arm...");
                     if(getSecondaryClimberPosition() <= -1){
                        secondaryClimber.set(-0.65);
@@ -366,6 +361,7 @@ public class ArmadilloClimber {
                 //This is a general method to stop the motors
                 case Off:
                     primaryClimber.set(0);
+                    secondaryClimber.set(0);
                     break;
                 
                 //This defaults the case to the off state
