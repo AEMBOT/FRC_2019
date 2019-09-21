@@ -52,6 +52,8 @@ public class VacuumSystem {
 
     private boolean isSucking = false;
 
+    private boolean hasMovedBack = false;
+
     private int currentHatchPosition = 0;
 
     private double encoderOffset = 0;
@@ -150,6 +152,9 @@ public class VacuumSystem {
             else{
                 hatchVacuumMotor.set(0);
                 isSucking = false;
+                if(hasMovedBack == false){
+                    enableMovingBack();
+                }
             }
         }
         else{
@@ -197,6 +202,8 @@ public class VacuumSystem {
         isMovingBack = false;
         isMovingUpSlightly = false;
         isMovingBackHatch = false; 
+
+        hasMovedBack = false;
     }
 
     //Enables moving back the rest to false to allow for priority
@@ -206,6 +213,8 @@ public class VacuumSystem {
         isMovingDown = false;
         isMovingUpSlightly = false;
         isMovingBackHatch = false; 
+
+        hasMovedBack = true;
     }
 
     //Enables moving back the rest to false to allow for priority
@@ -215,6 +224,8 @@ public class VacuumSystem {
         isMovingUpSlightly = false;
         isMovingBack = false;
         isMovingBackHatch = true; 
+
+        hasMovedBack = false;
     }
 
      //Enables moving back the rest to false to allow for priority
