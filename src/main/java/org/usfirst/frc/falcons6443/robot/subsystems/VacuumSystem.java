@@ -160,6 +160,7 @@ public class VacuumSystem {
         else{
             hatchVacuumMotor.set(0);
             hasRetracted = false;
+            hasMovedBack = false;
         }
     }
 
