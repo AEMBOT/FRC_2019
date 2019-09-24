@@ -269,6 +269,13 @@ public class Robot extends TimedRobot {
         //Allows for manual control of the secondary climber arm
         //climber.secondaryClimberManual(secondary.rightStickY());
         //Check if the climber has contracted or is contracting, if so and the combo of buttons is pressed again enable stage 2 after retraction complete
+        if(climber.isContractingArm){
+            teleop.runOncePerPress(secondary.dPadLeft(), () -> climber.enableStage2(), false);
+        }
+
+        if(climber.runStage2){
+            teleop.runOncePerPress(secondary.dPadUp(), () -> climber.enableStage3(), false);
+        }
 
         //Then check if the secondary button is pushed and B on the primary controller is pushed, at this point it starts the climb
         if (climber.secondary && primary.B()) {

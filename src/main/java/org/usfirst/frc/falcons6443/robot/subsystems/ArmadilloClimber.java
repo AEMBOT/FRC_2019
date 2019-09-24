@@ -44,7 +44,7 @@ public class ArmadilloClimber {
     private boolean isClimbing = false;
     private boolean isClimbingArmDown = false;
     private boolean hasClimbed = false;
-    public boolean runStage2 = true;
+    public boolean runStage2 = false;
     private boolean runStage3 = true;
 
     //Tells the robot at the start of the match it should try to level the arm
