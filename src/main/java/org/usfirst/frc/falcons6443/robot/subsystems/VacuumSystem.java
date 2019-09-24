@@ -250,8 +250,8 @@ public class VacuumSystem {
     //Move arm to floor for floor pickup or to climg
     public void moveArmDown() {
         if(isMovingDown && isManual == false){
-            if((armEncoder.getPosition() - encoderOffset) > -50){
-                armMotor.set(-0.4);
+            if((armEncoder.getPosition() - encoderOffset) > -40){
+                armMotor.set(-0.25);
             }
             else{
                 armMotor.set(0);
@@ -262,25 +262,29 @@ public class VacuumSystem {
 
     //Move arm to floor for floor pickup or to climb
     public void moveArmCenter() {
+        System.out.println(armEncoder.getPosition() - encoderOffset);
         if(isCentering && isManual == false){
-            if((armEncoder.getPosition() - encoderOffset) > -22){
-                armMotor.set(-0.4);
-            }
-            else if((armEncoder.getPosition() - encoderOffset) < -24)
-            {
-                armMotor.set(0.4);
-            }
-            else{
+
+            if((armEncoder.getPosition() - encoderOffset) > -21.1 && (armEncoder.getPosition() - encoderOffset) < -17.2){
                 armMotor.set(0);
                 isCentering = false;
             }
+
+            else if((armEncoder.getPosition() - encoderOffset) > -20.1){
+                armMotor.set(-0.25);
+            }
+            else if((armEncoder.getPosition() - encoderOffset) < -19.2)
+            {
+                armMotor.set(0.25);
+            }
+            
         }
     }
 
     //Slightly move arm
     public void moveArmUp(){
         if(isMovingUpSlightly && isManual == false){
-            if((armEncoder.getPosition() - encoderOffset) > -4){
+            if((armEncoder.getPosition() - encoderOffset) > -3.2){
                 armMotor.set(-0.2);
             }
             else{
@@ -293,7 +297,7 @@ public class VacuumSystem {
     //Moves arm back to starting postion
     public void moveArmBack() {
         if(isMovingBack && isManual == false){
-            if((armEncoder.getPosition() - encoderOffset) < -2)
+            if((armEncoder.getPosition() - encoderOffset) < -1.6)
             {
                 armMotor.set(0.4);
             }
@@ -310,7 +314,7 @@ public class VacuumSystem {
      */
     public void moveArmBackHatch(){
         if(isMovingBackHatch && isManual == false){
-            if((armEncoder.getPosition() - encoderOffset) < -4){
+            if((armEncoder.getPosition() - encoderOffset) < -3.2){
                 armMotor.set(0.4);
             }
             else{
