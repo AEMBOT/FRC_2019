@@ -284,7 +284,7 @@ public class VacuumSystem {
     //Slightly move arm
     public void moveArmUp(){
         if(isMovingUpSlightly && isManual == false){
-            if((armEncoder.getPosition() - encoderOffset) > -3.2){
+            if((armEncoder.getPosition() - encoderOffset) > -4){
                 armMotor.set(-0.2);
             }
             else{

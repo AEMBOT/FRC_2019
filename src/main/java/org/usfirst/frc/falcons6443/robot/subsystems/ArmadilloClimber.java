@@ -353,7 +353,7 @@ public class ArmadilloClimber {
                     else{
                         
                         secondaryClimber.set(0);
-                        Timer.delay(1);
+                        Timer.delay(2.1);
                         setClimb(ClimbEnum.ClimbStage3);
                     }
                 break;
