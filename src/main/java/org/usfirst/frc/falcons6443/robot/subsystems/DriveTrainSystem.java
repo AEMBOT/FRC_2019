@@ -59,24 +59,15 @@ public class DriveTrainSystem{
      */
     public DriveTrainSystem() {
         
-        //2019 Seasson Comp Bot
+        //2019 Seasson Comp Bot motors
         leftMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontLeftMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackLeftMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.LeftCenterMotor,MotorType.kBrushless));
         rightMotors = new SpeedControllerGroup(new CANSparkMax(RobotMap.FrontRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.BackRightMotor, MotorType.kBrushless), new CANSparkMax(RobotMap.RightCenterMotor, MotorType.kBrushless));
 
-        //Practice Bot Drive
-        //leftMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontLeftMotorPB), new VictorSP(RobotMap.BackLeftMotorPB));
-        //rightMotors = new SpeedControllerGroup(new VictorSP(RobotMap.FrontRightMotorPB), new VictorSP(RobotMap.BackRightMotorPB));
-       
+        //Creates a new differential drive using the previously defined motors
         drive = new DifferentialDrive(leftMotors, rightMotors);
 
         //Flips motor direction to run the left in the correct direction
-       leftMotors.setInverted(true);
-        //leftEncoder = new Encoders(RobotMap.LeftEncoderA, RobotMap.LeftEncoderB);
-       // rightEncoder = new Encoders(RobotMap.RightEncoderA, RobotMap.RightEncoderB);
-        //leftEncoder.setTicksPerRev(49);
-        //rightEncoder.setTicksPerRev(49);
-        //leftEncoder.setDiameter(WheelDiameter);
-        //rightEncoder.setDiameter(WheelDiameter);
+        leftMotors.setInverted(true);
 
         // the driver station will complain for some reason if this isn't setSpeed so it's pretty necessary.
         // [FOR SCIENCE!]
@@ -86,9 +77,18 @@ public class DriveTrainSystem{
         encoderCheck = new Timer();
     }
 
+    /**
+     * Used to get a reference to the left side of the drive train from other classes
+     * @return 'leftMotors' SpeedControllerGroup
+     */
     public SpeedControllerGroup getLeftMotors(){
        return leftMotors;
     }
+
+    /**
+     * Used to get a reference to the right side of the motors
+     * @return 'rightMotors' SpeedControllerGroup
+     */
     public SpeedControllerGroup getRightMotors(){
         return rightMotors;
      }
@@ -97,42 +97,37 @@ public class DriveTrainSystem{
      * Singular callable method to quickly change drive styles.
      *
      * @param controller controller reference used for power/rotation values
-     * @param style DriveStyles enum, used to easily switch styles
-     *
+     * @param style DriveStyles enum, used to easily switch style
+     * @param speedMultiplier will adjust the drive speed depending on weather or not demo mode is on
      */
-    public void generalDrive(Xbox controller, DriveStyles style){
+    public void generalDrive(Xbox controller, DriveStyles style, double speedMultiplier){
         switch(style){
         
-            
+            //General tank drive, 2 Joysticks one for each side
             case Tank:
-                tankDrive(controller.leftStickY() / currentLevel,controller.rightStickY() / currentLevel);
+                tankDrive(controller.leftStickY() * speedMultiplier,controller.rightStickY() * speedMultiplier);
                 break;
 
+            //Arcade drive, 2 Joysticks, one for forward and reverse another for turning
             case Arcade:
-                arcadeDrive(-controller.rightStickX() / currentLevel, controller.leftStickY() / currentLevel);
+                arcadeDrive(-controller.rightStickX() * speedMultiplier, controller.leftStickY() * speedMultiplier);
                 break;
 
             case Curve:
                 curvatureDrive(controller.leftStickY() / currentLevel,controller.rightStickX() / currentLevel, false);
                 break;
             
+            //RC 'Style' controls, 1 Joystick followed by the left trigger and right trigger.
+            //Joystick turns and the triggers move forward and back
             case RC:
                 rcDrive(controller.leftTrigger(), controller.rightTrigger(), controller.rightStickX());
                 break;
             
+            //The drive style selection default, is currently defautlting to arcade
             default:
-            arcadeDrive(-controller.rightStickX() / currentLevel, controller.leftStickY() / currentLevel);
+                arcadeDrive(-controller.rightStickX() / currentLevel, controller.leftStickY() / currentLevel);
         }
 
-    }
-
-    //use "a" as the main value
-    //finds the hypotenuse for drive controls (joysticks)
-    private double hypotenuse(double a , double b){
-        double c = Math.sqrt((a*a) + (b*b));
-        if(c > 1) c = 1;
-        if(a < 0) c *= -1;
-        return c;
     }
 
     /**
@@ -169,16 +164,25 @@ public class DriveTrainSystem{
      * Implements arcadeDrive using RC controls
      */
     private void rcDrive(double leftTrig, double rightTrig, double rotation){
-       if(leftTrig > 0){
-           moveSpeed = leftTrig;
-       }
-       else if(rightTrig > 0){
-           moveSpeed = -rightTrig;
-       }
-       else{
-           moveSpeed = 0;
-       }
+       
+        //Makes sure some values are being sent over the 'leftTrig' variable 
+        if(leftTrig > 0){
+           
+            //Asssign the trigger value to the new value of the 'moveSpeed' variable
+            moveSpeed = leftTrig;
+        }
 
+        //Repeats the same process used for the left trigger
+        else if(rightTrig > 0){
+           moveSpeed = -rightTrig;
+        }
+
+        //If neither the left or right trigger are pushed set move speed to 0
+        else{
+           moveSpeed = 0;
+        }
+
+       //Finally applies the values to the motors
        drive.arcadeDrive(-rotation, moveSpeed);
     }
 
@@ -196,6 +200,7 @@ public class DriveTrainSystem{
 
     public boolean first; //set true in AutoPaths.WaitDrive()
     private int strikes; //how many times the encoder did not move enough in 1 second
+    
     //In progress. Needs to be tested
     public double getDistanceSafe(){
         if(first){
@@ -204,9 +209,6 @@ public class DriveTrainSystem{
         }
 
         first = false;
-        //Left encoder is encoderList.get(0). Right encoder is encoderList.get(1)
-        //encoderList.get(0).add(leftEncoder.get());
-        //encoderList.get(1).add(rightEncoder.get());
 
         if(encoderCheck.get() > 1){ //if the function has been running for a second
             double first = encoderList.get(0).get(0);
@@ -224,18 +226,16 @@ public class DriveTrainSystem{
         return getDistanceUnsafe();
     }
 
+    /**
+     * Used to return a constant of the unsafe distance for the encoder
+     */
     public double getDistanceUnsafe(){
-        //if(usingLeftEncoder) return leftEncoder.getDistanceWithDiameter();
-        /*else*/ return 10;//rightEncoder.getDistanceWithDiameter();
+        return 10;
     }
 
-    public void reset(){
-        //leftEncoder.reset();
-        //rightEncoder.reset();
-        //Logger.log(LoggerSystems.Drive, "reset drive encoders");
-    }
-
-    // param upOrDown: false = shift down, true = shift up. changes index of array to give max speed value
+    /**
+     * The following method is used to act as a virtual speed shifter to shift between several different speed values
+     */
     public void changeSpeed (boolean upOrDown){
         if(upOrDown && speedIndex < speedLevels.length){
             speedIndex += 1;
@@ -251,10 +251,4 @@ public class DriveTrainSystem{
             currentLevel = currentLevel;
         }
     }
-/*
-    public void changeIdle(){
-        if(this.idleMode == IdleMode.kBrake) this.idleMode = IdleMode.kCoast;
-        else if(this.idleMode == IdleMode.kCoast) this.idleMode = IdleMode.kBrake;
-    }
-*/
 }

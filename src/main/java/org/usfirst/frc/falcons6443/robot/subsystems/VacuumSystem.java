@@ -47,6 +47,8 @@ public class VacuumSystem {
     private boolean isMovingBack = false;
     private boolean isCentering = false;
     private boolean isMovingDown = false;
+    private boolean isMovingUpSlightly = false;
+    private boolean isMovingBackHatch = false;
 
     private boolean isSucking = false;
 
@@ -184,6 +186,8 @@ public class VacuumSystem {
         isCentering = true;
         isMovingDown = false;
         isMovingBack = false;
+        isMovingUpSlightly = false;
+        isMovingBackHatch = false; 
     }
 
     //Enables moving down sets the rest to false to allow for priority
@@ -191,6 +195,8 @@ public class VacuumSystem {
         isMovingDown = true;
         isCentering = false;
         isMovingBack = false;
+        isMovingUpSlightly = false;
+        isMovingBackHatch = false; 
     }
 
     //Enables moving back the rest to false to allow for priority
@@ -198,6 +204,26 @@ public class VacuumSystem {
         isMovingBack = true;
         isCentering = false;
         isMovingDown = false;
+        isMovingUpSlightly = false;
+        isMovingBackHatch = false; 
+    }
+
+    //Enables moving back the rest to false to allow for priority
+    public void enableMovingBackHatch(){
+        isCentering = false;
+        isMovingDown = false;
+        isMovingUpSlightly = false;
+        isMovingBack = false;
+        isMovingBackHatch = true; 
+    }
+
+     //Enables moving back the rest to false to allow for priority
+     public void enableMovingUpSlightly(){
+        isMovingBack = false;
+        isCentering = false;
+        isMovingDown = false;
+        isMovingUpSlightly = true;
+        isMovingBackHatch = false; 
     }
 
     /**
@@ -205,7 +231,7 @@ public class VacuumSystem {
      * @param val pass in a joystick value
      */
     public void manual(double val){
-        if(isMovingDown == false && isMovingBack == false && isCentering == false)
+        if(isMovingDown == false && isMovingBack == false && isCentering == false && isMovingBackHatch == false){
            
             if(Math.abs(val) > 0.2){
                 armMotor.set(val*0.9);
@@ -214,14 +240,18 @@ public class VacuumSystem {
                 isManual = false;
                 armMotor.set(0);
             }
+        }
+        else{
+            isManual=false;
+        }
             
     } 
 
     //Move arm to floor for floor pickup or to climg
     public void moveArmDown() {
         if(isMovingDown && isManual == false){
-            if((armEncoder.getPosition() - encoderOffset) > -42){
-                armMotor.set(-0.4);
+            if((armEncoder.getPosition() - encoderOffset) > -40){
+                armMotor.set(-0.25);
             }
             else{
                 armMotor.set(0);
@@ -232,17 +262,34 @@ public class VacuumSystem {
 
     //Move arm to floor for floor pickup or to climb
     public void moveArmCenter() {
+        System.out.println(armEncoder.getPosition() - encoderOffset);
         if(isCentering && isManual == false){
-            if((armEncoder.getPosition() - encoderOffset) > -18){
-                armMotor.set(-0.4);
+
+            if((armEncoder.getPosition() - encoderOffset) > -21.1 && (armEncoder.getPosition() - encoderOffset) < -17.2){
+                armMotor.set(0);
+                isCentering = false;
             }
-            else if((armEncoder.getPosition() - encoderOffset) < -20)
+
+            else if((armEncoder.getPosition() - encoderOffset) > -20.1){
+                armMotor.set(-0.25);
+            }
+            else if((armEncoder.getPosition() - encoderOffset) < -19.2)
             {
-                armMotor.set(0.4);
+                armMotor.set(0.25);
+            }
+            
+        }
+    }
+
+    //Slightly move arm
+    public void moveArmUp(){
+        if(isMovingUpSlightly && isManual == false){
+            if((armEncoder.getPosition() - encoderOffset) > -4){
+                armMotor.set(-0.2);
             }
             else{
                 armMotor.set(0);
-                isCentering = false;
+                isMovingUpSlightly = false;
             }
         }
     }
@@ -250,7 +297,7 @@ public class VacuumSystem {
     //Moves arm back to starting postion
     public void moveArmBack() {
         if(isMovingBack && isManual == false){
-            if((armEncoder.getPosition() - encoderOffset) < -5)
+            if((armEncoder.getPosition() - encoderOffset) < -1.6)
             {
                 armMotor.set(0.4);
             }
@@ -258,6 +305,21 @@ public class VacuumSystem {
                 armMotor.set(0);
                 isMovingBack = false;
                 hasRetracted = false;
+            }
+        }
+    }
+
+    /**
+     * Moves the hatch arm back to a safe hatch carry position
+     */
+    public void moveArmBackHatch(){
+        if(isMovingBackHatch && isManual == false){
+            if((armEncoder.getPosition() - encoderOffset) < -3.2){
+                armMotor.set(0.4);
+            }
+            else{
+                armMotor.set(0);
+                isMovingBackHatch = false;
             }
         }
     }

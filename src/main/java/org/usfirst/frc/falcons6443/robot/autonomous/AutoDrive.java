@@ -47,6 +47,7 @@ public class AutoDrive extends DriveTrainSystem {
         distancePID.setMaxOutput(.65);
         distancePID.setMinDoneCycles(5);
         distancePID.setFinishedRange(distanceBuffer);
+        
        // navX = NavX.get();
         anglePID = new PIDTimer(angleP, angleI, angleD, angleEps, angleTime);
         anglePID.setMaxOutput(.7);
@@ -62,7 +63,7 @@ public class AutoDrive extends DriveTrainSystem {
 
     //distance is in inches, reset will reset the encoders
     void setDistance(double distance, boolean reset){
-        if(reset) reset();
+      //  if(reset) reset();
         distancePID.setDesiredValue(distance);
     }
 
