@@ -175,12 +175,12 @@ public class Pathing {
 
         //However if the angle is less than the required angle turn towards that angle
         else if(navx.getYaw() < Angles.get(waypointNumber)){
-            drive.arcadeDrive(-0.5, 0);
+            drive.arcadeDrive(0, -0.5);
         }
 
         //And if its greater, turn in the opposite direction
         else if(navx.getYaw() > Angles.get(waypointNumber)){
-            drive.arcadeDrive(0.5, 0);
+            drive.arcadeDrive(0, 0.5);
         }
         
     }
@@ -190,7 +190,6 @@ public class Pathing {
      * @param drive once again passed a reference to the drive train
      */
     private void driveInches(DriveTrainSystem drive){
-
         //1 rotation of the middle motor's encoder shaft is equivelent to 3.1 inches
         double requiredTicks = (1/3.1)*Distances.get(waypointNumber);
 
@@ -207,12 +206,12 @@ public class Pathing {
         
         //Gets the encoders rotational values and subtracts the offset then drives until its greater than what it needs to be
         else if (drive.getAverageEncoderPosition()-encoderOffset > requiredTicks){
-            drive.arcadeDrive(0, 0.2);
+            drive.arcadeDrive(0.2, 0);
         }
 
         //Drives the other direction
         else if (drive.getAverageEncoderPosition()-encoderOffset < requiredTicks){
-            drive.arcadeDrive(0, -0.2);
+            drive.arcadeDrive(-0.2, 0);
         }
 
     }

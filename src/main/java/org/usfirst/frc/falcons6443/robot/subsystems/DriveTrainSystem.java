@@ -118,7 +118,7 @@ public class DriveTrainSystem{
 
             //Arcade drive, 2 Joysticks, one for forward and reverse another for turning
             case Arcade:
-                arcadeDrive(-controller.rightStickX() * speedMultiplier, controller.leftStickY() * speedMultiplier);
+                arcadeDrive(controller.leftStickY  () * speedMultiplier, -controller.rightStickX() * speedMultiplier);
                 break;
 
             case Curve:

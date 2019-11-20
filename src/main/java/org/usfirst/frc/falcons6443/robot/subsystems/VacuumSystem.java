@@ -1,6 +1,5 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -20,9 +19,6 @@ import org.usfirst.frc.falcons6443.robot.Robot;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.Encoders;
 import org.usfirst.frc.falcons6443.robot.hardware.LimitSwitch;
- 
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.ControlMode;
 
 /**
  * @author Goirick Saha, Will Richards
