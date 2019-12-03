@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.Ultrasonic;
 
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.vision.*;
-import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
+import org.usfirst.frc.falcons6443.robot.utilities.pid.PIDSim;
 
 /**
  * This class uses the limelight vision camera to help place hatches
@@ -14,7 +14,7 @@ import org.usfirst.frc.falcons6443.robot.utilities.pid.PID;
  */
 public class AssistedPlacement {
 
-    private PID pid;
+    private PIDSim pid;
     public Servo servo; 
     public boolean isServoDown = false;
     public boolean isServoUp = false;
@@ -41,7 +41,7 @@ public class AssistedPlacement {
         this.drive = drive;
 
         //Create and initilze a new PID object
-        pid = new PID(.028,0,0,0);
+        pid = new PIDSim(.028,0,0,0);
         pid.setMaxOutput(1);
         pid.setMinDoneCycles(5);
         pid.setFinishedRange(1);

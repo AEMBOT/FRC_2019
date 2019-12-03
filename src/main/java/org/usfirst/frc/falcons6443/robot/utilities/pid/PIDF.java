@@ -8,7 +8,7 @@ package org.usfirst.frc.falcons6443.robot.utilities.pid;
  */
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class PIDF extends PID {
+public class PIDF extends PIDSim {
 
     //The feedForward term is used to start the PID at a certain value and then try to approach the target.
     //Very useful in shooter PIDs and others to get up to speed faster.

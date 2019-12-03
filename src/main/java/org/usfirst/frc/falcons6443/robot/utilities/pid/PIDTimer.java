@@ -6,7 +6,7 @@ package org.usfirst.frc.falcons6443.robot.utilities.pid;
  *
  * @author Simbotics 2017
  */
-public class PIDTimer extends PID {
+public class PIDTimer extends PIDSim {
     //The timer is used to time out the PID, keeping it from forever attempting to reach
     //the target. Can also increase done range to reduce need of timer.
     private long startTime = -1;

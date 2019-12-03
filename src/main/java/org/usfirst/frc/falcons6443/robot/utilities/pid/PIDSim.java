@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  *
  * @author Simbotics 2017
  */
-public class PID {
+public class PIDSim {
     private double pConst;
     private double iConst;
     private double dConst;
@@ -23,7 +23,7 @@ public class PID {
     private boolean resetI;
     protected boolean debug;
 
-    public PID(double p, double i, double d, double epsRange){
+    public PIDSim(double p, double i, double d, double epsRange){
         this.pConst = p;
         this.iConst = i;
         this.dConst = d;

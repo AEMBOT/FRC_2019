@@ -1,6 +1,7 @@
 package org.usfirst.frc.falcons6443.robot.hardware;
 
 import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.SPI;
 
 /**
@@ -44,6 +45,10 @@ public class NavX {
      */
    public float getYaw() {
         return ahrs.getYaw();
+    }
+
+    public float getFusedHeading(){
+        return ahrs.getFusedHeading();
     }
 
     public void reset() {

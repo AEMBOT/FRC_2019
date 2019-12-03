@@ -8,6 +8,8 @@ import java.util.Scanner;
 
 import org.usfirst.frc.falcons6443.robot.hardware.NavX;
 import org.usfirst.frc.falcons6443.robot.subsystems.DriveTrainSystem;
+import org.usfirst.frc.falcons6443.robot.utilities.PID;
+import org.usfirst.frc.falcons6443.robot.utilities.pid.PIDSim;
 
 public class Pathing {
 
@@ -26,6 +28,10 @@ public class Pathing {
     List<Double> Angles;
     List<Boolean> hasTurned;
     List<Boolean> hasDriven;
+
+    PID turnPID;
+
+    double gyroOffset = 0;
 
     //Reference to the waypoint file
     File csv;
@@ -63,6 +69,11 @@ public class Pathing {
         //Creates a new File variable that points to the waypoints list file
         csv = new File(waypointFilePath);
 
+        turnPID = new PID(0.14,0,0.12);
+        turnPID.setAcceptableRange(0.3);
+        turnPID.setMaxOutput(0.5);
+        
+
         //Trys to read the file via Scanner
         try {
             file = new Scanner(csv);
@@ -71,6 +82,8 @@ public class Pathing {
 
         //Grab a static reference to the navX (avoids resource already allocated)
         navx = NavX.get();
+
+        navx.reset();
 
     }
     
@@ -108,11 +121,11 @@ public class Pathing {
             for (int i = 0; i < X.size(); i++) {
 
                 //Assign a temp value for the X offset and Y offset for use in tan-1 = (opp. / adj. )
-                double xDist = X.get(i) - X.get(i + 1);
-                double yDist = Y.get(i) - Y.get(i + 1);
+                double xDist = -X.get(i) + X.get(i + 1);
+                double yDist = -Y.get(i) + Y.get(i + 1);
 
                 //Calculate the angle using atan2 and the preset offset and then convert the answer to degrees
-                double angle = Math.toDegrees(Math.atan2(Math.abs(yDist), Math.abs(xDist)));
+                double angle = Math.toDegrees(Math.atan2(yDist, xDist));
 
                 //Add the calculated angle to an array list which will match up with the coords.
                 Angles.add(angle);
@@ -161,28 +174,35 @@ public class Pathing {
      * @param drive Gets passed a reference to the drive train to avoid errors
      */
     private void turnToAngle(DriveTrainSystem drive){
+       
+            System.out.println("Angle: " + getHeading());
+            System.out.println("Wanted Angle: " + Angles.get(waypointNumber));
+            turnPID.setSetpoint(Angles.get(waypointNumber));
+            double power = turnPID.calcOutput(getHeading());
 
-        //Check if the current angle is within the acceptable range (temp. PID) that it considers correct
-        if(navx.getYaw() < Angles.get(waypointNumber)+1 && navx.getYaw() > Angles.get(waypointNumber)-1){
+            //Check if the current angle is within the acceptable range (temp. PID) that it considers correct
+            if(turnPID.isInRange()){
 
-            //At which point stop turning and set the current waypoint's hasTurned value to true
-            drive.arcadeDrive(0, 0);
-            hasTurned.set(waypointNumber, true);
+                //At which point stop turning and set the current waypoint's hasTurned value to true
+                drive.arcadeDrive(0, 0);
+                hasTurned.set(waypointNumber, true);
 
-            //And since the wheels were driven the encoder values will have increased so.. reset them
-            resetEncoder(drive);
-        }
+                //And since the wheels were driven the encoder values will have increased so.. reset them
+                resetEncoder(drive);
+            }
 
-        //However if the angle is less than the required angle turn towards that angle
-        else if(navx.getYaw() < Angles.get(waypointNumber)){
-            drive.arcadeDrive(0, -0.5);
-        }
-
-        //And if its greater, turn in the opposite direction
-        else if(navx.getYaw() > Angles.get(waypointNumber)){
-            drive.arcadeDrive(0, 0.5);
-        }
+            //However if the angle is less than the required angle turn towards that angle
+            else{
+                if(Angles.get(waypointNumber) == 180.0){
+                    drive.arcadeDrive(0, power);
+                }
+                else{
+                    drive.arcadeDrive(0, -power);
+                }
+                
+            }
         
+
     }
 
     /**
@@ -206,12 +226,12 @@ public class Pathing {
         
         //Gets the encoders rotational values and subtracts the offset then drives until its greater than what it needs to be
         else if (drive.getAverageEncoderPosition()-encoderOffset > requiredTicks){
-            drive.arcadeDrive(0.2, 0);
+            drive.arcadeDrive(-0.2, 0);
         }
 
         //Drives the other direction
         else if (drive.getAverageEncoderPosition()-encoderOffset < requiredTicks){
-            drive.arcadeDrive(-0.2, 0);
+            drive.arcadeDrive(0.2, 0);
         }
 
     }
@@ -221,5 +241,18 @@ public class Pathing {
      * @return a double that represents the gyro angle
      */
     public double getHeading(){return navx.getYaw();}
+
+    /**
+     * Used to "reset" the gyro heading
+     * @return the offset to make it 0
+     */
+    public void reset(){
+        if(getHeading()>0){
+            gyroOffset = -getHeading();
+        }
+        else{
+            gyroOffset = getHeading();
+        }
+    }
 
 }
