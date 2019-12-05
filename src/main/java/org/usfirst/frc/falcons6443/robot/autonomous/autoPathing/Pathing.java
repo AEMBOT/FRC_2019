@@ -12,6 +12,7 @@ import jaci.pathfinder.PathfinderFRC;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.followers.EncoderFollower;
 
+
 public class Pathing {
 
     private DriveTrainSystem drive;
