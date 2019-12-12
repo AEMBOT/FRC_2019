@@ -105,12 +105,15 @@ public class Robot extends TimedRobot {
         //Stop Inverting the left side to allow for the correct calculations
         driveTrain.getLeftMotors().setInverted(false);
         climber.setClimb(ClimbEnum.Steady);
+
         //Resets the Nav angle
         NavX.get().reset();
+
+        driveTrain.resetEncoder();
         
         //Follows the path given as an input, in this case the path titled 'Stage1'
         try {
-            path.runPath("Stage1");
+            path.runPath("Test");
         } catch (IOException e) {}
     }
 
@@ -131,6 +134,8 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
        // Logger.teleopInit();
+       NavX.get().ahrs().zeroYaw();
+       NavX.get().ahrs().reset();
 
        try{
         path.stopPathing();
@@ -151,10 +156,11 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopPeriodic() {
-        System.out.println("Gyro: " + NavX.get().getYaw());
+        System.out.println("Gyro: " + NavX.get().get360Yaw());
 
         climber.climb();
         //System.out.println(assistedPlacement.servo.getAngle());
+        System.out.println(climber.s)
 
         //If the kill switch has not been pressed and has not already climbed
         if (!isKillSwitchEnabled && climber.getHasClimbed() == false && climber.getIsClimbing() == false) {
@@ -288,7 +294,15 @@ public class Robot extends TimedRobot {
      * This function is called periodically during test mode.
      */
     @Override
-    public void testPeriodic() {  LiveWindow.run();  }
+    public void testPeriodic() {  
+        System.out.println("Left: " + driveTrain.getLeftSideEncoderPosition());
+        System.out.println("Right: " + driveTrain.getRightSideEncoderPosition());
+    }
+
+    @Override
+    public void testInit() {
+        driveTrain.resetEncoder();
+    }
 
     /*
      * Called when the robot first enters disabled mode.

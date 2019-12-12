@@ -46,6 +46,20 @@ public class NavX {
         return ahrs.getYaw();
     }
 
+    /**
+     * Gets the yaw in the 360 degree space
+     */
+    public float get360Yaw() {
+        if(getYaw()<0){
+            return 180+(180-Math.abs(getYaw()));
+        }
+        return getYaw();
+    }
+
+    public float getFusedHeading(){
+        return ahrs.getFusedHeading();
+    }
+
     public void reset() {
         ahrs().reset();
     }

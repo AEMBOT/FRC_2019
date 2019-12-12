@@ -37,6 +37,7 @@ public class Pathing {
         this.drive = drive;
         
         navX = NavX.get();
+        navX.reset();
     }
 
     /**
@@ -44,7 +45,7 @@ public class Pathing {
      */
     public void runPath(String pathName) throws IOException {
         drive.resetEncoder();
-
+        navX.ahrs().reset();
        
         /**
          * Assign trajectories to corresponding files
@@ -61,13 +62,13 @@ public class Pathing {
         leftFollower.configureEncoder(drive.getLeftSideEncoderPosition(), RobotPathConstants.TICKS_PER_REV, RobotPathConstants.WHEEL_DIAMETER);
 
         //Configure the advanced PID which includes velocity
-        leftFollower.configurePIDVA(0.1, 0.0, 0.0, 1 / RobotPathConstants.MAX_VELOCITY, 0.0);
+        leftFollower.configurePIDVA(1.25, 0.0, 0.0, 1 / RobotPathConstants.MAX_VELOCITY, 0.0);
 
         //Configure the right follower's encoder
-        rightFollower.configureEncoder(drive.getRightSideEncoderPosition(), RobotPathConstants.TICKS_PER_REV, RobotPathConstants.WHEEL_DIAMETER);
+        rightFollower.configureEncoder(drive.getRightSideEncoderPosition(), -RobotPathConstants.TICKS_PER_REV, RobotPathConstants.WHEEL_DIAMETER);
 
         //Configure the right followers PID
-        rightFollower.configurePIDVA(0.1, 0.0, 0.0, 1 / RobotPathConstants.MAX_VELOCITY, 0.0);
+        rightFollower.configurePIDVA(1.25, 0.0, 0.0, 1 / RobotPathConstants.MAX_VELOCITY, 0.0);
 
         followerNotifier = new Notifier(this::followPath);
         followerNotifier.startPeriodic(leftTrajectory.get(0).dt);
@@ -80,18 +81,18 @@ public class Pathing {
     private void followPath(){
 
         //If the path is complete stop trying to follow the path
-        if(leftFollower.isFinished() || rightFollower.isFinished()){
+        if(leftFollower.isFinished() && rightFollower.isFinished()){
             stopPathing();
         }
         else{
             double leftSpeed = leftFollower.calculate(drive.getLeftSideEncoderPosition());
             double rightSpeed = rightFollower.calculate(drive.getRightSideEncoderPosition());
 
-            double heading = navX.getYaw();
+            double heading = navX.get360Yaw();
             System.out.println("Current Head. " + heading);
         
             //Invert Orientation Of Gyro
-            double desiredHeading = -Pathfinder.r2d(leftFollower.getHeading());
+            double desiredHeading = Pathfinder.r2d(leftFollower.getHeading());
 
             System.out.println("Desired Head. " + desiredHeading);
 
@@ -99,7 +100,8 @@ public class Pathing {
             double turn = 0.8 * (-1.0/80.0) * headingDifference;
 
         
-            drive.tankDrive(leftSpeed - turn, rightSpeed + turn);
+           //+turn -turn
+            drive.tankDrive(leftSpeed+turn, rightSpeed-turn);
         }
     }
 
