@@ -6,8 +6,9 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import org.usfirst.frc.falcons6443.robot.Robot;
 import org.usfirst.frc.falcons6443.robot.RobotMap;
 import org.usfirst.frc.falcons6443.robot.hardware.LimitSwitch;
-import org.usfirst.frc.falcons6443.robot.hardware.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -17,7 +18,7 @@ import edu.wpi.first.wpilibj.Timer;
  */
 public class ArmadilloClimber {
 
-    //Primary Climb Motors
+    // Primary Climb Motors
     private CANSparkMax leftMotor;
     private CANSparkMax rightMotor;
 
@@ -30,9 +31,6 @@ public class ArmadilloClimber {
 
     //Beam break for stopping the arm/leveling it
     private LimitSwitch bellySwitch;
-
-    //Ref to the led controller class
-    private static LEDSystem led;
 
     //Primary Climber Encoder
     private CANEncoder leftEncoder;
@@ -74,10 +72,7 @@ public class ArmadilloClimber {
     public boolean isContractingArm = false;
 
 
-    //Creates a new vacuum object
-    private VacuumSystem vacuum;
-
-    public ArmadilloClimber(VacuumSystem vacuum) {
+    public ArmadilloClimber() {
 
         //Assigns the motors to the proper mappings
         rightMotor = new CANSparkMax(RobotMap.RightClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -86,9 +81,6 @@ public class ArmadilloClimber {
         //Assigns secondary climber motors
         leftSecondMotor = new CANSparkMax(RobotMap.LeftSecondClimbMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
         rightSecondMotor = new CANSparkMax(RobotMap.RightSecondMotor, CANSparkMaxLowLevel.MotorType.kBrushless);                                                
-
-        //Creates a new LED System object for controlling LEDS
-        led = new LEDSystem();
 
         //Assigns climbing variables to false at start of match
         isClimbing = false;
@@ -102,9 +94,6 @@ public class ArmadilloClimber {
 
         //Assigns the secondaryEncoder variable to the secondary climbs's left motor encoder
         secondaryEncoder = leftSecondMotor.getEncoder();
-
-        //Creates a reference to a pre created vaccum object
-        this.vacuum = vacuum;
 
         //Flips the left motor so it is running the right direction
         rightMotor.setInverted(true);
@@ -182,7 +171,6 @@ public class ArmadilloClimber {
     public void enableKillSwitch(){
         isClimbing = false;
         isClimbingArmDown = false;
-        Robot.isKillSwitchEnabled = true;
     }
 
     /**
@@ -217,13 +205,6 @@ public class ArmadilloClimber {
         position = num;
     }
 
-    /**
-     * Gets a reference to the LED system for use in this class
-     * @return LED object
-     */
-    public static LEDSystem getLED(){
-        return led;
-    }
 
     /**
      * This method utilizes an enumerated type to determine the current stage of the climb and run that accordingly
@@ -241,8 +222,6 @@ public class ArmadilloClimber {
             case ClimbHab:
 
                 System.out.println("Running Primary Climber...");
-                //Switches LEDS to rainbow
-                led.enableRainbow();
 
                 //Tells the code it is no longer supposed to steady the arm
                 steady = false;
@@ -251,7 +230,6 @@ public class ArmadilloClimber {
                 if(first){
                     climbDegree = leftEncoder.getPosition();
                     secondaryClimbDegree = secondaryEncoder.getPosition();
-                    vacuum.enableMovingBack();
                 }
 
                 //Tells the robot it has already run through the loop omce

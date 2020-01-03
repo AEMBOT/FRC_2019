@@ -2,7 +2,7 @@ package org.usfirst.frc.falcons6443.robot.hardware.joysticks;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import org.usfirst.frc.falcons6443.robot.utilities.enums.XboxRumble;
+
 
 /**
  * Wrapper for an Xbox 360 Xbox. Provides clearer interface with button and axis inputs.
@@ -157,20 +157,5 @@ public class Xbox {
      */
     public boolean dPadLeft(){
         return controller.getPOV(0) == 270;
-    }
-
-    public void setRumble(XboxRumble rumble, double value){
-        switch (rumble){
-            case RumbleLeft:
-                controller.setRumble(GenericHID.RumbleType.kLeftRumble, value);
-                break;
-            case RumbleRight:
-                controller.setRumble(GenericHID.RumbleType.kRightRumble, value);
-                break;
-            case RumbleBoth:
-                controller.setRumble(GenericHID.RumbleType.kLeftRumble, value);
-                controller.setRumble(GenericHID.RumbleType.kRightRumble, value);
-                break;
-        }
     }
 }

@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import com.revrobotics.*;
 import org.usfirst.frc.falcons6443.robot.hardware.joysticks.Xbox;
-import org.usfirst.frc.falcons6443.robot.utilities.enums.DriveStyles;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.InputMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 
 //import org.usfirst.frc.falcons6443.robot.utilities.Logger;
 
@@ -108,34 +108,8 @@ public class DriveTrainSystem{
      * @param style DriveStyles enum, used to easily switch style
      * @param speedMultiplier will adjust the drive speed depending on weather or not demo mode is on
      */
-    public void generalDrive(Xbox controller, DriveStyles style, double speedMultiplier){
-        switch(style){
-        
-            //General tank drive, 2 Joysticks one for each side
-            case Tank:
-                tankDrive(controller.leftStickY() * speedMultiplier,controller.rightStickY() * speedMultiplier);
-                break;
-
-            //Arcade drive, 2 Joysticks, one for forward and reverse another for turning
-            case Arcade:
-                arcadeDrive(controller.leftStickY  () * speedMultiplier, -controller.rightStickX() * speedMultiplier);
-                break;
-
-            case Curve:
-                curvatureDrive(controller.leftStickY() / currentLevel,controller.rightStickX() / currentLevel, false);
-                break;
-            
-            //RC 'Style' controls, 1 Joystick followed by the left trigger and right trigger.
-            //Joystick turns and the triggers move forward and back
-            case RC:
-                rcDrive(controller.leftTrigger(), controller.rightTrigger(), controller.rightStickX());
-                break;
-            
-            //The drive style selection default, is currently defautlting to arcade
-            default:
-                arcadeDrive(-controller.rightStickX() / currentLevel, controller.leftStickY() / currentLevel);
-        }
-
+    public void generalDrive(Xbox controller, double speedMultiplier){
+        arcadeDrive(-controller.rightStickX() / currentLevel, controller.leftStickY() / currentLevel);
     }
 
     //Gets the RightCenter motor's encoder value 
