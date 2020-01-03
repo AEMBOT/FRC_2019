@@ -79,4 +79,12 @@ public class NavX {
     public void resetDisplacement() {
         ahrs().resetDisplacement();
     }
+
+    public double getAngle(){
+        return ahrs.getAngle();
+    }
+
+    public double getRate(){
+        return ahrs.getRate();
+    }
 }

@@ -1,5 +1,6 @@
 package org.usfirst.frc.falcons6443.robot.subsystems;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
@@ -36,6 +37,11 @@ public class DriveTrainSystem{
     SpeedControllerGroup leftMotors;
     SpeedControllerGroup rightMotors;
 
+    Encoder rightSideEncoder;
+    Encoder leftSideEncoder;
+
+    private double distancePerPulse = 0;
+
     //Allows more control over indidual motors (Left side)
     CANSparkMax FrontLeftMotor = new CANSparkMax(RobotMap.FrontLeftMotor, MotorType.kBrushless);
     CANSparkMax LeftCenterMotor = new CANSparkMax(RobotMap.LeftCenterMotor, MotorType.kBrushless);
@@ -71,6 +77,10 @@ public class DriveTrainSystem{
         leftMotors = new SpeedControllerGroup(FrontLeftMotor, BackLeftMotor, LeftCenterMotor);
         rightMotors = new SpeedControllerGroup(FrontRightMotor, BackRightMotor, RightCenterMotor);
 
+        rightSideEncoder = new Encoder(RobotMap.RightSideBoreEncoderA, RobotMap.RightSideBoreEncoderB);
+
+        leftSideEncoder = new Encoder(RobotMap.LeftSideBoreEncoderA, RobotMap.RightSideBoreEncoderB);
+
         //Creates a new differential drive using the previously defined motors
         drive = new DifferentialDrive(leftMotors, rightMotors);
 
@@ -99,6 +109,11 @@ public class DriveTrainSystem{
      */
     public SpeedControllerGroup getRightMotors(){
         return rightMotors;
+     }
+
+
+     public void setDistancePerPulse(double dist){
+        this.distancePerPulse = dist;
      }
 
     /**
@@ -172,6 +187,27 @@ public class DriveTrainSystem{
 
        //Finally applies the values to the motors
        drive.arcadeDrive(-rotation, moveSpeed);
+    }
+
+    /**
+     * Return the encoder on the left side of the drive train
+     */
+    public Encoder getLeftSideEncoder(){
+        return leftSideEncoder;
+    }
+
+    //Reset the econders
+    public void resetEncoders(){
+        leftSideEncoder.reset();
+        rightSideEncoder.reset();     
+    }
+    
+
+     /**
+     * Return the encoder on the right side of the drive train
+     */
+    public Encoder getRightSideEncoder(){
+        return leftSideEncoder;
     }
 
     /**
